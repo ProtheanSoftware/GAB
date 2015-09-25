@@ -12,6 +12,14 @@
 bin/
 gen/
 
+#idea files
+/.idea/workspace.xml
+/.idea/libraries
+
+#mac files
+.DS_Store
+
+
 # Gradle files
 .gradle/
 build/
