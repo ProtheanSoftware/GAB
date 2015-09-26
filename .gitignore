@@ -13,8 +13,8 @@ bin/
 gen/
 
 #idea files
-/.idea/workspace.xml
-/.idea/libraries
+.idea/workspace.xml
+.idea/libraries
 
 #mac files
 .DS_Store
@@ -33,3 +33,5 @@ proguard/
 
 # Log Files
 *.log
+#Secrets file
+app/src/main/java/gab/protheansoftware/com/gab/model/Secrets.java
