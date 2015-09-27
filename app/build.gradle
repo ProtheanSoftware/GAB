@@ -31,4 +31,5 @@ dependencies {
     androidTestCompile('com.android.support.test:testing-support-lib:0.1') {
         exclude group: 'junit'  // junit:junit-dep conflicts with junit:unit
     }
+    compile 'com.android.support:support-v4:23.0.1'
 }
