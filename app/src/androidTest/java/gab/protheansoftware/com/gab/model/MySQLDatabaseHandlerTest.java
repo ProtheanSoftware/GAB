@@ -12,6 +12,6 @@ public class MySQLDatabaseHandlerTest {
     @Test
     public void testAddUser() throws Exception {
         MySQLDatabaseHandler db = new MySQLDatabaseHandler();
-        db.addUser("asdf", 6);
+        db.addUser("asdasdww22", 8);
     }
 }
