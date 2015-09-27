@@ -30,7 +30,7 @@ public class MySQLDatabaseHandler implements IDatabaseHandler {
         try{
             con = DriverManager.getConnection(url, user, password);
 
-            pstatement = con.prepareStatement("INSERT INTO t_users(id, name, fb_id) VALUES(?,?,?);");
+            pstatement = con.prepareStatement("INSERT INTO t_users(user_id, name, fb_id) VALUES(?,?,?);");
             pstatement.setString(1, null);
             pstatement.setString(2, name);
             pstatement.setString(3, String.valueOf(id));
