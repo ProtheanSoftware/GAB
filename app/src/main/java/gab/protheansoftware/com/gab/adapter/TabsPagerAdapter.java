@@ -6,12 +6,14 @@ import android.support.v4.app.FragmentPagerAdapter;
 import gab.protheansoftware.com.gab.ChatFragment;
 import gab.protheansoftware.com.gab.MatchScreenFragment;
 import gab.protheansoftware.com.gab.MatchesListFragment;
+import gab.protheansoftware.com.gab.SearchforMatches;
 
 /**
  * Tis class returns fragments.
  * @author Tobias Alldén
  */
 public class TabsPagerAdapter extends FragmentPagerAdapter {
+    private boolean hasMatches = false;
 
 
     public TabsPagerAdapter(FragmentManager fragmentManager) {
@@ -27,13 +29,21 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int i) {
         switch(i) {
             case 0:
-                return new MatchScreenFragment();
+                if(!hasMatches) {
+                    return new SearchforMatches();
+                } else {
+                    return new MatchScreenFragment();
+                }
             case 1:
                 return new MatchesListFragment();
             case 2:
                 return new ChatFragment();
         }
         return null;
+    }
+
+    public void hasmatches(boolean value) {
+        this.hasMatches = value;
     }
 
     @Override
