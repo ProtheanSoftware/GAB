@@ -4,5 +4,23 @@
     <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
         <!-- Customize your theme here. -->
     </style>
+    <style name="btndislike">
+        <item name="android:layout_width">100dp</item>
+        <item name="android:layout_height">105dp</item>
+
+    </style>
+    <style name="rlytforlikedislike">
+    <item name="android:padding">10dp</item>
+    </style>
+
+    <style name="btnlike">
+        <item name="android:layout_width">100dp</item>
+        <item name="android:layout_height">105dp</item>
+
+    </style>
+    <style name="btnmatcheduserinfo">
+        <item name="android:layout_width">70dp</item>
+        <item name="android:layout_height">85dp</item>
+    </style>
 
 </resources>

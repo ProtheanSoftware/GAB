@@ -4,6 +4,10 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.view.Window;
+import android.view.WindowManager;
+
+import java.util.ArrayList;
 
 import gab.protheansoftware.com.gab.adapter.TabsPagerAdapter;
 
@@ -13,6 +17,9 @@ public class TabbedActivity extends FragmentActivity implements ActionBar.TabLis
     private ViewPager mViewPager;
     private TabsPagerAdapter mAdapter;
     private ActionBar actionBar;
+    private ArrayList<Match> matches;
+
+
 
     //Tab titles
     private String[] tabs = {"Match Screen","Matches","Chat"};
@@ -55,6 +62,19 @@ public class TabbedActivity extends FragmentActivity implements ActionBar.TabLis
             public void onPageScrollStateChanged(int arg0) {
             }
         });
+
+        //search for matches
+        mAdapter.hasmatches(false);
+        searchForMatches();
+
+    }
+
+
+    /**
+     * Searches the database for nearby matches
+     */
+    private void searchForMatches() {
+        //SEARCH DATABASE FOR MATCHES
     }
 
     @Override

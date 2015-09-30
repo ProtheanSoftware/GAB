@@ -1,10 +1,83 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="gab.protheansoftware.com.gab.MatchScreenFragment">
+    android:orientation="vertical" >
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-        android:text="@string/main_fragment_0" />
+    <!--Top bar-->
 
-</FrameLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="#0BDA51" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="Match"
+            android:layout_centerVertical="true"
+            android:textSize="26sp"
+            android:textColor="#000"
+            android:layout_centerHorizontal="true" />
+
+    </RelativeLayout>
+
+
+    <!--The main Screen-->
+    <RelativeLayout
+        android:id="@+id/likedislikelayout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@android:color.grey">
+
+        <TextView
+            android:id="@+id/messagetextview"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="Namn"
+            android:textColor="@android:color/black"
+            android:textSize="23sp" />
+
+
+        </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/dislikelayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/infobuttonlaout">
+
+        <Button
+            android:id="@+id/dislikeButton"
+            style="@style/btndislike"
+            android:layout_centerVertical="true"
+            android:background="@drawable/dislike" />
+
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/likelayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/infobuttonlaout">
+
+        <Button
+            android:id="@+id/likeButton"
+            style="@style/btnlike"
+
+            android:background="@drawable/like" />
+
+    </RelativeLayout>
+
+
+
+
+
+
+
+
+
+</LinearLayout>
