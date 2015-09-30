@@ -3,58 +3,81 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <!-- This acts as Actionbar -->
+    <!--Top bar-->
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="55dp"
-        android:background="#FFF" >
-        <TextView
-            android:id="@+id/activity_main_content_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:text="Layout 1"
-            android:visibility="gone"/>
-
-
-
-        <ImageView
-            android:id="@+id/imageView1"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:visibility="gone"
-            android:src="@drawable/tinder_logo" />
+        android:background="#0BDA51" >
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            android:text="@string/app_name"
+            android:text="Match"
             android:layout_centerVertical="true"
             android:textSize="26sp"
-            android:textColor="#FF6600"
+            android:textColor="#000"
             android:layout_centerHorizontal="true" />
-
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:src="@drawable/navigation_shadow" />
 
     </RelativeLayout>
 
-    <!-- This is where fragment will show up -->
 
-    <FrameLayout
-        android:id="@+id/activity_main_content_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/white" >
-    </FrameLayout>
+    <!--The main Screen-->
+    <RelativeLayout
+        android:id="@+id/likedislikelayout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@android:color.grey">
+
+        <TextView
+            android:id="@+id/messagetextview"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="Namn"
+            android:textColor="@android:color/black"
+            android:textSize="23sp" />
+
+
+        </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/dislikelayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/infobuttonlaout">
+
+        <Button
+            android:id="@+id/dislikeButton"
+            style="@style/btndislike"
+            android:layout_centerVertical="true"
+            android:background="@drawable/dislike" />
+
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/likelayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/infobuttonlaout">
+
+        <Button
+            android:id="@+id/likeButton"
+            style="@style/btnlike"
+
+            android:background="@drawable/like" />
+
+    </RelativeLayout>
+
+
+
+
+
+
+
+
 
 </LinearLayout>
