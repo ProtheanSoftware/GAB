@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
@@ -7,69 +7,83 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:background="#0BDA51" >
+        android:layout_height="100dp">
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_alignParentTop="true">
 
         <TextView
+            android:id="@+id/nameTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
-            android:text="Match"
-            android:layout_centerVertical="true"
-            android:textSize="26sp"
-            android:textColor="#000"
-            android:layout_centerHorizontal="true" />
+            android:text="@string/matchScreen_nameTag"
+            android:textSize="40sp"/>
 
-    </RelativeLayout>
-
-
-    <!--The main Screen-->
-    <RelativeLayout
-        android:id="@+id/likedislikelayout"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="@android:color.grey">
 
         <TextView
             android:id="@+id/messagetextview"
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:gravity="center"
-            android:text="Namn"
+            android:text="@string/message_matchScreen"
             android:textColor="@android:color/black"
+            android:gravity="center"
             android:textSize="23sp" />
+        </LinearLayout>
+    </RelativeLayout>
 
-
-        </RelativeLayout>
+    <LinearLayout
+        android:id="@+id/centerContent"
+        android:layout_centerInParent="true"
+        android:background="@android:color/black"
+        android:layout_width="360dp"
+        android:gravity="center"
+        android:layout_height="250dp">
+        <ListView
+            android:background="@android:color/white"
+            android:id="@+id/centerContentList"
+            android:layout_centerInParent="true"
+            android:layout_width="350dp"
+            android:layout_height="240dp">
+        </ListView>
+    </LinearLayout>
 
     <RelativeLayout
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        >
+
+     <RelativeLayout
         android:id="@+id/dislikelayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/infobuttonlaout">
+         android:layout_alignParentLeft="true">
 
         <Button
             android:id="@+id/dislikeButton"
             style="@style/btndislike"
             android:layout_centerVertical="true"
             android:background="@drawable/dislike" />
-
-
     </RelativeLayout>
     <RelativeLayout
         android:id="@+id/likelayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/infobuttonlaout">
+        android:layout_alignParentRight="true">
 
         <Button
             android:id="@+id/likeButton"
             style="@style/btnlike"
-
             android:background="@drawable/like" />
 
+
+    </RelativeLayout>
     </RelativeLayout>
 
 
@@ -80,4 +94,4 @@
 
 
 
-</LinearLayout>
+</RelativeLayout>

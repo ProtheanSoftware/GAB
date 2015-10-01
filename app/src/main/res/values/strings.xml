@@ -9,4 +9,8 @@
     <string name="main_fragment_0">Match Screen</string>
     <string name="main_fragment_1">Matches List</string>
     <string name="main_fragment_2">Chat</string>
+    <string name="message_matchScreen">Ni båda gillar:</string>
+    <string name="matchScreen_nameTag">Namn</string>
+    <string name="searchForMatchesMessage">Söker efter personer...</string>
+
 </resources>
