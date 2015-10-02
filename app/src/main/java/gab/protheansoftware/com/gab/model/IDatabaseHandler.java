@@ -1,5 +1,6 @@
 package gab.protheansoftware.com.gab.model;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -7,10 +8,13 @@ import java.util.ArrayList;
  */
 public interface IDatabaseHandler {
     void addUser(String name, int id);
-    int getMyId();
+    int getMyId() throws SQLException;
 //    void sessionStart();
  //   void sessionStop();
     void addLike(int likeId, String likeName);
     void removeLike(int likeId);
-    ArrayList<Profile> getMatches();
+    ArrayList<Profile> getPotentialMatches() throws SQLException;
+    ArrayList<Profile> getMatches() throws SQLException;
+    boolean hasLikedMe(int targetId) throws SQLException;
+    Profile getUser(int id) throws SQLException;
 }

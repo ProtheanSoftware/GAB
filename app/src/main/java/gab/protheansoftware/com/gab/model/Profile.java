@@ -6,9 +6,12 @@ package gab.protheansoftware.com.gab.model;
 public class Profile {
     private final String name;
     private final int id;
-    public Profile(String name, int id){
+    private final int fbId;
+
+    public Profile(String name, int id, int fbId){
         this.name = name;
         this.id = id;
+        this.fbId = fbId;
     }
 
     public int getId() {
@@ -17,5 +20,9 @@ public class Profile {
 
     public String getName() {
         return name;
+    }
+
+    public int getFbId() {
+        return fbId;
     }
 }
