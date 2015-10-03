@@ -10,11 +10,11 @@ import java.util.ArrayList;
  * @author oskar
  * Created by oskar on 2015-09-26.
  */
-public class MySQLDatabaseHandlerTest {
-    MySQLDatabaseHandler db;
+public class JdbcDatabaseHandlerTest {
+    JdbcDatabaseHandler db;
     @Before
     public void initialize() {
-        db = new MySQLDatabaseHandler();
+        db = new JdbcDatabaseHandler();
     }
     @Test
     public void testAddUser() throws Exception {

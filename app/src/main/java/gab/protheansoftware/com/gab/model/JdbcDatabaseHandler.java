@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 /**
  * Created by oskar on 2015-09-26.
  */
-public class MySQLDatabaseHandler implements IDatabaseHandler {
+public class JdbcDatabaseHandler implements IDatabaseHandler {
     private static final int my_fb_id = 6;
 
     private ArrayList<Like> selectFromLikes(String query){
@@ -40,7 +40,7 @@ public class MySQLDatabaseHandler implements IDatabaseHandler {
             }
 
         }catch (SQLException ex){
-            Logger lgr = Logger.getLogger(MySQLDatabaseHandler.class.getName());
+            Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
             lgr.log(Level.SEVERE, ex.getMessage(), ex);
         }finally {
             try {
@@ -52,7 +52,7 @@ public class MySQLDatabaseHandler implements IDatabaseHandler {
                 }
 
             } catch (SQLException ex) {
-                Logger lgr = Logger.getLogger(MySQLDatabaseHandler.class.getName());
+                Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
                 lgr.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
@@ -86,7 +86,7 @@ public class MySQLDatabaseHandler implements IDatabaseHandler {
             }
 
         }catch (SQLException ex){
-            Logger lgr = Logger.getLogger(MySQLDatabaseHandler.class.getName());
+            Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
             lgr.log(Level.SEVERE, ex.getMessage(), ex);
         }finally {
             try {
@@ -98,7 +98,7 @@ public class MySQLDatabaseHandler implements IDatabaseHandler {
                 }
 
             } catch (SQLException ex) {
-                Logger lgr = Logger.getLogger(MySQLDatabaseHandler.class.getName());
+                Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
                 lgr.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
@@ -128,7 +128,7 @@ public class MySQLDatabaseHandler implements IDatabaseHandler {
             pstatement.setString(3, String.valueOf(id));
             pstatement.executeUpdate();
         }catch (SQLException ex){
-            Logger lgr = Logger.getLogger(MySQLDatabaseHandler.class.getName());
+            Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
             lgr.log(Level.SEVERE, ex.getMessage(), ex);
         }finally {
             try {
@@ -140,7 +140,7 @@ public class MySQLDatabaseHandler implements IDatabaseHandler {
                 }
 
             } catch (SQLException ex) {
-                Logger lgr = Logger.getLogger(MySQLDatabaseHandler.class.getName());
+                Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
                 lgr.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
@@ -180,7 +180,7 @@ public class MySQLDatabaseHandler implements IDatabaseHandler {
             pstatement.setString(4, likeName);
             pstatement.executeUpdate();
         }catch (SQLException ex){
-            Logger lgr = Logger.getLogger(MySQLDatabaseHandler.class.getName());
+            Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
             lgr.log(Level.SEVERE, ex.getMessage(), ex);
         }finally {
             try {
@@ -192,7 +192,7 @@ public class MySQLDatabaseHandler implements IDatabaseHandler {
                 }
 
             } catch (SQLException ex) {
-                Logger lgr = Logger.getLogger(MySQLDatabaseHandler.class.getName());
+                Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
                 lgr.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
@@ -225,7 +225,7 @@ public class MySQLDatabaseHandler implements IDatabaseHandler {
 
     @Override
     public boolean hasLikedMe(int targetId) throws SQLException {
-        ArrayList<Like> likes = selectFromLikes("SELECT * FROM `t_likes` WHERE `origin_id` =" + targetId + " AND coding`like_id` =" + getMyId() + " LIMIT 0 , 30;");
+        ArrayList<Like> likes = selectFromLikes("SELECT * FROM `t_likes` WHERE `origin_id` =" + targetId + " AND `like_id` =" + getMyId() + " LIMIT 0 , 30;");
         return likes.size()>0;
     }
 
