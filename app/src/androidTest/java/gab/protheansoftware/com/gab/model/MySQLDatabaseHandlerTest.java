@@ -3,6 +3,7 @@ package gab.protheansoftware.com.gab.model;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 
 
 /**
@@ -27,5 +28,15 @@ public class MySQLDatabaseHandlerTest {
     @Test
      public void testAddLike() throws Exception {
         db.addLike(2, "asdf");
+    }
+    @Test
+    public void testGetPotentialMatches() throws Exception{
+        ArrayList<Profile> profiles = db.getPotentialMatches();
+        assert profiles.size()>0;
+    }
+    @Test
+    public void testGetMatches() throws Exception{
+        ArrayList<Profile> profiles = db.getMatches();
+        assert profiles.size()>0;
     }
 }

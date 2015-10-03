@@ -12,8 +12,8 @@ import java.util.logging.Logger;
 public class MySQLDatabaseHandler implements IDatabaseHandler {
     private static final int my_fb_id = 6;
 
-    private ResultSet runQuery(String query){
-        ResultSet rs = null;
+    private ArrayList<Like> selectFromLikes(String query){
+        ArrayList<Like> likes = new ArrayList<Like>();
 
         Connection con = null;
         Statement statement =  null;
@@ -32,8 +32,12 @@ public class MySQLDatabaseHandler implements IDatabaseHandler {
 
             statement = con.createStatement();
 
-            rs = statement.executeQuery(query);
+            ResultSet rs = statement.executeQuery(query);
 
+            while (rs.next()){
+                Like temp = new Like(rs.getInt("id"), rs.getInt("origin_id"), rs.getInt("like_id"), rs.getString("like_name"));
+                likes.add(temp);
+            }
 
         }catch (SQLException ex){
             Logger lgr = Logger.getLogger(MySQLDatabaseHandler.class.getName());
@@ -52,7 +56,53 @@ public class MySQLDatabaseHandler implements IDatabaseHandler {
                 lgr.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
-        return rs;
+        return likes;
+    }
+
+    private ArrayList<Profile> selectFromUsers(String query){
+        ArrayList<Profile> profiles = new ArrayList<Profile>();
+
+        Connection con = null;
+        Statement statement =  null;
+
+        String url = "jdbc:mysql://" + Secrets.DB_IP + "/gab";
+        String user = Secrets.DB_USER;
+        String password = Secrets.DB_PASSWORD;
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+
+        try{
+            con = DriverManager.getConnection(url, user, password);
+
+            statement = con.createStatement();
+
+            ResultSet rs = statement.executeQuery(query);
+            while (rs.next()){
+                Profile temp = new Profile(rs.getString("name"),rs.getInt("user_id"), rs.getInt("fb_id"));
+                profiles.add(temp);
+            }
+
+        }catch (SQLException ex){
+            Logger lgr = Logger.getLogger(MySQLDatabaseHandler.class.getName());
+            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+        }finally {
+            try {
+                if(statement != null){
+                    statement.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+
+            } catch (SQLException ex) {
+                Logger lgr = Logger.getLogger(MySQLDatabaseHandler.class.getName());
+                lgr.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+        }
+        return profiles;
     }
 
     @Override
@@ -99,10 +149,9 @@ public class MySQLDatabaseHandler implements IDatabaseHandler {
     @Override
     public int getMyId() throws SQLException {
         int user_id = -1;
-        ResultSet rs = runQuery("SELECT * FROM `t_users` WHERE `fb_id` =" + my_fb_id + " LIMIT 0 , 30;");
-        while (rs.next()){
-            user_id = rs.getInt("user_id");
-            System.out.println(user_id);
+        ArrayList<Profile> profiles = selectFromUsers("SELECT * FROM `t_users` WHERE `fb_id` =" + my_fb_id + " LIMIT 0 , 30;");
+        if(profiles.size()>0){
+            user_id = profiles.get(0).getId();
         }
         return user_id;
     }
@@ -156,51 +205,35 @@ public class MySQLDatabaseHandler implements IDatabaseHandler {
     }
     @Override
     public ArrayList<Profile> getPotentialMatches() throws SQLException {
-        ArrayList<Profile> profiles = null;
 
-        ResultSet rs = runQuery("SELECT * FROM `t_users` LIMIT 0 , 30;");
-        while (rs.next()){
-            if(profiles == null){
-                profiles = new ArrayList<Profile>();
-            }
-            Profile temp = new Profile(rs.getString("name"),rs.getInt("user_id"), rs.getInt("fb_id"));
-            profiles.add(temp);
-        }
+        ArrayList<Profile> profiles = selectFromUsers("SELECT * FROM `t_users` LIMIT 0 , 30;");
+
         return profiles;
     }
 
     @Override
     public ArrayList<Profile> getMatches() throws SQLException {
-        ArrayList<Profile> profiles = null;
-        ResultSet rs = runQuery("SELECT * FROM `t_likes` WHERE `origin_id`= " + getMyId() + " LIMIT 0 , 30;");
-        while (rs.next()){
-            if(profiles == null){
-                profiles = new ArrayList<Profile>();
-            }
-            if(hasLikedMe(rs.getInt("like_id"))){
-                profiles.add(getUser(rs.getInt("target_id")));
+        ArrayList<Like> likes = selectFromLikes("SELECT * FROM `t_likes` WHERE `origin_id`= " + getMyId() + " LIMIT 0 , 30;");
+        ArrayList<Profile> matches = new ArrayList<Profile>();
+        for(Like temp : likes){
+            if(hasLikedMe(temp.getLikeId())){
+                matches.add(getUser(temp.getLikeId()));
             }
         }
-        return profiles;
+        return matches;
     }
 
     @Override
     public boolean hasLikedMe(int targetId) throws SQLException {
-        boolean matched = false;
-        ResultSet rs = runQuery("SELECT * FROM `t_likes` WHERE `origin_id` =" + targetId + " `like_id` =" + getMyId() + "LIMIT 0 , 30;");
-        matched = rs.next();
-
-        return matched;
+        ArrayList<Like> likes = selectFromLikes("SELECT * FROM `t_likes` WHERE `origin_id` =" + targetId + " AND coding`like_id` =" + getMyId() + " LIMIT 0 , 30;");
+        return likes.size()>0;
     }
 
     @Override
     public Profile getUser(int id) throws SQLException {
         Profile profile = null;
-        ResultSet rs = runQuery("SELECT * FROM `t_users` WHERE `user_id` =" + id + " LIMIT 0 , 30;");
-        while (rs.next()){
-            profile = new Profile(rs.getString("name"), rs.getInt("user_id"), rs.getInt("fb_id"));
-        }
-        return profile;
+        ArrayList<Profile> profiles = selectFromUsers("SELECT * FROM `t_users` WHERE `user_id` =" + id + " LIMIT 0 , 30;");
+        return profiles.get(0);
     }
 
 }
