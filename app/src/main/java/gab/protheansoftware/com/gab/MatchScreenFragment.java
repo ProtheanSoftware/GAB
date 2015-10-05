@@ -18,7 +18,6 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            searchForMatches();
 
 
         }
@@ -35,23 +34,24 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
 
     }
 
-    /**
-     * Searches the database for potential matches
-     */
-    private void searchForMatches() {
-        //Search database for matches and set fragmentview to another view.
-    }
-
-    /**
-     * Checks the server if the other person have matched with this one.
-     */
-    private void findLikeMatched() {
+    //Fills out the fragment with the user.
+    public void setUser() {
 
     }
 
+    /**
+     * Declines the other user
+     */
+    public void decline() {
 
+    }
 
+    /**
+     * Sets  the list of potential matches
+     */
+    public void setPotentialMatches() {
 
+    }
 
     @Override
     public void onStop() {
@@ -65,6 +65,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
+
         
     }
 

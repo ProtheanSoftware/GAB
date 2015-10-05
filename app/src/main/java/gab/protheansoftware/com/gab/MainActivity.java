@@ -21,6 +21,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     private ActionBar actionBar;
     private ArrayList<Match> matches;
 
+    //Reference to matchscreen to be able to build with user profile
+    private MatchScreenFragment match;
+
+
+
 
 
     //Tab titles
@@ -65,10 +70,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             }
         });
 
-        //search for matches
-        tabsAdapter.hasmatches(false);
-        searchForMatches();
-
     }
 
 
@@ -83,11 +84,21 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
     }
 
+    //Returns the fragment for the specified tag
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-        // on tab selected
-        // show respected fragment view
-        viewPager.setCurrentItem(tab.getPosition());
+        if(tab.getPosition() == 0) {
+            if(matches.isEmpty()) {
+                //returns searchformatches
+                viewPager.setCurrentItem(11);
+                searchForMatches();
+            } else {
+                viewPager.setCurrentItem(tab.getPosition());
+                this.match = (MatchScreenFragment)tabsAdapter.getItem(0);
+                match.setmatches(matches);
+            }
+        }
+            viewPager.setCurrentItem(tab.getPosition());
     }
 
     @Override
