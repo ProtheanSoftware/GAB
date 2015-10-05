@@ -9,7 +9,7 @@ import gab.protheansoftware.com.gab.MatchesListFragment;
 import gab.protheansoftware.com.gab.SearchforMatches;
 
 /**
- * Tis class returns fragments.
+ * This adapter returns fragments for the main activity.
  * @author Tobias Alldén
  */
 public class TabsPagerAdapter extends FragmentPagerAdapter {
