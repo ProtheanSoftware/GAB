@@ -41,7 +41,7 @@ public class MatchesListAdapter extends ArrayAdapter<Profile>{
 
         matchedNameText.setText(SingleMatchItem.getName());
 
-        matchedPicture.setImageResource(R.drawable.oskar);
+        matchedPicture.setImageResource(R.drawable.noprofpic);
 
         return custom_row;
     }
