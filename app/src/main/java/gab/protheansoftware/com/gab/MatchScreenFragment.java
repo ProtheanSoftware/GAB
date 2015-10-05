@@ -65,6 +65,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
+        
     }
 
 }
