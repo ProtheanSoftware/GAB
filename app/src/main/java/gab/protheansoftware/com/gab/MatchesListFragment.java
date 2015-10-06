@@ -38,6 +38,8 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
 
         ListAdapter matchesListAdapter = new MatchesListAdapter(getActivity(), matches);
         setListAdapter(matchesListAdapter);
+
+        getListView().setOnItemClickListener(this);
     }
 
     public void setDbh(IDatabaseHandler dbh){
@@ -46,7 +48,8 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Toast.makeText(getActivity(), String.valueOf(parent.getItemAtPosition(position)), Toast.LENGTH_SHORT);
+        Toast.makeText(getActivity(), String.valueOf(parent.getItemAtPosition(position)), Toast.LENGTH_SHORT).show();
+
     }
 
 
