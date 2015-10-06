@@ -1,6 +1,7 @@
 package gab.protheansoftware.com.gab.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,7 +33,7 @@ public class MatchesListAdapter extends ArrayAdapter<Profile>{
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View custom_row = inflater.inflate(R.layout.matches_list_row_template, parent, false);
 
-        Profile SingleMatchItem = getItem(position);
+        final Profile SingleMatchItem = getItem(position);
 
         TextView matchedNameText = (TextView) custom_row.findViewById(R.id.matchedNameText);
         ImageView matchedPicture = (ImageView) custom_row.findViewById(R.id.matchedPicture);
@@ -40,7 +41,12 @@ public class MatchesListAdapter extends ArrayAdapter<Profile>{
         matchedNameText.setText(SingleMatchItem.getName());
 
         matchedPicture.setImageResource(R.drawable.oskar);
-
+        custom_row.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("Match", String.valueOf(SingleMatchItem.getId()));
+            }
+        });
         return custom_row;
     }
 }

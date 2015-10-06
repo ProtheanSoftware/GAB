@@ -95,15 +95,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
         if(tab.getPosition() == 0) {
-            if(matches.isEmpty()) {
-                //returns searchformatches
-                viewPager.setCurrentItem(11);
-                searchForMatches();
-            } else {
-                viewPager.setCurrentItem(tab.getPosition());
-                this.match = (MatchScreenFragment)tabsAdapter.getItem(0);
-                match.setmatches(matches);
-            }
+           // if(matches.isEmpty()) {
+           //     //returns searchformatches
+           //     viewPager.setCurrentItem(11);
+           //     searchForMatches();
+           // } else {
+           //     viewPager.setCurrentItem(tab.getPosition());
+           //     this.match = (MatchScreenFragment)tabsAdapter.getItem(0);
+           //     match.setmatches(matches);
+           // }
         }
             viewPager.setCurrentItem(tab.getPosition());
     }
