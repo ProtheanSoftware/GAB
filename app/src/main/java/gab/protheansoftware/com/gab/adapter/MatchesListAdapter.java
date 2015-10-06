@@ -8,9 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import gab.protheansoftware.com.gab.R;
 import gab.protheansoftware.com.gab.model.Profile;
@@ -23,7 +21,7 @@ public class MatchesListAdapter extends ArrayAdapter<Profile>{
 
 
 
-    public MatchesListAdapter(Context context, Profile[] profiles)
+    public MatchesListAdapter(Context context, List<Profile> profiles)
     {
         super(context, R.layout.matches_list_row_template , profiles);
     }
