@@ -7,6 +7,9 @@ import gab.protheansoftware.com.gab.model.Profile;
 import gab.protheansoftware.com.gab.adapter.MatchesListAdapter;
 import gab.protheansoftware.com.gab.model.JdbcDatabaseHandler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Implement match list here
@@ -22,9 +25,9 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment {
 
 
         setDbh(new JdbcDatabaseHandler());
-        Profile[] matches = new Profile[0];
+        List<Profile> matches = new ArrayList<Profile>();
         try {
-            matches = (Profile[]) dbh.getMatches().toArray();
+            matches = dbh.getMatches();
         } catch (Exception e) {
             e.printStackTrace();
         }
