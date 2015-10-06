@@ -5,20 +5,27 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.view.Window;
-import android.view.WindowManager;
 
 import java.util.ArrayList;
 
 import gab.protheansoftware.com.gab.adapter.TabsPagerAdapter;
 
 
-public class TabbedActivity extends FragmentActivity implements ActionBar.TabListener {
+/**
+ * This is the main activity, it holds the chat, the list of matches and the matchscreen fragments.
+ * @author Tobias Allden
+ */
+public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 
-    private ViewPager mViewPager;
-    private TabsPagerAdapter mAdapter;
+    private ViewPager viewPager;
+    private TabsPagerAdapter tabsAdapter;
     private ActionBar actionBar;
     private ArrayList<Match> matches;
+
+    //Reference to matchscreen to be able to build with user profile
+    private MatchScreenFragment match;
+
+
 
 
 
@@ -28,17 +35,19 @@ public class TabbedActivity extends FragmentActivity implements ActionBar.TabLis
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tabbed);
+
+        //Fix for mysql(jdbc)
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
 
-        //Initilize
-        mViewPager = (ViewPager) findViewById(R.id.pager);
+        //Initialize
+        viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar = getActionBar();
-        mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
+        tabsAdapter = new TabsPagerAdapter(getSupportFragmentManager());
 
-        mViewPager.setAdapter(mAdapter);
+        viewPager.setAdapter(tabsAdapter);
         actionBar.setHomeButtonEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
@@ -50,7 +59,7 @@ public class TabbedActivity extends FragmentActivity implements ActionBar.TabLis
     /**
      * on swiping the viewpager make respective tab selected
      * */
-        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
             @Override
             public void onPageSelected(int position) {
@@ -68,10 +77,6 @@ public class TabbedActivity extends FragmentActivity implements ActionBar.TabLis
             }
         });
 
-        //search for matches
-        mAdapter.hasmatches(false);
-        searchForMatches();
-
     }
 
 
@@ -86,11 +91,21 @@ public class TabbedActivity extends FragmentActivity implements ActionBar.TabLis
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
     }
 
+    //Returns the fragment for the specified tag
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-        // on tab selected
-        // show respected fragment view
-        mViewPager.setCurrentItem(tab.getPosition());
+        if(tab.getPosition() == 0) {
+            if(matches.isEmpty()) {
+                //returns searchformatches
+                viewPager.setCurrentItem(11);
+                searchForMatches();
+            } else {
+                viewPager.setCurrentItem(tab.getPosition());
+                this.match = (MatchScreenFragment)tabsAdapter.getItem(0);
+                match.setmatches(matches);
+            }
+        }
+            viewPager.setCurrentItem(tab.getPosition());
     }
 
     @Override

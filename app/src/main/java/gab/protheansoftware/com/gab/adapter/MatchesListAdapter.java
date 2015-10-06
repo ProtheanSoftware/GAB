@@ -8,16 +8,22 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import gab.protheansoftware.com.gab.R;
+import gab.protheansoftware.com.gab.model.Profile;
 
 /**
  * Created by Oscar Hall on 01/10/15.
  */
-public class MatchesListAdapter extends ArrayAdapter<String>{
+public class MatchesListAdapter extends ArrayAdapter<Profile>{
 
 
 
-    public MatchesListAdapter(Context context, String[] profiles)
+
+    public MatchesListAdapter(Context context, Profile[] profiles)
     {
         super(context, R.layout.matches_list_row_template , profiles);
     }
@@ -28,11 +34,13 @@ public class MatchesListAdapter extends ArrayAdapter<String>{
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View custom_row = inflater.inflate(R.layout.matches_list_row_template, parent, false);
 
-        String SingleMatchItem = getItem(position);
+        Profile SingleMatchItem = getItem(position);
+
         TextView matchedNameText = (TextView) custom_row.findViewById(R.id.matchedNameText);
         ImageView matchedPicture = (ImageView) custom_row.findViewById(R.id.matchedPicture);
 
-        matchedNameText.setText(SingleMatchItem);
+        matchedNameText.setText(SingleMatchItem.getName());
+
         matchedPicture.setImageResource(R.drawable.oskar);
 
         return custom_row;

@@ -235,5 +235,4 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         ArrayList<Profile> profiles = selectFromUsers("SELECT * FROM `t_users` WHERE `user_id` =" + id + " LIMIT 0 , 30;");
         return profiles.get(0);
     }
-
 }
