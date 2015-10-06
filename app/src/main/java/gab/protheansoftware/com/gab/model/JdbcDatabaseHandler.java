@@ -10,7 +10,14 @@ import java.util.logging.Logger;
  * Created by oskar on 2015-09-26.
  */
 public class JdbcDatabaseHandler implements IDatabaseHandler {
-    private static final int my_fb_id = 6;
+    private int my_fb_id;
+
+    public JdbcDatabaseHandler(int id){
+        this.my_fb_id = id;
+    }
+    public JdbcDatabaseHandler(){
+        my_fb_id = 7;
+    }
 
     private ArrayList<Like> selectFromLikes(String query){
         ArrayList<Like> likes = new ArrayList<Like>();
