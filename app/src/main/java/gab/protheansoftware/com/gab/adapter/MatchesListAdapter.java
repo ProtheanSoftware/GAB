@@ -40,13 +40,14 @@ public class MatchesListAdapter extends ArrayAdapter<Profile>{
 
         matchedNameText.setText(SingleMatchItem.getName());
 
-        matchedPicture.setImageResource(R.drawable.oskar);
         custom_row.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d("Match", String.valueOf(SingleMatchItem.getId()));
             }
         });
+        matchedPicture.setImageResource(R.drawable.noprofpic);
+
         return custom_row;
     }
 }

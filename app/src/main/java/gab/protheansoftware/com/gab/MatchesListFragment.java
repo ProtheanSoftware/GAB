@@ -1,7 +1,14 @@
 package gab.protheansoftware.com.gab;
 
+import android.app.TabActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListAdapter;
+import android.widget.Toast;
+
+import gab.protheansoftware.com.gab.adapter.TabsPagerAdapter;
 import gab.protheansoftware.com.gab.model.IDatabaseHandler;
 import gab.protheansoftware.com.gab.model.Profile;
 import gab.protheansoftware.com.gab.adapter.MatchesListAdapter;
@@ -14,7 +21,7 @@ import java.util.List;
 /**
  * Implement match list here
  */
-public class MatchesListFragment extends android.support.v4.app.ListFragment {
+public class MatchesListFragment extends android.support.v4.app.ListFragment implements AdapterView.OnItemClickListener {
 
     private IDatabaseHandler dbh;
 
@@ -32,13 +39,20 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment {
             e.printStackTrace();
         }
 
-
         ListAdapter matchesListAdapter = new MatchesListAdapter(getActivity(), matches);
-
         setListAdapter(matchesListAdapter);
+
+        getListView().setOnItemClickListener(this);
     }
+
     public void setDbh(IDatabaseHandler dbh){
         this.dbh = dbh;
     }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Toast.makeText(getActivity(), String.valueOf(parent.getItemAtPosition(position)), Toast.LENGTH_SHORT).show();
+    }
+
 
 }
