@@ -1,13 +1,17 @@
 package gab.protheansoftware.com.gab.chat;
 
-import android.app.Fragment;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -37,44 +41,66 @@ public class MessagingFragment extends Fragment {
     private MessageClientListener messageClientListener;
     private IDatabaseHandler dbh;
 
-    private String recipientId;
+    private static String recipientId;
     private EditText messageBodyField;
     private String messageBody;
     private MessageService.MessageServiceInterface messageService;
     private String currentUserId;
-    private ServiceConnection serviceConnection = new MyServiceConnection();
+    public ServiceConnection serviceConnection = new MyServiceConnection();
 
     private ListView messagesList;
     private MessageAdapter messageAdapter;
+
+    public static void setRecipientId(String recipientId) {
+        MessagingFragment.recipientId = recipientId;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "sending message");
-
         super.onCreate(savedInstanceState);
-        getActivity().setContentView(R.layout.fragment_chat);
+    }
+
+    @Override
+    public void onDestroy() {
+        getActivity().unbindService(serviceConnection);
+        messageService.removeMessageClientListener(messageClientListener);
+        super.onDestroy();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //Initialize base items for messaging functionality
+
+        Log.d(TAG, "Initializing messagefragment");
 
         //Initialize variables
         dbh = new JdbcDatabaseHandler();
         messageClientListener = new MySQLMessageClientListener();
 
-        getActivity().bindService(new Intent(getActivity(), MessagingFragment.class), serviceConnection, getActivity().BIND_AUTO_CREATE);
 
-        //get recipientId from intent extra
-        Intent intent = getActivity().getIntent();
-        recipientId = intent.getStringExtra("RECIPIENT_ID");
         try {
             currentUserId = String.valueOf(dbh.getMyId());
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
+
+        View rootView = inflater.inflate(R.layout.fragment_chat,container,false);
+        return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
         //Add listener for sending messages
         messageBodyField = (EditText) getActivity().findViewById(R.id.messageBodyField);
         getActivity().findViewById(R.id.sendButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "sending message");
                 messageBody = messageBodyField.getText().toString();
+
+                Log.d(TAG, "sending message: " + messageBody + ", To: " + recipientId);
                 if (!messageBody.isEmpty()) {
                     messageService.sendMessage(recipientId, messageBody);
                     messageBodyField.setText("");
@@ -85,13 +111,6 @@ public class MessagingFragment extends Fragment {
         messagesList = (ListView) getActivity().findViewById(R.id.listMessages);
         messageAdapter = new MessageAdapter(getActivity());
         messagesList.setAdapter(messageAdapter);
-    }
-
-    @Override
-    public void onDestroy() {
-        getActivity().unbindService(serviceConnection);
-        messageService.removeMessageClientListener(messageClientListener);
-        super.onDestroy();
     }
 
     private class MyServiceConnection implements ServiceConnection {

@@ -1,6 +1,7 @@
 package gab.protheansoftware.com.gab;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -10,6 +11,7 @@ import android.support.v4.view.ViewPager;
 import java.util.ArrayList;
 
 import gab.protheansoftware.com.gab.adapter.TabsPagerAdapter;
+import gab.protheansoftware.com.gab.chat.MessagingFragment;
 
 
 /**
@@ -107,6 +109,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
            // }
         }
             viewPager.setCurrentItem(tab.getPosition());
+    }
+    @Override
+    public void onStart(){
+        super.onStart();
     }
 
     @Override

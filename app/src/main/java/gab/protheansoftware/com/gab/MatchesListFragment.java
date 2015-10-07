@@ -1,6 +1,5 @@
 package gab.protheansoftware.com.gab;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -30,6 +29,7 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
 
     public Observable notifier;
 
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -57,7 +57,6 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         int r_id = 0;
-        Log.d(TAG, "ITEM CLICK");
 
         //Switch tab
         ViewPager pager = (ViewPager) getActivity().findViewById(R.id.pager);
@@ -66,13 +65,13 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
 
 
         Toast.makeText(getActivity(), String.valueOf(parent.getItemAtPosition(position)), Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(getActivity().getApplicationContext(), MessagingFragment.class);
+
         if(parent.getItemAtPosition(position) instanceof Profile) {
             r_id = ((Profile)parent.getItemAtPosition(position)).getId();
         }
-        intent.putExtra("RECIPIENT_ID", r_id);
+        Log.d(TAG, "Opening chat with: " + r_id);
 
-        getActivity().setIntent(intent);
+        MessagingFragment.setRecipientId(String.valueOf(r_id));
 
     }
 }
