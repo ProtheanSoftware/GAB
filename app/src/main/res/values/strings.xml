@@ -12,5 +12,6 @@
     <string name="message_matchScreen">Ni båda gillar:</string>
     <string name="matchScreen_nameTag">Namn</string>
     <string name="searchForMatchesMessage">Söker efter personer...</string>
+    <string name="splash_screen_text">gab! gab!! gab..</string>
 
 </resources>
