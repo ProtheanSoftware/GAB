@@ -1,9 +1,11 @@
-package gab.protheansoftware.com.gab;
+package gab.protheansoftware.com.gab.chat;
 
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
+
 import com.sinch.android.rtc.*;
 import com.sinch.android.rtc.messaging.MessageClient;
 import com.sinch.android.rtc.messaging.MessageClientListener;
@@ -95,6 +97,7 @@ public class MessageService extends Service implements SinchClientListener {
 
     public void sendMessage(String recipientUserId, String textBody){
         if(messageClient != null){
+            Log.d("MessageService", "sending message: " + textBody);
             WritableMessage message = new WritableMessage(recipientUserId, textBody);
             messageClient.send(message);
         }
@@ -118,7 +121,7 @@ public class MessageService extends Service implements SinchClientListener {
     }
 
 
-    //public interface for ListUsersActivity & MessagingActivity
+    //public interface for ListUsersActivity & MessagingFragment
     public class MessageServiceInterface extends Binder {
         public void sendMessage(String recipientUserId, String textBody) {
             MessageService.this.sendMessage(recipientUserId, textBody);

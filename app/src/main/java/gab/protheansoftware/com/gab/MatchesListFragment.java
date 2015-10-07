@@ -1,14 +1,15 @@
 package gab.protheansoftware.com.gab;
 
-import android.app.TabActivity;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.Toast;
 
-import gab.protheansoftware.com.gab.adapter.TabsPagerAdapter;
+import gab.protheansoftware.com.gab.chat.MessagingFragment;
 import gab.protheansoftware.com.gab.model.IDatabaseHandler;
 import gab.protheansoftware.com.gab.model.Profile;
 import gab.protheansoftware.com.gab.adapter.MatchesListAdapter;
@@ -16,6 +17,7 @@ import gab.protheansoftware.com.gab.model.JdbcDatabaseHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 
 
 /**
@@ -23,7 +25,10 @@ import java.util.List;
  */
 public class MatchesListFragment extends android.support.v4.app.ListFragment implements AdapterView.OnItemClickListener {
 
+    private static final String TAG = "MatchesListFragment";
     private IDatabaseHandler dbh;
+
+    public Observable notifier;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -51,8 +56,23 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        int r_id = 0;
+        Log.d(TAG, "ITEM CLICK");
+
+        //Switch tab
+        ViewPager pager = (ViewPager) getActivity().findViewById(R.id.pager);
+        pager.setCurrentItem(2);
+
+
+
         Toast.makeText(getActivity(), String.valueOf(parent.getItemAtPosition(position)), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getActivity().getApplicationContext(), MessagingFragment.class);
+        if(parent.getItemAtPosition(position) instanceof Profile) {
+            r_id = ((Profile)parent.getItemAtPosition(position)).getId();
+        }
+        intent.putExtra("RECIPIENT_ID", r_id);
+
+        getActivity().setIntent(intent);
+
     }
-
-
 }

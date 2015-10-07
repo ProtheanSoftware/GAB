@@ -1,6 +1,7 @@
 package gab.protheansoftware.com.gab;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
