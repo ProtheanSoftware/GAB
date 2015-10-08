@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import gab.protheansoftware.com.gab.adapter.TabsPagerAdapter;
+import gab.protheansoftware.com.gab.chat.MessageService;
 import gab.protheansoftware.com.gab.chat.MessagingFragment;
 import gab.protheansoftware.com.gab.model.JdbcDatabaseHandler;
 
@@ -118,6 +119,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     @Override
     public void onStart(){
         super.onStart();
+        final Intent serviceIntent = new Intent(getApplicationContext(), MessageService.class);
+        startService(serviceIntent);
     }
 
     @Override

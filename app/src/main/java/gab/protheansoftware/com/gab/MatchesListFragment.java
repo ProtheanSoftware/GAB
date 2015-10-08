@@ -73,9 +73,6 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
         }
         Log.d(TAG, "Opening chat with: " + r_id);
 
-        final Intent serviceIntent = new Intent(getActivity().getApplicationContext(), MessageService.class);
-        getActivity().startService(serviceIntent);
-
         MessagingFragment.setRecipientId(String.valueOf(r_id));
 
     }
