@@ -1,5 +1,6 @@
 package gab.protheansoftware.com.gab;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -8,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.Toast;
 
+import gab.protheansoftware.com.gab.chat.MessageService;
 import gab.protheansoftware.com.gab.chat.MessagingFragment;
 import gab.protheansoftware.com.gab.model.IDatabaseHandler;
 import gab.protheansoftware.com.gab.model.Profile;
@@ -36,7 +38,7 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
 
 
 
-        setDbh(new JdbcDatabaseHandler());
+        setDbh(JdbcDatabaseHandler.getInstance());
         List<Profile> matches = new ArrayList<Profile>();
         try {
             matches = dbh.getMatches();
@@ -70,6 +72,9 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
             r_id = ((Profile)parent.getItemAtPosition(position)).getId();
         }
         Log.d(TAG, "Opening chat with: " + r_id);
+
+        final Intent serviceIntent = new Intent(getActivity().getApplicationContext(), MessageService.class);
+        getActivity().startService(serviceIntent);
 
         MessagingFragment.setRecipientId(String.valueOf(r_id));
 
