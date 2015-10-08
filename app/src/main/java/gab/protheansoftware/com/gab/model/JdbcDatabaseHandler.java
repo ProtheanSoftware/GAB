@@ -22,7 +22,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     //    this.my_fb_id = id;
     //}
     private JdbcDatabaseHandler(){
-        my_fb_id = 7;
+        my_fb_id = 137;
         myId = -1;
         Log.d(TAG, "Setting id..");
         try {
@@ -38,6 +38,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         }
         return instance;
     }
+
     private ArrayList<Like> selectFromLikes(String query){
         ArrayList<Like> likes = new ArrayList<Like>();
 
@@ -233,6 +234,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     public void removeLike(int likeId) {
 
     }
+
     @Override
     public ArrayList<Profile> getPotentialMatches() throws SQLException {
 
@@ -264,5 +266,15 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         Profile profile = null;
         ArrayList<Profile> profiles = selectFromUsers("SELECT * FROM `t_users` WHERE `user_id` =" + id + " LIMIT 0 , 30;");
         return profiles.get(0);
+    }
+
+    @Override
+    public ArrayList<Message> getMessagesFrom(int user_id) {
+        return null;
+    }
+
+    @Override
+    public void saveMessage(int recieverId, String message) {
+
     }
 }
