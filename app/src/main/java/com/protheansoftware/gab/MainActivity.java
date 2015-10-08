@@ -1,4 +1,4 @@
-package gab.protheansoftware.com.gab;
+package com.protheansoftware.gab;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -8,7 +8,7 @@ import android.support.v4.view.ViewPager;
 
 import java.util.ArrayList;
 
-import gab.protheansoftware.com.gab.adapter.TabsPagerAdapter;
+import com.protheansoftware.gab.adapter.TabsPagerAdapter;
 
 
 /**

@@ -1,11 +1,11 @@
-package gab.protheansoftware.com.gab;
+package com.protheansoftware.gab;
 
 import android.os.Bundle;
 import android.widget.ListAdapter;
-import gab.protheansoftware.com.gab.model.IDatabaseHandler;
-import gab.protheansoftware.com.gab.model.Profile;
-import gab.protheansoftware.com.gab.adapter.MatchesListAdapter;
-import gab.protheansoftware.com.gab.model.JdbcDatabaseHandler;
+import com.protheansoftware.gab.model.IDatabaseHandler;
+import com.protheansoftware.gab.model.Profile;
+import com.protheansoftware.gab.adapter.MatchesListAdapter;
+import com.protheansoftware.gab.model.JdbcDatabaseHandler;
 
 import java.util.ArrayList;
 import java.util.List;

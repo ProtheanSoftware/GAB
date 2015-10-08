@@ -1,10 +1,10 @@
-package gab.protheansoftware.com.gab;
+package com.protheansoftware.gab;
 
 import android.media.Image;
 
 import java.util.ArrayList;
 
-import gab.protheansoftware.com.gab.constants.Constants;
+import com.protheansoftware.gab.constants.Constants;
 
 /**
  * A class containing all tha data for a potential match

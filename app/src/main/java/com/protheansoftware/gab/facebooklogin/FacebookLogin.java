@@ -1,6 +1,6 @@
-package gab.protheansoftware.com.gab.facebooklogin;
+package com.protheansoftware.gab.facebooklogin;
 
-import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -14,9 +14,9 @@ import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
-import gab.protheansoftware.com.gab.R;
+import com.protheansoftware.gab.R;
 
-public class FacebookLogin extends AppCompatActivity {
+public class FacebookLogin extends Activity {
     LoginButton loginButton;
     CallbackManager callbackManager;
 
@@ -24,14 +24,14 @@ public class FacebookLogin extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_facebook_login);
+
 
         //initialize facebook sdk
         FacebookSdk.sdkInitialize(getApplicationContext());
+        setContentView(R.layout.activity_facebook_login);
         callbackManager=CallbackManager.Factory.create();
-
-        loginButton.setReadPermissions("user_friends", "user_likes");
-
+        loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton.setReadPermissions("user_likes");
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -40,14 +40,14 @@ public class FacebookLogin extends AppCompatActivity {
 
             @Override
             public void onCancel() {
-                Log.i("FacebookActivity","login cancelled");
-                Toast.makeText(getApplicationContext(),"Facebook login interrupted",Toast.LENGTH_LONG).show();
+                Log.i("FacebookActivity", "login cancelled");
+                Toast.makeText(getApplicationContext(), "Facebook login interrupted", Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onError(FacebookException e) {
-                Log.i("FacebookActivity","FacebookLogin error");
-                Toast.makeText(getApplicationContext(),"There was an error, please try again",Toast.LENGTH_LONG).show();
+                Log.i("FacebookActivity", "FacebookLogin error");
+                Toast.makeText(getApplicationContext(), "There was an error, please try again", Toast.LENGTH_LONG).show();
 
             }
 
