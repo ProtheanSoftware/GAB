@@ -29,7 +29,7 @@ repositories {
 
 dependencies {
     //compile files('lib/sinch-android-rtc-3.6.2.jar')
-    compile fileTree(include: ['*.jar'], dir: 'lib')
+    compile fileTree(include: ['*.jar'], dir: 'libs')
    //compile 'mysql:mysql-connector-java:5.1.16'
     compile 'com.android.support:support-annotations:21.0.3'
     androidTestCompile 'junit:junit:4.11'
