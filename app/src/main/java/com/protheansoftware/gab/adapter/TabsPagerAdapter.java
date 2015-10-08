@@ -28,8 +28,6 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int i) {
         switch(i) {
             case 0:
-                    return new MatchScreenFragment();
-            case 11:
                 return new SearchforMatches();
             case 1:
                 return new MatchesListFragment();
