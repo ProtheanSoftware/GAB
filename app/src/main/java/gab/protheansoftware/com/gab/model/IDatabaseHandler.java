@@ -17,4 +17,7 @@ public interface IDatabaseHandler {
     ArrayList<Profile> getMatches() throws SQLException;
     boolean hasLikedMe(int targetId) throws SQLException;
     Profile getUser(int id) throws SQLException;
+
+    ArrayList<Message> getMessagesFrom(int user_id);
+    void saveMessage(int recieverId, String message);
 }
