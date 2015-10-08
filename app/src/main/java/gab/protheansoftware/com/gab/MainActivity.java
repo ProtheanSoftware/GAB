@@ -8,10 +8,12 @@ import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import gab.protheansoftware.com.gab.adapter.TabsPagerAdapter;
 import gab.protheansoftware.com.gab.chat.MessagingFragment;
+import gab.protheansoftware.com.gab.model.JdbcDatabaseHandler;
 
 
 /**
@@ -44,6 +46,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
+
+        //Set my id based on fb
+        JdbcDatabaseHandler.getInstance();
 
         //Initialize
         viewPager = (ViewPager) findViewById(R.id.pager);
