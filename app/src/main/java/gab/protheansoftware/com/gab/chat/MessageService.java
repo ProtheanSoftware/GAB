@@ -14,11 +14,14 @@ import gab.protheansoftware.com.gab.model.IDatabaseHandler;
 import gab.protheansoftware.com.gab.model.JdbcDatabaseHandler;
 
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 /**
+ * @author oskar 
  * Created by oskar on 2015-10-06.
  */
 public class MessageService extends Service implements SinchClientListener {
+    private static final String TAG = "MESSAGE SERVICE";
     private IDatabaseHandler dbh = null;
     private static final String APP_KEY = "ca2d3532-28fa-47a0-9b86-770b33c28c63";
     private static final String APP_SECRET = "ZnbCNoNYAkGV4nKVvvivmQ==";
@@ -57,7 +60,7 @@ public class MessageService extends Service implements SinchClientListener {
 
         sinchClient.checkManifest();
         sinchClient.start();
-        Log.d("SINCH", "Starting sinch client");
+        Log.d(TAG, "Starting sinch client");
 
     }
 
@@ -71,6 +74,7 @@ public class MessageService extends Service implements SinchClientListener {
 
     @Override
     public void onClientStarted(SinchClient client) {
+        Log.d(TAG, "Client starting..");
         client.startListeningOnActiveConnection();
         messageClient = client.getMessageClient();
     }
@@ -106,11 +110,13 @@ public class MessageService extends Service implements SinchClientListener {
 
     public void addMessageClientListener(MessageClientListener listener){
         if(messageClient != null){
+            Log.d(TAG, "Adding messageclientlistener");
             messageClient.addMessageClientListener(listener);
         }
     }
     public void removeMessageClientListener(MessageClientListener listener){
         if(messageClient != null){
+            Log.d(TAG, "Removing messageclientlistener");
             messageClient.removeMessageClientListener(listener);
         }
     }

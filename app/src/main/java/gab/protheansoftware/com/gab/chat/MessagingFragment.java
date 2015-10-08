@@ -142,6 +142,7 @@ public class MessagingFragment extends Fragment {
 
         @Override
         public void onMessageSent(MessageClient messageClient, Message message, String s) {
+            Log.d(TAG, "Displaying message");
             //Display the message just sent
             //Save in database
             WritableMessage writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
@@ -151,6 +152,7 @@ public class MessagingFragment extends Fragment {
         @Override
         public void onMessageFailed(MessageClient messageClient, Message message, MessageFailureInfo messageFailureInfo) {
             Toast.makeText(getActivity(), "Message failed to send.", Toast.LENGTH_LONG).show();
+            Log.e(TAG, messageFailureInfo.getSinchError().toString());
         }
 
         @Override
