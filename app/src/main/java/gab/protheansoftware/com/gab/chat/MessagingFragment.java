@@ -119,6 +119,7 @@ public class MessagingFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
 
         if(isVisibleToUser) Log.d(TAG, "Switched to chat");
+        //Put read messages from db here (dont forget to empty current chat)
     }
 
     private class MyServiceConnection implements ServiceConnection {
