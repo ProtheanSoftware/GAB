@@ -114,6 +114,12 @@ public class MessagingFragment extends Fragment {
         messageAdapter = new MessageAdapter(getActivity());
         messagesList.setAdapter(messageAdapter);
     }
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+
+        if(isVisibleToUser) Log.d(TAG, "Switched to chat");
+    }
 
     private class MyServiceConnection implements ServiceConnection {
         @Override
@@ -128,9 +134,6 @@ public class MessagingFragment extends Fragment {
             messageService = null;
         }
     }
-
-
-
 
     private class MySQLMessageClientListener implements MessageClientListener {
         @Override
@@ -147,6 +150,8 @@ public class MessagingFragment extends Fragment {
             //Save in database
             WritableMessage writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
             messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_OUTGOING);
+
+            dbh.saveMessage(Integer.parseInt(writableMessage.getRecipientIds().get(0)), message.getTextBody());
         }
 
         @Override
