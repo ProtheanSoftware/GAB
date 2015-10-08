@@ -30,7 +30,7 @@ public class MessageService extends Service implements SinchClientListener {
     @Override
     public int onStartCommand(Intent intent, int flags, int startID){
         if(dbh == null){
-            this.setDbh(new JdbcDatabaseHandler());
+            this.setDbh(JdbcDatabaseHandler.getInstance());
         }
         try {
             currentUserId = String.valueOf(dbh.getMyId());
@@ -57,6 +57,7 @@ public class MessageService extends Service implements SinchClientListener {
 
         sinchClient.checkManifest();
         sinchClient.start();
+        Log.d("SINCH", "Starting sinch client");
 
     }
 
@@ -104,7 +105,7 @@ public class MessageService extends Service implements SinchClientListener {
     }
 
     public void addMessageClientListener(MessageClientListener listener){
-        if(messageClient != null);{
+        if(messageClient != null){
             messageClient.addMessageClientListener(listener);
         }
     }
