@@ -1,6 +1,7 @@
 package gab.protheansoftware.com.gab.adapter;
 
 import android.app.Activity;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import android.widget.Toast;
 import com.sinch.android.rtc.messaging.WritableMessage;
 
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import gab.protheansoftware.com.gab.R;
  * Created by boking on 2015-10-07.
  */
 public class MessageAdapter extends BaseAdapter {
+    public static final String TAG = "MESSAGE ADAPTER";
 
     public static final int DIRECTION_INCOMING = 0;
     public static final int DIRECTION_OUTGOING = 1;
@@ -32,6 +35,7 @@ public class MessageAdapter extends BaseAdapter {
     }
 
     public void addMessage(WritableMessage message, int direction){
+        Log.d(TAG, "Adding message to adapater");
         messages.add(new Pair(message,direction));
         notifyDataSetChanged();
     }
@@ -67,9 +71,9 @@ public class MessageAdapter extends BaseAdapter {
         if(convertView == null){
             int res = 0;
             if(direction == DIRECTION_INCOMING){
-                res = R.layout.message_right;
-            }else if (direction == DIRECTION_OUTGOING){
                 res = R.layout.message_left;
+            }else if (direction == DIRECTION_OUTGOING){
+                res = R.layout.message_right;
             }
             convertView = layoutInflater.inflate(res, parent, false);
         }
