@@ -1,6 +1,8 @@
 package gab.protheansoftware.com.gab.model;
 
 
+import android.util.Log;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -11,14 +13,31 @@ import java.util.logging.Logger;
  */
 public class JdbcDatabaseHandler implements IDatabaseHandler {
     private int my_fb_id;
+    private int myId;
 
-    public JdbcDatabaseHandler(int id){
-        this.my_fb_id = id;
-    }
-    public JdbcDatabaseHandler(){
+    private static JdbcDatabaseHandler instance;
+
+    public static final String TAG = "MYSQLDBH";
+    //public JdbcDatabaseHandler(int id){
+    //    this.my_fb_id = id;
+    //}
+    private JdbcDatabaseHandler(){
         my_fb_id = 7;
+        myId = -1;
+        Log.d(TAG, "Setting id..");
+        try {
+            myId = getMyId();
+        } catch (SQLException e) {
+        }
+        Log.d(TAG, "You id is: " + myId);
     }
 
+    public static JdbcDatabaseHandler getInstance(){
+        if(instance == null){
+           instance = new JdbcDatabaseHandler();
+        }
+        return instance;
+    }
     private ArrayList<Like> selectFromLikes(String query){
         ArrayList<Like> likes = new ArrayList<Like>();
 
@@ -156,10 +175,14 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     @Override
     public int getMyId() throws SQLException {
         int user_id = -1;
+        if(myId != -1){
+            return myId;
+        }
         ArrayList<Profile> profiles = selectFromUsers("SELECT * FROM `t_users` WHERE `fb_id` =" + my_fb_id + " LIMIT 0 , 30;");
         if(profiles.size()>0){
             user_id = profiles.get(0).getId();
         }
+        myId = user_id;
         return user_id;
     }
 
