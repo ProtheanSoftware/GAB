@@ -58,6 +58,21 @@ public class MessagingFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Initialize base items for messaging functionality
+
+        Log.d(TAG, "Initializing messagefragment");
+
+        //Initialize variables
+        dbh = JdbcDatabaseHandler.getInstance();
+        messageClientListener = new MySQLMessageClientListener();
+
+
+        try {
+            currentUserId = String.valueOf(dbh.getMyId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -69,22 +84,6 @@ public class MessagingFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //Initialize base items for messaging functionality
-
-        Log.d(TAG, "Initializing messagefragment");
-
-        //Initialize variables
-        dbh = new JdbcDatabaseHandler();
-        messageClientListener = new MySQLMessageClientListener();
-
-
-        try {
-            currentUserId = String.valueOf(dbh.getMyId());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-
         View rootView = inflater.inflate(R.layout.fragment_chat,container,false);
         return rootView;
     }
@@ -92,6 +91,9 @@ public class MessagingFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        Log.d(TAG, "Connecting service");
+        getActivity().bindService(new Intent(getActivity(), MessageService.class), serviceConnection, FragmentActivity.BIND_AUTO_CREATE);
 
         //Add listener for sending messages
         messageBodyField = (EditText) getActivity().findViewById(R.id.messageBodyField);
@@ -116,6 +118,7 @@ public class MessagingFragment extends Fragment {
     private class MyServiceConnection implements ServiceConnection {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d("Service Connection", "Service connected");
             messageService = (MessageService.MessageServiceInterface) service;
             messageService.addMessageClientListener(messageClientListener);
         }
