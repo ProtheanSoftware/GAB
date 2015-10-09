@@ -68,8 +68,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
             @Override
             public void onPageSelected(int position) {
-                // on changing the page
-                // make respected tab selected
                 actionBar.setSelectedNavigationItem(position);
             }
 
@@ -116,7 +114,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
         if(tab.getPosition() == 0) {
-            if(matches.isEmpty()) {
+            if(matches.size() ==0) {
                 //returns searchformatches
                 viewPager.setCurrentItem(11);
                 searchForMatches();
