@@ -188,6 +188,53 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     }
 
     @Override
+    public void sessionStart(String wifi) {
+        Connection con = null;
+        PreparedStatement pstatement = null;
+
+        String url = "jdbc:mysql://" + Secrets.DB_IP + "/gab";
+        String user = Secrets.DB_USER;
+        String password = Secrets.DB_PASSWORD;
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+
+        try{
+            con = DriverManager.getConnection(url, user, password);
+
+            pstatement = con.prepareStatement("INSERT INTO t_sessions(session_id, user_id, wifi, timestamp) VALUES(?,?,?,?);");
+            pstatement.setString(1, null);
+            pstatement.setString(2, String.valueOf(getMyId()));
+            pstatement.setString(3, wifi);
+            pstatement.setString(4, null);
+            pstatement.executeUpdate();
+        }catch (SQLException ex){
+            Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
+            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+        }finally {
+            try {
+                if (pstatement != null) {
+                    pstatement.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+
+            } catch (SQLException ex) {
+                Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
+                lgr.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+        }
+    }
+
+    @Override
+    public void sessionStop() {
+
+    }
+
+    @Override
     public void addLike(int likeId, String likeName) {
         Connection con = null;
         PreparedStatement pstatement = null;
