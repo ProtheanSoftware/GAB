@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.sql.SQLException;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 
 import com.facebook.appevents.AppEventsLogger;
 import com.protheansoftware.gab.adapter.TabsPagerAdapter;
+import com.protheansoftware.gab.chat.MessagingFragment;
 import com.protheansoftware.gab.model.Match;
 import com.protheansoftware.gab.chat.MessageService;
 import com.protheansoftware.gab.model.JdbcDatabaseHandler;
@@ -25,6 +27,7 @@ import com.protheansoftware.gab.model.JdbcDatabaseHandler;
  */
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 
+    private static final String TAG = "MAINACTIVITY";
     private ViewPager viewPager;
     private TabsPagerAdapter tabsAdapter;
     private ActionBar actionBar;
@@ -82,6 +85,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             @Override
             public void onPageSelected(int position) {
                 if(position == 2){
+                    Log.d(TAG, "chat opened");
                     if(actionBar.getTabCount()==3){
                         actionBar.removeTabAt(2);
                     }

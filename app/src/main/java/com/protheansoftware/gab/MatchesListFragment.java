@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.Toast;
 
+import com.protheansoftware.gab.adapter.TabsPagerAdapter;
 import com.protheansoftware.gab.model.IDatabaseHandler;
 import com.protheansoftware.gab.model.Profile;
 import com.protheansoftware.gab.adapter.MatchesListAdapter;
@@ -64,8 +65,6 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         int r_id = 0;
 
-        Toast.makeText(getActivity(), String.valueOf(parent.getItemAtPosition(position)), Toast.LENGTH_SHORT).show();
-
         if(parent.getItemAtPosition(position) instanceof Profile) {
             r_id = ((Profile)parent.getItemAtPosition(position)).getId();
         }
@@ -75,6 +74,7 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
 
         //Switch tab
         ViewPager pager = (ViewPager) getActivity().findViewById(R.id.pager);
+        ((TabsPagerAdapter)pager.getAdapter()).setCount(3);
         pager.setCurrentItem(2);
     }
 }

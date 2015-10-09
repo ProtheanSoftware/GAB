@@ -15,10 +15,11 @@ import com.protheansoftware.gab.SearchforMatches;
  * @author Tobias Alldén
  */
 public class TabsPagerAdapter extends FragmentPagerAdapter {
-
+    private int count;
 
     public TabsPagerAdapter(FragmentManager fragmentManager) {
         super(fragmentManager);
+        count=2;
     }
 
     /**
@@ -43,6 +44,10 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;
+        return count;
+    }
+    public void setCount(int i){
+        count = i;
+        notifyDataSetChanged();
     }
 }
