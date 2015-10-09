@@ -19,6 +19,8 @@
         android:requiresSmallestWidthDp="240"
         android:smallScreens="true" />
 
+
+    <!-- Main activity -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/gab_icon"
@@ -32,7 +34,11 @@
 
         <activity
             android:name=".facebooklogin.FacebookLogin"
-            android:label="@string/app_name" >
+            android:label="@string/app_name" />
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+        <activity
+            android:name=".SplashScreen"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -45,12 +51,8 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
-            android:name=".SplashActivity"
-            android:label="@string/app_name" >
-        </activity>
-        <activity
             android:name=".MainActivity"
-            android:label="" >
+            android:label="@string/app_name" >
         </activity>
     </application>
 
