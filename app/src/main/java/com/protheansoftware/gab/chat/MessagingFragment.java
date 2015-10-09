@@ -55,6 +55,9 @@ public class MessagingFragment extends Fragment {
     public static void setRecipientId(String recipientId) {
         MessagingFragment.recipientId = recipientId;
     }
+    public static String getRecipientId(){
+        return recipientId;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
