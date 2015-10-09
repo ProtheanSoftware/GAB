@@ -9,8 +9,8 @@ import java.util.ArrayList;
 public interface IDatabaseHandler {
     void addUser(String name, int id);
     int getMyId() throws SQLException;
-//    void sessionStart();
- //   void sessionStop();
+    void sessionStart(String wifi);
+    void sessionStop();
     void addLike(int likeId, String likeName);
     void removeLike(int likeId);
     ArrayList<Profile> getPotentialMatches() throws SQLException;
