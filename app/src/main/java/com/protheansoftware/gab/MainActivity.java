@@ -9,9 +9,9 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import com.facebook.AccessToken;
 import com.facebook.appevents.AppEventsLogger;
 import com.protheansoftware.gab.adapter.TabsPagerAdapter;
+import com.protheansoftware.gab.model.Match;
 
 
 /**
@@ -28,10 +28,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     //Reference to matchscreen to be able to build with user profile
     private MatchScreenFragment match;
 
-
-
-
-
     //Tab titles
     private String[] tabs = {"Match Screen","Matches","Chat"};
 
@@ -45,7 +41,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             StrictMode.setThreadPolicy(policy);
         }
 
-        //Initialize
+        initTabStructure();
+
+    }
+
+    /**
+     * Initializes the tab structure
+     */
+    private void initTabStructure() {
         viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar = getActionBar();
         tabsAdapter = new TabsPagerAdapter(getSupportFragmentManager());
@@ -61,9 +64,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         }
 
 
-    /**
-     * on swiping the viewpager make respective tab selected
-     * */
+        /**
+         * on swiping the viewpager make respective tab selected
+         * */
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
             @Override
@@ -79,10 +82,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             public void onPageScrollStateChanged(int arg0) {
             }
         });
-
-        if(AccessToken.getCurrentAccessToken() != null) {
-            Toast.makeText(this,"Hello,world!",Toast.LENGTH_LONG).show();
-        }
 
     }
 
@@ -100,7 +99,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 
     /**
-     * Searches the database for nearby matches
+     * Starts a thread that search for matches
      */
     private void searchForMatches() {
         //SEARCH DATABASE FOR MATCHES
@@ -114,11 +113,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
         if(tab.getPosition() == 0) {
-            if(matches.size() ==0) {
-                //returns searchformatches
+            if(matches.size() ==1) {
+                Toast.makeText(this,"Yellow",Toast.LENGTH_LONG).show();
                 viewPager.setCurrentItem(11);
                 searchForMatches();
             } else {
+                Toast.makeText(this,"Yellow",Toast.LENGTH_LONG).show();
                 viewPager.setCurrentItem(tab.getPosition());
                 this.match = (MatchScreenFragment)tabsAdapter.getItem(0);
                 match.setmatches(matches);

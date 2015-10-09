@@ -33,24 +33,22 @@ public class FacebookLogin extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i("FacebookLogin", "FacebookLogin activity started");
-
-
+        Log.d("FacebookLogin", "FacebookLogin activity started");
 
         //initialize facebook sdk
         FacebookSdk.sdkInitialize(getApplicationContext());
-        Log.i("FacebookLogin", "Facebook sdk initialized");
+        Log.d("FacebookLogin", "Facebook sdk initialized");
 
+        Log.i("FacebookLogin","Tries to log in with previous user...");
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("user_likes"));
-
 
         //Check if logged in, if tre, starts main activity
         if(AccessToken.getCurrentAccessToken() != null) {
-            Log.i("FacebookLogin", "Logged in sucessfully");
+            Log.d("FacebookLogin", "User logged in sucessfully");
+            startMainActivity();
+        } else {
+            Log.d("FacebookLogin","Could not log in previous user, will now show facebooklogin...");
         }
-
-
-
 
         setContentView(R.layout.activity_facebook_login);
         callbackManager=CallbackManager.Factory.create();
@@ -59,20 +57,20 @@ public class FacebookLogin extends Activity {
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Log.i("FacebookActivity", "Login sucessful");
+                Log.d("FacebookActivity", "Login sucessful");
                 startMainActivity();
 
             }
 
             @Override
             public void onCancel() {
-                Log.i("FacebookActivity", "login cancelled");
+                Log.d("FacebookActivity", "login cancelled");
                 Toast.makeText(getApplicationContext(), "Facebook login interrupted", Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onError(FacebookException e) {
-                Log.i("FacebookActivity", "FacebookLogin error");
+                Log.d("FacebookActivity", "FacebookLogin error");
                 Toast.makeText(getApplicationContext(), "There was an error, please try again", Toast.LENGTH_LONG).show();
 
             }
@@ -92,7 +90,6 @@ public class FacebookLogin extends Activity {
      */
     public void startMainActivity() {
         Intent mainActivity = new Intent(this,MainActivity.class);
-        Log.i("DEBUG","INTENT STARTED");
         startActivity(mainActivity);
 
     }
