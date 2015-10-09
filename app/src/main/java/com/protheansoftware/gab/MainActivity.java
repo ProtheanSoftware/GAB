@@ -1,17 +1,22 @@
 package com.protheansoftware.gab;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
+import android.content.Intent;
+import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.widget.Toast;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.facebook.appevents.AppEventsLogger;
 import com.protheansoftware.gab.adapter.TabsPagerAdapter;
 import com.protheansoftware.gab.model.Match;
+import com.protheansoftware.gab.chat.MessageService;
+import com.protheansoftware.gab.model.JdbcDatabaseHandler;
 
 
 /**
@@ -49,6 +54,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      * Initializes the tab structure
      */
     private void initTabStructure() {
+
+        //Set my id based on fb
+        JdbcDatabaseHandler.getInstance();
+
+        //Initialize
         viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar = getActionBar();
         tabsAdapter = new TabsPagerAdapter(getSupportFragmentManager());
@@ -123,8 +133,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 this.match = (MatchScreenFragment)tabsAdapter.getItem(0);
                 match.setmatches(matches);
             }
+           // if(matches.isEmpty()) {
+           //     //returns searchformatches
+           //     viewPager.setCurrentItem(11);
+           //     searchForMatches();
+           // } else {
+           //     viewPager.setCurrentItem(tab.getPosition());
+           //     this.match = (MatchScreenFragment)tabsAdapter.getItem(0);
+           //     match.setmatches(matches);
+           // }
         }
             viewPager.setCurrentItem(tab.getPosition());
+    }
+    @Override
+    public void onStart(){
+        super.onStart();
+        final Intent serviceIntent = new Intent(getApplicationContext(), MessageService.class);
+        startService(serviceIntent);
     }
 
     @Override
