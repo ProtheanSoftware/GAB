@@ -89,7 +89,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     if(actionBar.getTabCount()==3){
                         actionBar.removeTabAt(2);
                     }
-                    actionBar.addTab(actionBar.newTab().setText("NAME").setTabListener(MainActivity.this));
+                    String recipient = "null";
+                    try {
+                        recipient = JdbcDatabaseHandler.getInstance().getUser(Integer.parseInt(MessagingFragment.getRecipientId())).getName();
+                    } catch (SQLException e) {g
+                    }
+                    actionBar.addTab(actionBar.newTab().setText(recipient).setTabListener(MainActivity.this));
                 }
                 actionBar.setSelectedNavigationItem(position);
             }
