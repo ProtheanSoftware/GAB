@@ -1,4 +1,4 @@
-package gab.protheansoftware.com.gab.model;
+package com.protheansoftware.gab.model;
 
 import org.junit.Before;
 import org.junit.Test;

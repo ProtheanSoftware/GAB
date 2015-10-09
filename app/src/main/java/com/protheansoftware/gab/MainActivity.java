@@ -1,14 +1,17 @@
-package gab.protheansoftware.com.gab;
+package com.protheansoftware.gab;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import gab.protheansoftware.com.gab.adapter.TabsPagerAdapter;
+import com.facebook.AccessToken;
+import com.facebook.appevents.AppEventsLogger;
+import com.protheansoftware.gab.adapter.TabsPagerAdapter;
 
 
 /**
@@ -50,11 +53,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         viewPager.setAdapter(tabsAdapter);
         actionBar.setHomeButtonEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        matches = new ArrayList<Match>();
 
         //add tabs
         for(String tab_name : tabs) {
             actionBar.addTab(actionBar.newTab().setText(tab_name).setTabListener(this));
         }
+
 
     /**
      * on swiping the viewpager make respective tab selected
@@ -63,8 +68,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
             @Override
             public void onPageSelected(int position) {
-                // on changing the page
-                // make respected tab selected
                 actionBar.setSelectedNavigationItem(position);
             }
 
@@ -77,6 +80,22 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             }
         });
 
+        if(AccessToken.getCurrentAccessToken() != null) {
+            Toast.makeText(this,"Hello,world!",Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        AppEventsLogger.activateApp(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        AppEventsLogger.deactivateApp(this);
     }
 
 
@@ -95,7 +114,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
         if(tab.getPosition() == 0) {
-            if(matches.isEmpty()) {
+            if(matches.size() ==0) {
                 //returns searchformatches
                 viewPager.setCurrentItem(11);
                 searchForMatches();

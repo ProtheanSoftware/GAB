@@ -1,4 +1,4 @@
-package gab.protheansoftware.com.gab.adapter;
+package com.protheansoftware.gab.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,8 +10,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import gab.protheansoftware.com.gab.R;
-import gab.protheansoftware.com.gab.model.Profile;
+import com.protheansoftware.gab.R;
+import com.protheansoftware.gab.model.Profile;
 
 /**
  * Created by Oscar Hall on 01/10/15.

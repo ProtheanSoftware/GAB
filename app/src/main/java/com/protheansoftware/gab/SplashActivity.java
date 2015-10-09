@@ -1,4 +1,4 @@
-package gab.protheansoftware.com.gab;
+package com.protheansoftware.gab;
 
 import android.app.Activity;
 import android.os.Bundle;

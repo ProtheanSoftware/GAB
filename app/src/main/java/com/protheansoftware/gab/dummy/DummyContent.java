@@ -1,4 +1,4 @@
-package gab.protheansoftware.com.gab.dummy;
+package com.protheansoftware.gab.dummy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
