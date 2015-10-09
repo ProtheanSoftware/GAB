@@ -120,6 +120,17 @@ public class MessagingFragment extends Fragment {
 
         if(isVisibleToUser) Log.d(TAG, "Switched to chat");
         //Put read messages from db here (dont forget to empty current chat)
+        //For now the conversation between the current user and user 1 is retrieved and
+        //displayed. This will later be integrated and the variable recipientId will be used
+        //instead.
+        for (gab.protheansoftware.com.gab.model.Message m : dbh.getConversation(Integer.parseInt(recipientId))) {
+            WritableMessage writableMessage = new WritableMessage(m.getId() + "", m.getMessage());
+            if (Integer.parseInt(currentUserId) == m.getRecieverId()) {
+                messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_INCOMING);
+            } else {
+                messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_OUTGOING);
+            }
+        }
     }
 
     private class MyServiceConnection implements ServiceConnection {
@@ -128,18 +139,6 @@ public class MessagingFragment extends Fragment {
             Log.d("Service Connection", "Service connected");
             messageService = (MessageService.MessageServiceInterface) service;
             messageService.addMessageClientListener(messageClientListener);
-
-            //For now the conversation between the current user and user 1 is retrieved and
-            //displayed. This will later be integrated and the variable recipientId will be used
-            //instead.
-            for (gab.protheansoftware.com.gab.model.Message m : dbh.getConversation(1)) {
-                WritableMessage writableMessage = new WritableMessage(m.getId() + "", m.getMessage());
-                if (Integer.parseInt(currentUserId) == m.getRecieverId()) {
-                    messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_INCOMING);
-                } else {
-                    messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_OUTGOING);
-                }
-            }
         }
 
         @Override
