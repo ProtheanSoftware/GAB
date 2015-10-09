@@ -60,12 +60,6 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         int r_id = 0;
 
-        //Switch tab
-        ViewPager pager = (ViewPager) getActivity().findViewById(R.id.pager);
-        pager.setCurrentItem(2);
-
-
-
         Toast.makeText(getActivity(), String.valueOf(parent.getItemAtPosition(position)), Toast.LENGTH_SHORT).show();
 
         if(parent.getItemAtPosition(position) instanceof Profile) {
@@ -75,5 +69,8 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
 
         MessagingFragment.setRecipientId(String.valueOf(r_id));
 
+        //Switch tab
+        ViewPager pager = (ViewPager) getActivity().findViewById(R.id.pager);
+        pager.setCurrentItem(2);
     }
 }
