@@ -1,18 +1,15 @@
-package gab.protheansoftware.com.gab;
+package com.protheansoftware.gab;
 
-import android.app.TabActivity;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.Toast;
 
-import gab.protheansoftware.com.gab.adapter.TabsPagerAdapter;
-import gab.protheansoftware.com.gab.model.IDatabaseHandler;
-import gab.protheansoftware.com.gab.model.Profile;
-import gab.protheansoftware.com.gab.adapter.MatchesListAdapter;
-import gab.protheansoftware.com.gab.model.JdbcDatabaseHandler;
+import com.protheansoftware.gab.model.IDatabaseHandler;
+import com.protheansoftware.gab.model.Profile;
+import com.protheansoftware.gab.adapter.MatchesListAdapter;
+import com.protheansoftware.gab.model.JdbcDatabaseHandler;
 
 import java.util.ArrayList;
 import java.util.List;

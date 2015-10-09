@@ -1,4 +1,4 @@
-package gab.protheansoftware.com.gab.constants;
+package com.protheansoftware.gab.constants;
 
 /**
  * Contains constants for the application
