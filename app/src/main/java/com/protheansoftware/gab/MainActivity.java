@@ -34,7 +34,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     private MatchScreenFragment match;
 
     //Tab titles
-    private String[] tabs = {"Match Screen","Matches","Chat"};
+    private String[] tabs = {"Match Screen","Matches"};
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +81,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
             @Override
             public void onPageSelected(int position) {
+                if(position == 2){
+                    if(actionBar.getTabCount()==3){
+                        actionBar.removeTabAt(2);
+                    }
+                    actionBar.addTab(actionBar.newTab().setText("NAME").setTabListener(MainActivity.this));
+                }
                 actionBar.setSelectedNavigationItem(position);
             }
 
