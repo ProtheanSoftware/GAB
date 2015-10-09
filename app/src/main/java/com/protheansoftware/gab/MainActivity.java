@@ -92,7 +92,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     String recipient = "null";
                     try {
                         recipient = JdbcDatabaseHandler.getInstance().getUser(Integer.parseInt(MessagingFragment.getRecipientId())).getName();
-                    } catch (SQLException e) {g
+                    } catch (SQLException e) {
                     }
                     actionBar.addTab(actionBar.newTab().setText(recipient).setTabListener(MainActivity.this));
                 }
