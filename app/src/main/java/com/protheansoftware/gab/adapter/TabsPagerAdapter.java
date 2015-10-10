@@ -1,7 +1,6 @@
 package com.protheansoftware.gab.adapter;
-import android.content.Intent;
+
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
@@ -10,15 +9,23 @@ import com.protheansoftware.gab.MatchScreenFragment;
 import com.protheansoftware.gab.MatchesListFragment;
 import com.protheansoftware.gab.SearchforMatches;
 
+import java.util.ArrayList;
+
 /**
  * This adapter returns fragments for the main activity.
  * @author Tobias Alldén
  */
 public class TabsPagerAdapter extends FragmentPagerAdapter {
     private int count;
+    private ArrayList<Fragment> fragments;
 
     public TabsPagerAdapter(FragmentManager fragmentManager) {
         super(fragmentManager);
+        fragments = new ArrayList<Fragment>();
+        fragments.add(new MatchScreenFragment());
+        fragments.add(new SearchforMatches());
+        fragments.add(new MatchesListFragment());
+        fragments.add(new MessagingFragment());
         count=2;
     }
 
@@ -31,13 +38,13 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int i) {
         switch(i) {
             case 0:
-                return new MatchScreenFragment();
+                return fragments.get(0);
             case 11:
-                return new SearchforMatches();
+                return fragments.get(1);
             case 1:
-                return new MatchesListFragment();
+                return fragments.get(2);
             case 2:
-                return new MessagingFragment();
+                return fragments.get(3);
         }
         return null;
     }
@@ -47,7 +54,9 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
         return count;
     }
     public void setCount(int i){
-        count = i;
-        notifyDataSetChanged();
+        if(count!=i) {
+            count = i;
+            notifyDataSetChanged();
+        }
     }
 }

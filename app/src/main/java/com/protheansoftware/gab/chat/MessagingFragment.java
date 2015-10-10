@@ -8,6 +8,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.protheansoftware.gab.adapter.TabsPagerAdapter;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.messaging.Message;
 import com.sinch.android.rtc.messaging.MessageClient;
@@ -51,6 +53,7 @@ public class MessagingFragment extends Fragment {
 
     private ListView messagesList;
     private MessageAdapter messageAdapter;
+    private boolean viewCreated;
 
     public static void setRecipientId(String recipientId) {
         MessagingFragment.recipientId = recipientId;
@@ -63,6 +66,7 @@ public class MessagingFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Initialize base items for messaging functionality
+        viewCreated = false;
 
         Log.d(TAG, "Initializing messagefragment");
 
@@ -88,6 +92,7 @@ public class MessagingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_chat,container,false);
+        viewCreated = true;
         return rootView;
     }
 
@@ -121,20 +126,31 @@ public class MessagingFragment extends Fragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
 
-        if(isVisibleToUser) {
+        if(isVisibleToUser){
             Log.d(TAG, "Switched to chat");
+            ListView list = (ListView)getActivity().findViewById(R.id.listMessages);
+            list.setAdapter(null);
+            messageAdapter = new MessageAdapter(getActivity());
+            list.setAdapter(messageAdapter);
             //Put read messages from db here (dont forget to empty current chat)
             //For now the conversation between the current user and user 1 is retrieved and
             //displayed. This will later be integrated and the variable recipientId will be used
             //instead.
-            for (com.protheansoftware.gab.model.Message m : dbh.getConversation(Integer.parseInt(recipientId))) {
-                WritableMessage writableMessage = new WritableMessage(m.getId() + "", m.getMessage());
-                if (Integer.parseInt(currentUserId) == m.getRecieverId()) {
-                    messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_INCOMING);
-                } else {
-                    messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_OUTGOING);
+            if(messageAdapter.isEmpty()) {
+                for (com.protheansoftware.gab.model.Message m : dbh.getConversation(Integer.parseInt(recipientId))) {
+                    WritableMessage writableMessage = new WritableMessage(m.getId() + "", m.getMessage());
+                    if (Integer.parseInt(currentUserId) == m.getRecieverId()) {
+                        messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_INCOMING);
+                    } else {
+                        messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_OUTGOING);
+                    }
                 }
             }
+        }
+        if(!isVisibleToUser && viewCreated){
+            ViewPager pager = (ViewPager) getActivity().findViewById(R.id.pager);
+            ((TabsPagerAdapter)pager.getAdapter()).setCount(2);
+            getActivity().getActionBar().removeTabAt(2);
         }
     }
 
