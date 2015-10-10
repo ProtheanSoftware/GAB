@@ -22,17 +22,21 @@ import com.facebook.login.widget.LoginButton;
 
 import com.protheansoftware.gab.MainActivity;
 import com.protheansoftware.gab.R;
+import com.protheansoftware.gab.model.JdbcDatabaseHandler;
+import com.protheansoftware.gab.model.Profile;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 
 public class FacebookLogin extends Activity {
     LoginButton loginButton;
     CallbackManager callbackManager;
 
-
+    private boolean userExists;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        userExists = false;
         Log.d("FacebookLogin", "FacebookLogin activity started");
 
         //initialize facebook sdk
@@ -45,6 +49,7 @@ public class FacebookLogin extends Activity {
         //Check if logged in, if tre, starts main activity
         if(AccessToken.getCurrentAccessToken() != null) {
             Log.d("FacebookLogin", "User logged in sucessfully");
+            addUserIfNotExists();
             startMainActivity();
         } else {
             Log.d("FacebookLogin","Could not log in previous user, will now show facebooklogin...");
@@ -58,6 +63,14 @@ public class FacebookLogin extends Activity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d("FacebookActivity", "Login sucessful");
+                addUserIfNotExists();
+                while(!userExists){
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
                 startMainActivity();
 
             }
@@ -78,6 +91,30 @@ public class FacebookLogin extends Activity {
         });
     }
 
+    private void addUserIfNotExists() {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                long  fb_id = Long.parseLong(AccessToken.getCurrentAccessToken().getUserId());
+                try {
+                    Profile user = JdbcDatabaseHandler.getInstance().getUserFromFBID(fb_id);
+                    if(user == null){
+                        Log.d("LOGIN", "User doesn't exist, creating user..");
+                        JdbcDatabaseHandler.getInstance().addUser("TEMP", fb_id);
+                        userExists = true;
+                        return;
+                    }else{
+                        userExists = true;
+                        return;
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+    }
+
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -91,7 +128,6 @@ public class FacebookLogin extends Activity {
     public void startMainActivity() {
         Intent mainActivity = new Intent(this,MainActivity.class);
         startActivity(mainActivity);
-
     }
 
     @Override

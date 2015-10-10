@@ -133,7 +133,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     }
 
     @Override
-    public void addUser(String name, int id) {
+    public void addUser(String name, long id) {
         Connection con = null;
         PreparedStatement pstatement = null;
 
@@ -399,13 +399,14 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
 
     @Override
     public Profile getUser(int id) throws SQLException {
-        Profile profile = null;
         ArrayList<Profile> profiles = selectFromUsers("SELECT * FROM `t_users` WHERE `user_id` =" + id + " LIMIT 0 , 30;");
         return profiles.get(0);
     }
-    public Profile getUserFromFBID(int fbID) throws SQLException {
-        Profile profile = null;
+    public Profile getUserFromFBID(long fbID) throws SQLException {
         ArrayList<Profile> profiles = selectFromUsers("SELECT * FROM `t_users` WHERE `fb_id` =" + fbID + " LIMIT 0 , 30;");
+        if (profiles.size() == 0){
+            return null;
+        }
         return profiles.get(0);
     }
 

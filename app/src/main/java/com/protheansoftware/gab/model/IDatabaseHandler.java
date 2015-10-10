@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * Created by oskar on 2015-09-26.
  */
 public interface IDatabaseHandler {
-    void addUser(String name, int id);
+    void addUser(String name, long id);
     int getMyId() throws SQLException;
     void sessionStart(String wifi);
     void sessionStop();
