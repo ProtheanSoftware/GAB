@@ -1,65 +1,62 @@
 package com.protheansoftware.gab.model;
 
-import android.media.Image;
 
 import java.util.ArrayList;
 
-import com.protheansoftware.gab.constants.Constants;
 
 /**
  * A class containing all tha data for a potential match
  */
 public class Match {
-    private int id;
+    private int databaseId;
+    private long facebookId;
     private String name;
     private int age;
     private ArrayList<String> interests;
-    private Image profileImage;
-    private boolean hasSimularInterests;
 
-
-
-    public Match(int id ,String name, int age,ArrayList<String> interests) {
-        this.id = id;
+    public Match(int databaseId,long facebookId,String name,ArrayList<String> interests) {
+        this.databaseId = databaseId;
+        this.facebookId = facebookId;
         this.name = name;
-        this.age = age;
-        for(String s: interests) {
-            this.interests.add(s);
-        }
+        this.interests = interests;
 
     }
 
-    /**
-     * Compares your interests with this persons interests to determine if match.
-     * @param yourInterests
-     */
-    private void hasSimularInterests(ArrayList<String> yourInterests) {
-        int numOfSimularInterests = 0;
-        for(String s:yourInterests) {
-            if(numOfSimularInterests > Constants.num_of_simular_interest_for_match) {
-                hasSimularInterests =true;
-                break;
-            }
-            if(this.interests.contains(s)) {
-                numOfSimularInterests++;
-            }
-        }
+    public int getDatabaseId() {
+        return databaseId;
+    }
+    public long getFacebookId() {
+        return facebookId;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public ArrayList<String> getInterests() {
+        return interests;
+    }
+
+
+
     /**
-     * Returns all the simular interests.
+     * Returns number of simular interests between profiles.
      * @return
      */
-    private ArrayList<String> getSimularInterests(ArrayList<String> yourInterests) {
-        ArrayList<String> simularInterests = new ArrayList<String>();
+    private Integer getNumberOfSimularInterests(ArrayList<String> yourInterests) {
+        Integer number = 0;
         for(String s:yourInterests) {
             if(this.interests.contains(s)) {
-                simularInterests.add(s);
+                number +=1;
             }
         }
-        return simularInterests;
+        return number;
     }
 
+    @Override
+    public String toString() {
+        return "Name: " + name + " Likes " + interests.get(0) + " " + interests.get(1);
+    }
 
 
 

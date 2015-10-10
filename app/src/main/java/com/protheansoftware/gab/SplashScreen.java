@@ -1,4 +1,4 @@
-package com.protheansoftware.gab.model;
+package com.protheansoftware.gab;
 
 import android.app.Activity;
 import android.content.Intent;
