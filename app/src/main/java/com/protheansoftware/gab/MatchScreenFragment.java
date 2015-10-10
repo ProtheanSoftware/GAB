@@ -1,10 +1,16 @@
 package com.protheansoftware.gab;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
 
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+import com.protheansoftware.gab.model.JdbcDatabaseHandler;
 import com.protheansoftware.gab.model.Match;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 
@@ -17,16 +23,21 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     private ArrayList<Match> matches;
 
 
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-
-        }
-    public void setmatches(ArrayList<Match> matches) {
+    }
+    public void setMatches(ArrayList<Match> matches) {
         this.matches = matches;
     }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setPotentialMatches();
+        View rootView = inflater.inflate(R.layout.fragment_match_screen,container,false);
+        return rootView;
+    }
 
 
 
@@ -36,16 +47,43 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
 
     }
 
-    //Fills out the fragment with the user.
-    public void setUser() {
-
+    //Fills out the fragment with the match.
+    public void setMatch(final Match match){
+        ((TextView)getActivity().findViewById(R.id.nameTag)).setText(match.getName() + ", " + match.getAge());
+        ((Button)getActivity().findViewById(R.id.dislikeButton)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dislike(match.getId(), match.getName());
+            }
+        });
+        ((Button)getActivity().findViewById(R.id.likeButton)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                like(match.getId(), match.getName());
+            }
+        });
     }
 
     /**
-     * Declines the other user
+     * Dislike the match
      */
-    public void decline() {
+    public void dislike(int id, String name) {
+        try {
+            JdbcDatabaseHandler.getInstance().addDislike(JdbcDatabaseHandler.getInstance().getUserFromFBID(id).getId(), name);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
+    /**
+     * Likes the match
+     */
+    public void like(int id, String name){
+        try {
+            JdbcDatabaseHandler.getInstance().addLike(JdbcDatabaseHandler.getInstance().getUserFromFBID(id).getId(), name);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

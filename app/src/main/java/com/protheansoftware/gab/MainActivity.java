@@ -138,7 +138,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
         if(tab.getPosition() == 0) {
-            if(matches.size() ==1) {
+            if(matches.size() == 0) {
                 Toast.makeText(this,"Yellow",Toast.LENGTH_LONG).show();
                 viewPager.setCurrentItem(11);
                 searchForMatches();
@@ -146,7 +146,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 Toast.makeText(this,"Yellow",Toast.LENGTH_LONG).show();
                 viewPager.setCurrentItem(tab.getPosition());
                 this.match = (MatchScreenFragment)tabsAdapter.getItem(0);
-                match.setmatches(matches);
+                match.setMatches(matches);
             }
            // if(matches.isEmpty()) {
            //     //returns searchformatches
