@@ -22,7 +22,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     //    this.my_fb_id = id;
     //}
     private JdbcDatabaseHandler(){
-        my_fb_id = 137;
+        my_fb_id = 7;
         myId = -1;
         Log.d(TAG, "Setting id..");
         try {
@@ -278,16 +278,105 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     }
 
     @Override
+    public void addDislike(int likeId, String likeName) {
+        Connection con = null;
+        PreparedStatement pstatement = null;
+
+        String url = "jdbc:mysql://" + Secrets.DB_IP + "/gab";
+        String user = Secrets.DB_USER;
+        String password = Secrets.DB_PASSWORD;
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+
+        try{
+            con = DriverManager.getConnection(url, user, password);
+
+            pstatement = con.prepareStatement("INSERT INTO t_dislikes(id, origin_id, like_id, like_name) VALUES(?,?,?,?);");
+            pstatement.setString(1, null);
+            pstatement.setString(2, String.valueOf(getMyId()));
+            pstatement.setString(3, String.valueOf(likeId));
+            pstatement.setString(4, likeName);
+            pstatement.executeUpdate();
+        }catch (SQLException ex){
+            Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
+            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+        }finally {
+            try {
+                if (pstatement != null) {
+                    pstatement.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+
+            } catch (SQLException ex) {
+                Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
+                lgr.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+        }
+    }
+
+    @Override
+    public ArrayList<Like> getDislikes() throws SQLException{
+        ArrayList<Like> dislikes = new ArrayList<Like>();
+
+        selectFromLikes("SELECT * FROM `t_dislikes` WHERE `origin_id`= " + getMyId() + " LIMIT 0 , 30;");
+
+        return dislikes;
+    }
+
+    @Override
     public void removeLike(int likeId) {
 
     }
 
     @Override
     public ArrayList<Profile> getPotentialMatches() throws SQLException {
-
-        ArrayList<Profile> profiles = selectFromUsers("SELECT * FROM `t_users` LIMIT 0 , 30;");
-
+        ArrayList<Profile> profiles = new ArrayList<Profile>();
+        ArrayList<Profile> allUsers = selectFromUsers("SELECT * FROM `t_users` LIMIT 0 , 60;");
+        for(Profile temp: allUsers){
+            if(!userExistsInDislikes(temp)){
+                if(!userExistsInLikes(temp)){
+                    profiles.add(temp);
+                }
+            }
+        }
         return profiles;
+    }
+
+    private boolean userExistsInLikes(Profile user) {
+        try {
+            ArrayList<Like> myLikes = selectFromLikes("SELECT * FROM `t_likes` WHERE `origin_id`= " + getMyId() + " LIMIT 0 , 30;");
+            for(Like temp: myLikes){
+                if(temp.getLikeId() == user.getId()){
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return false;
+    }
+
+    private boolean userExistsInDislikes(Profile user) {
+        try {
+            ArrayList<Like> myDislikes = getDislikes();
+            for(Like temp: myDislikes){
+                if(temp.getLikeId() == user.getId()){
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return false;
     }
 
     @Override
@@ -312,6 +401,11 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     public Profile getUser(int id) throws SQLException {
         Profile profile = null;
         ArrayList<Profile> profiles = selectFromUsers("SELECT * FROM `t_users` WHERE `user_id` =" + id + " LIMIT 0 , 30;");
+        return profiles.get(0);
+    }
+    public Profile getUserFromFBID(int fbID) throws SQLException {
+        Profile profile = null;
+        ArrayList<Profile> profiles = selectFromUsers("SELECT * FROM `t_users` WHERE `fb_id` =" + fbID + " LIMIT 0 , 30;");
         return profiles.get(0);
     }
 

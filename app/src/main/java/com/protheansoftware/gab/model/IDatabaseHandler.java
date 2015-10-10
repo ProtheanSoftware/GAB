@@ -12,6 +12,8 @@ public interface IDatabaseHandler {
     void sessionStart(String wifi);
     void sessionStop();
     void addLike(int likeId, String likeName);
+    void addDislike(int likeId, String likeName);
+    ArrayList<Like> getDislikes() throws SQLException;
     void removeLike(int likeId);
     ArrayList<Profile> getPotentialMatches() throws SQLException;
     ArrayList<Profile> getMatches() throws SQLException;
