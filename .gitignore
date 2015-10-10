@@ -35,3 +35,6 @@ proguard/
 *.log
 #Secrets file
 app/src/main/java/gab/protheansoftware/com/gab/model/Secrets.java
+#Other generated files
+app/app.iml
+gab.iml
