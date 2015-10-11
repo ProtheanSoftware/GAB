@@ -114,7 +114,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
 
             ResultSet rs = statement.executeQuery(query);
             while (rs.next()){
-                Profile temp = new Profile(rs.getString("name"),rs.getInt("user_id"), rs.getInt("fb_id"));
+                Profile temp = new Profile(rs.getString("name"),rs.getInt("user_id"), rs.getLong("fb_id"));
                 profiles.add(temp);
             }
 
