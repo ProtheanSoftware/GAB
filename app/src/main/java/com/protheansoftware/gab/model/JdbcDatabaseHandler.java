@@ -1,6 +1,12 @@
 package com.protheansoftware.gab.model;
 
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.sql.*;
@@ -108,7 +114,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
 
             ResultSet rs = statement.executeQuery(query);
             while (rs.next()){
-                Profile temp = new Profile(rs.getString("name"),rs.getInt("user_id"), rs.getInt("fb_id"));
+                Profile temp = new Profile(rs.getString("name"),rs.getInt("user_id"), rs.getLong("fb_id"));
                 profiles.add(temp);
             }
 
@@ -231,7 +237,96 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
 
     @Override
     public void sessionStop() {
+        Log.d(TAG, "Attempting to stop session...");
+        int user_id = 237; //This variable should be passed as a param.
 
+        Connection con = null;
+        PreparedStatement pstatement = null;
+
+        String url = "jdbc:mysql://" + Secrets.DB_IP + "/gab";
+        String user = Secrets.DB_USER;
+        String password = Secrets.DB_PASSWORD;
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+
+        try {
+            con = DriverManager.getConnection(url, user, password);
+
+            pstatement = con.prepareStatement("DELETE FROM t_sessions WHERE user_id = ?");
+            pstatement.setInt(1, user_id);
+            pstatement.executeUpdate();
+            Log.d(TAG, "Session stopped succesfully");
+        }catch (SQLException ex){
+            Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
+            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+        }finally {
+            try {
+                if (pstatement != null) {
+                    pstatement.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+
+            } catch (SQLException ex) {
+                Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
+                lgr.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+        }
+    }
+
+    public Session getSessionSSIDByUserId(int user_id) {
+        Session session = null;
+
+        Connection con = null;
+        Statement statement =  null;
+
+        String url = "jdbc:mysql://" + Secrets.DB_IP + "/gab";
+        String user = Secrets.DB_USER;
+        String password = Secrets.DB_PASSWORD;
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+
+        try{
+            con = DriverManager.getConnection(url, user, password);
+
+            statement = con.createStatement();
+
+            ResultSet rs = statement
+                    .executeQuery("SELECT * " +
+                            "FROM `t_sessions` " +
+                            "WHERE `user_id` =" + user_id + ";");
+            if (rs.next()) {
+                session = new Session(rs.getInt("session_id"),
+                        rs.getInt("user_id"),
+                        rs.getString("wifi"),
+                        rs.getTimestamp("timestamp"));
+            }
+
+        }catch (SQLException ex){
+            Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
+            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+        }finally {
+            try {
+                if(statement != null){
+                    statement.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+
+            } catch (SQLException ex) {
+                Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
+                lgr.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+        }
+        return session;
     }
 
     @Override
@@ -487,6 +582,45 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
             pstatement.setString(3, String.valueOf(recieverId));
             pstatement.setString(4, message);
             pstatement.setString(5, String.valueOf(sinch_id));
+            pstatement.executeUpdate();
+        }catch (SQLException ex){
+            Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
+            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+        }finally {
+            try {
+                if (pstatement != null) {
+                    pstatement.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+
+            } catch (SQLException ex) {
+                Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
+                lgr.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+        }
+    }
+
+    public void updateSession(String my_wifi, int user_id) {
+        Connection con = null;
+        PreparedStatement pstatement = null;
+
+        String url = "jdbc:mysql://" + Secrets.DB_IP + "/gab";
+        String user = Secrets.DB_USER;
+        String password = Secrets.DB_PASSWORD;
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+
+        try{
+            con = DriverManager.getConnection(url, user, password);
+
+            pstatement = con.prepareStatement("UPDATE t_sessions SET wifi = ? WHERE user_id = ?");
+            pstatement.setString(1, my_wifi);
+            pstatement.setInt(2, user_id);
             pstatement.executeUpdate();
         }catch (SQLException ex){
             Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());

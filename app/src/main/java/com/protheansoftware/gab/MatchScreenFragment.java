@@ -3,10 +3,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
-
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.protheansoftware.gab.model.BusHandler;
 import com.protheansoftware.gab.model.JdbcDatabaseHandler;
 import com.protheansoftware.gab.model.Match;
 
@@ -18,7 +19,8 @@ import java.util.ArrayList;
  * Shows the different matches retrieved
  */
 public class MatchScreenFragment extends Fragment implements View.OnClickListener {
-
+    private JdbcDatabaseHandler jdb = JdbcDatabaseHandler.getInstance();
+    private BusHandler bh = BusHandler.getInstance();
     // list of matches
     private ArrayList<Match> matches;
 
@@ -45,6 +47,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     public void onResume() {
         super.onResume();
 
+        bh.startSessionIfNeeded(this.getContext());
     }
 
     //Fills out the fragment with the match.

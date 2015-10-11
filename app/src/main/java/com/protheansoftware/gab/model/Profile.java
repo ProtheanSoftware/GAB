@@ -8,7 +8,7 @@ public class Profile {
     private final int id;
     private final long fbId;
 
-    public Profile(String name, int id, int fbId){
+    public Profile(String name, int id, long fbId){
         this.name = name;
         this.id = id;
         this.fbId = fbId;
@@ -22,7 +22,7 @@ public class Profile {
         return name;
     }
 
-    public long  getFbId() {
+    public long getFbId() {
         return fbId;
     }
 }
