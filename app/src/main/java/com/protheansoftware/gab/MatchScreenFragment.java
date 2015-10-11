@@ -49,17 +49,17 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
 
     //Fills out the fragment with the match.
     public void setMatch(final Match match){
-        ((TextView)getActivity().findViewById(R.id.nameTag)).setText(match.getName() + ", " + match.getAge());
+        ((TextView)getActivity().findViewById(R.id.nameTag)).setText(match.getName());
         ((Button)getActivity().findViewById(R.id.dislikeButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dislike(match.getId(), match.getName());
+                dislike(match.getDatabaseId(), match.getName());
             }
         });
         ((Button)getActivity().findViewById(R.id.likeButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                like(match.getId(), match.getName());
+                like(match.getDatabaseId(), match.getName());
             }
         });
     }

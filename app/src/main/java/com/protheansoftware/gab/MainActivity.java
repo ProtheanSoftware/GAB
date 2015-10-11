@@ -13,12 +13,27 @@ import android.widget.Toast;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.facebook.AccessToken;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.appevents.AppEventsLogger;
 import com.protheansoftware.gab.adapter.TabsPagerAdapter;
 import com.protheansoftware.gab.chat.MessagingFragment;
 import com.protheansoftware.gab.model.Match;
 import com.protheansoftware.gab.chat.MessageService;
 import com.protheansoftware.gab.model.JdbcDatabaseHandler;
+import com.protheansoftware.gab.model.JdbcDatabaseHandler;
+import com.protheansoftware.gab.model.JsonParser;
+import com.protheansoftware.gab.model.Match;
+import com.protheansoftware.gab.model.Profile;
+import java.util.Collections;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 /**
@@ -35,6 +50,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     //Reference to matchscreen to be able to build with user profile
     private MatchScreenFragment match;
+    private String name;
 
     //Tab titles
     private String[] tabs = {"Match Screen","Matches"};
@@ -43,11 +59,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tabbed);
 
+
         //Fix for mysql(jdbc)
         if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
+
+
 
         initTabStructure();
 
@@ -72,7 +91,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         matches = new ArrayList<Match>();
 
         //add tabs
-        for(String tab_name : tabs) {
+        for (String tab_name : tabs) {
             actionBar.addTab(actionBar.newTab().setText(tab_name).setTabListener(this));
         }
 
@@ -127,8 +146,27 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      * Starts a thread that search for matches
      */
     private void searchForMatches() {
-        //SEARCH DATABASE FOR MATCHES
+        //Start session and search for matches
+
+        //Fills a arraylist with profiles wich are then converted to matches.
+        ArrayList<Profile> matchesFromDb = new ArrayList<>();
+
+        //Generate matches if db returned profiles
+        if (!matchesFromDb.isEmpty()) {
+            for (Profile p : matchesFromDb) {
+                JsonParser parser = JsonParser.getInstance();
+                this.matches.add(parser.generateMatchFromUserID(p.getId(), p.getFbId()));
+            }
+        }
     }
+
+    /**
+     * Generates matches from an arrayList from server
+     */
+    public void generateMatches() {
+
+    }
+
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
@@ -139,11 +177,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
         if(tab.getPosition() == 0) {
             if(matches.size() == 0) {
-                Toast.makeText(this,"Yellow",Toast.LENGTH_LONG).show();
                 viewPager.setCurrentItem(11);
                 searchForMatches();
             } else {
-                Toast.makeText(this,"Yellow",Toast.LENGTH_LONG).show();
                 viewPager.setCurrentItem(tab.getPosition());
                 this.match = (MatchScreenFragment)tabsAdapter.getItem(0);
                 match.setMatches(matches);
@@ -158,7 +194,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
            //     match.setmatches(matches);
            // }
         }
-            viewPager.setCurrentItem(tab.getPosition());
+        viewPager.setCurrentItem(tab.getPosition());
     }
     @Override
     public void onStart(){
@@ -167,8 +203,118 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         startService(serviceIntent);
     }
 
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+    /**
+     * Inner class for parsing the facebook sdk responses
+     */
+    class FacebookParser {
+
+        /**
+         * Gets the user name and likes from the facebook sdk and returns a new Match
+         *
+         * @param dbId
+         * @param fbId
+         * @return
+         */
+        public Match generateMatchFromUserID(Integer dbId, Long fbId) {
+            String name = getNameFromFacebookId(fbId);
+            ArrayList<String> likes = getLikeListFromFacebookId(fbId);
+            return new Match(dbId, fbId, name, likes);
+        }
+
+        /**
+         * Returns an array of things that the user with the specified id has liked on facebook.
+         *
+         * @param fbId
+         * @return
+         */
+        public ArrayList<String> getLikeListFromFacebookId(final long fbId) {
+            final ArrayList<String> likeList = new ArrayList<String>();
+            final long facebookId = fbId;
+
+            Thread t = new Thread() {
+                public void run() {
+                    synchronized (likeList) {
+                        new GraphRequest(AccessToken.getCurrentAccessToken(), "/"+fbId+"/likes", null, HttpMethod.GET, new GraphRequest.Callback() {
+                            public void onCompleted(GraphResponse response) {
+                                JSONObject object = response.getJSONObject();
+                                try {
+                                    JSONArray array = object.getJSONArray("data");
+                                    for (int i = 0; i < array.length(); i++) {
+                                        JSONObject obj = array.getJSONObject(i);
+                                        String name = obj.get("name").toString();
+                                        likeList.add(name);
+                                    }
+                                        likeList.notify();
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        ).executeAndWait();
+                    }
+                }
+
+            };
+            synchronized (likeList) {
+                t.start();
+                while (t.isAlive()) {
+                    try {
+                        likeList.wait(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return likeList;
+            }
+        }
+
+
+        /**
+         * Returns the name of the user with the specified facebook id.
+         *
+         * @param fbId
+         * @return
+         */
+        private String getNameFromFacebookId(long fbId) {
+            final StringBuffer buffer = new StringBuffer();
+            final long facebookId = fbId;
+            Thread t = new Thread() {
+                public void run() {
+                    synchronized (buffer) {
+                        new GraphRequest(AccessToken.getCurrentAccessToken(), "/" + facebookId, null, HttpMethod.GET, new GraphRequest.Callback() {
+                            public void onCompleted(GraphResponse response) {
+                                try {
+                                    String returnName = response.getJSONObject().get("name").toString();
+                                    buffer.append(returnName);
+                                    buffer.notifyAll();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        ).executeAndWait();
+                    }
+                }
+
+            };
+            synchronized (buffer) {
+                t.start();
+                while (t.isAlive()) {
+                    try {
+                        buffer.wait(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return buffer.toString();
+            }
+        }
     }
 
-}
+
+        @Override
+        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+        }
+
+    }
