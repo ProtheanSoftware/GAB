@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.telephony.TelephonyManager;
+import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -62,6 +64,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getActionBar().setDisplayShowTitleEnabled(false);
         setContentView(R.layout.activity_tabbed);
 
 
@@ -123,7 +126,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         //Initialize
         viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar = getActionBar();
-        tabsAdapter = new TabsPagerAdapter(getSupportFragmentManager());
+        tabsAdapter = new TabsPagerAdapter(getSupportFragmentManager(), (TelephonyManager) getSystemService(this.TELEPHONY_SERVICE));
 
         viewPager.setAdapter(tabsAdapter);
         actionBar.setHomeButtonEnabled(false);
@@ -228,7 +231,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             }
         }
         for(Integer siminterest:simularInterestMap.keySet()) {
-            if(!siminterest == 0) {
+            if(!(siminterest == 0)) {
                 for(Match m:simularInterestMap.get(siminterest)) {
                     sortedMatches.add(m);
                 }

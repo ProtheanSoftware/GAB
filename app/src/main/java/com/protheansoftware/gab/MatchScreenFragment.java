@@ -1,6 +1,9 @@
 package com.protheansoftware.gab;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.telephony.CellLocation;
+import android.telephony.TelephonyManager;
+import android.telephony.gsm.GsmCellLocation;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +26,7 @@ import java.util.ArrayList;
 public class MatchScreenFragment extends Fragment implements View.OnClickListener {
     private JdbcDatabaseHandler jdb = JdbcDatabaseHandler.getInstance();
     private BusHandler bh = BusHandler.getInstance();
+    private TelephonyManager telephonyManager;
     // list of matches
     private ArrayList<Match> matches;
 
@@ -50,7 +54,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     public void onResume() {
         super.onResume();
 
-        bh.startSessionIfNeeded(this.getContext());
+        bh.startSessionIfNeeded(this.getContext(), (GsmCellLocation) telephonyManager.getCellLocation());
     }
 
     //Fills out the fragment with the match.
@@ -136,4 +140,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
         
     }
 
+    public void init(TelephonyManager telephonyManager) {
+        this.telephonyManager = telephonyManager;
+    }
 }

@@ -3,6 +3,7 @@ package com.protheansoftware.gab.adapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.telephony.TelephonyManager;
 
 import com.protheansoftware.gab.chat.MessagingFragment;
 import com.protheansoftware.gab.MatchScreenFragment;
@@ -19,10 +20,12 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
     private int count;
     private ArrayList<Fragment> fragments;
 
-    public TabsPagerAdapter(FragmentManager fragmentManager) {
+    public TabsPagerAdapter(FragmentManager fragmentManager, TelephonyManager telephonyManager) {
         super(fragmentManager);
+        MatchScreenFragment msf = new MatchScreenFragment();
+        msf.init(telephonyManager);
         fragments = new ArrayList<Fragment>();
-        fragments.add(new MatchScreenFragment());
+        fragments.add(msf);
         fragments.add(new SearchforMatches());
         fragments.add(new MatchesListFragment());
         fragments.add(new MessagingFragment());

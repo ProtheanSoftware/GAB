@@ -1,30 +1,18 @@
 package com.protheansoftware.gab.model;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.text.TextUtils;
+import android.telephony.CellLocation;
+import android.telephony.gsm.GsmCellLocation;
 import android.util.Base64;
 import android.util.Log;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.ProtocolException;
 import java.net.URL;
-import java.net.URLConnection;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -46,11 +34,19 @@ public class BusHandler{
         return instance;
     }
 
-    public String getWifis() {
+    public ArrayList<String> getWifis() {
         long newtime = System.currentTimeMillis();
-        long old = newtime - 100000;
-        return getJSON("https://ece01.ericsson.net:4443/ecity?resourceSpec=Ericsson$Cell_Id_Value&t1="+old+"&t2="+newtime);
+        long oldtime = newtime - 100000;
+        String tmp = getJSON("https://ece01.ericsson.net:4443/ecity?resourceSpec=Ericsson$Cell_Id_Value&t1=" + oldtime + "&t2=" + newtime);
+
+        ArrayList<String> sa = new ArrayList<>();
+        Matcher m = Pattern.compile("(?<=\"value\":\")([^\"]*)").matcher(tmp);
+
+        while (m.find()) {sa.add(m.group());}
+
+        return sa;
     }
+
     public String getMyWifi(Context context){
         WifiManager mngr = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         String wifi = mngr.getConnectionInfo().getSSID();
@@ -92,33 +88,41 @@ public class BusHandler{
         return null;
     }
 
-    public void startSessionIfNeeded(Context context) {
+    public void startSessionIfNeeded(Context context, GsmCellLocation cellLocation) {
         JdbcDatabaseHandler jdb = JdbcDatabaseHandler.getInstance(); //Maybe pass this class around instead?
         int user_id = 237; //Will be passed to this function as a param
-        ArrayList<String> wifis = new ArrayList<String>(); //Will be retrieved by getWifis function
-        wifis.add("NETGEAR20");
-        String my_wifi = getMyWifi(context).replaceAll("\"", "");
+        ArrayList<String> wifis = getWifis();
+        String my_wifi = Integer.toHexString(cellLocation.getCid()).toUpperCase();
+
+        if (my_wifi.length() < 8) {
+            my_wifi = "0" + my_wifi;
+        }
+
+        wifis.add(my_wifi);
 
         Session session;
-        Log.d(TAG, "My network: "+my_wifi+" Bussnetworks: "+wifis);
+        Log.e(TAG, "My network: "+my_wifi+" Bussnetworks: "+wifis);
         if ((session = jdb.getSessionSSIDByUserId(user_id)) != null) {
             if (session.ssid.equals(my_wifi)) {
-                Log.i(TAG, "Session running. Fetch and display matches.");
+                Log.e(TAG, "Session running. Fetch and display matches.");
                 //already on this bus network and session is started
                 //Display my matches
             } else if (wifis.contains(my_wifi)){
-                Log.i(TAG, "Updating session ssid.");
-                Log.d(TAG, "User wifi is a bus wifi but not the same as the session wifi. " +
+                Log.e(TAG, "Updating session ssid.");
+                Log.e(TAG, "User wifi is a bus wifi but not the same as the session wifi. " +
                         "My ssid: "+my_wifi+". Session ssid: "+session.ssid);
                 //Im on a another bus network, update the session
                 jdb.updateSession(my_wifi, user_id);
+            } else {
+                //I have a session running but is currently not on a buss network.
+                //Dont allow matches.
             }
         } else if (wifis.contains(my_wifi)){
             Log.e(TAG, "Starting a new session...");
             //Im on a bus network and no session is started, start a new session
             jdb.sessionStart(my_wifi);
         } else {
-            Log.d(TAG, "IM NOT ON A BUS NETWORK!");
+            Log.e(TAG, "IM NOT ON A BUS NETWORK!");
             //Im not currently on any buss network!
             //Display fragment prompting the user to connect to the buss network.
         }
