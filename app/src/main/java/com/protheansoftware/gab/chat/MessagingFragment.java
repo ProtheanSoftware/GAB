@@ -82,7 +82,7 @@ public class MessagingFragment extends Fragment {
 
         //Initialize variables
         dbh = JdbcDatabaseHandler.getInstance();
-        messageClientListener = new MySQLMessageClientListener();
+        messageClientListener = new SinchMessageClientListener();
 
 
         try {
@@ -218,27 +218,45 @@ public class MessagingFragment extends Fragment {
         }
     }
 
-    private class MySQLMessageClientListener implements MessageClientListener {
+    private class SinchMessageClientListener implements MessageClientListener {
         @Override
-        public void onIncomingMessage(MessageClient messageClient, Message message) {
-            //Display
-            WritableMessage writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
-            messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_INCOMING);
+        public void onIncomingMessage(MessageClient messageClient, final Message message) {
+            //Display message if the list doesn't already have the message displayed
+            //This is required for sinch, sinch will try to redeliver all undelivered messages
+            //Since we also save in a mysqldatabase for message history these two will both get
+            //the same messages
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if (!conversationContainsMessage(message)){
+                        WritableMessage writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
+                        messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_INCOMING);
+                    }
+                }
+            });
+            thread.run();
         }
 
         @Override
-        public void onMessageSent(MessageClient messageClient, Message message, String s) {
+        public void onMessageSent(MessageClient messageClient, final Message message, String s) {
             Log.d(TAG, "Displaying message");
+
             //Display the message just sent
-            //Save in database
-            WritableMessage writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
+            final WritableMessage writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
             messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_OUTGOING);
 
-            JdbcDatabaseHandler.getInstance()
-                    .saveMessage(
-                            Integer.parseInt(message.getRecipientIds().get(0)),
-                            message.getTextBody(),
-                            writableMessage.getMessageId());
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    //Save in database
+                    JdbcDatabaseHandler.getInstance()
+                            .saveMessage(
+                                    Integer.parseInt(message.getRecipientIds().get(0)),
+                                    message.getTextBody(),
+                                    writableMessage.getMessageId());
+                }
+            });
+            thread.run();
         }
 
         @Override
@@ -256,5 +274,14 @@ public class MessagingFragment extends Fragment {
         public void onShouldSendPushData(MessageClient messageClient, Message message, List<PushPair> list) {
 
         }
+    }
+
+    /**
+     * Checks if current conversation contains message using the sinch id
+     * @param message message in question
+     * @return True; Database contains message, False; Database doesn't contain message
+     */
+    private boolean conversationContainsMessage(Message message) {
+        return JdbcDatabaseHandler.getInstance().messagesContains(message.getMessageId());
     }
 }
