@@ -41,6 +41,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     //Tab titles
     private String[] tabs = {"Match Screen","Matches"};
+    private Intent serviceIntent;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -264,8 +265,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     @Override
     public void onStart(){
         super.onStart();
-        final Intent serviceIntent = new Intent(getApplicationContext(), MessageService.class);
+        serviceIntent = new Intent(getApplicationContext(), MessageService.class);
         startService(serviceIntent);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopService(serviceIntent);
     }
 
     @Override

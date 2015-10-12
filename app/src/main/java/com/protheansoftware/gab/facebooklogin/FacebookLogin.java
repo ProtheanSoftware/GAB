@@ -22,6 +22,7 @@ import com.facebook.login.widget.LoginButton;
 
 import com.protheansoftware.gab.MainActivity;
 import com.protheansoftware.gab.R;
+import com.protheansoftware.gab.model.IDatabaseHandler;
 import com.protheansoftware.gab.model.JdbcDatabaseHandler;
 import com.protheansoftware.gab.model.Profile;
 import org.json.JSONArray;
@@ -54,7 +55,16 @@ public class FacebookLogin extends Activity {
         if(AccessToken.getCurrentAccessToken() != null) {
             Log.d("FacebookLogin", "User logged in sucessfully");
             addUserIfNotExists();
-            startMainActivity();
+            while(!userExists){
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(userExists) {
+                startMainActivity();
+            }
         } else {
             Log.d("FacebookLogin","Could not log in previous user, will now show facebooklogin...");
         }
@@ -75,8 +85,9 @@ public class FacebookLogin extends Activity {
                         e.printStackTrace();
                     }
                 }
-                startMainActivity();
-
+                if(userExists) {
+                    startMainActivity();
+                }
             }
 
             @Override
@@ -100,20 +111,23 @@ public class FacebookLogin extends Activity {
             @Override
             public void run() {
                 long  fb_id = Long.parseLong(AccessToken.getCurrentAccessToken().getUserId());
+                Profile user = null;
+
                 try {
-                    Profile user = JdbcDatabaseHandler.getInstance().getUserFromFBID(fb_id);
-                    FacebookParser parser = new FacebookParser();
-                    if(user == null){
-                        Log.d("LOGIN", "User doesn't exist, creating user..");
-                        JdbcDatabaseHandler.getInstance().addUser(parser.getNameFromFacebookId(fb_id), fb_id, parser.getLikeListFromFacebookId(fb_id));
-                        userExists = true;
-                        return;
-                    }else{
-                        userExists = true;
-                        return;
-                    }
+                    user = JdbcDatabaseHandler.getInstance(fb_id).getUserFromFBID(fb_id);
                 } catch (SQLException e) {
                     e.printStackTrace();
+                }
+
+                FacebookParser parser = new FacebookParser();
+                if(user == null){
+                    Log.d("LOGIN", "User doesn't exist, creating user..");
+                    JdbcDatabaseHandler.getInstance().addUser(parser.getNameFromFacebookId(fb_id), fb_id, parser.getLikeListFromFacebookId(fb_id));
+                    userExists = true;
+                    return;
+                }else{
+                    userExists = true;
+                    return;
                 }
             }
         });

@@ -3,9 +3,7 @@ package com.protheansoftware.gab.model;
 
 import android.util.Log;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -15,17 +13,17 @@ import java.util.logging.Logger;
  * Created by oskar on 2015-09-26.
  */
 public class JdbcDatabaseHandler implements IDatabaseHandler {
-    private int my_fb_id;
+
+    private long my_fb_id;
     private int myId;
 
     private static JdbcDatabaseHandler instance;
 
     public static final String TAG = "MYSQLDBH";
-    //public JdbcDatabaseHandler(int id){
-    //    this.my_fb_id = id;
-    //}
-    private JdbcDatabaseHandler(){
-        my_fb_id = 137;
+
+
+    private JdbcDatabaseHandler(long fb_id){
+        my_fb_id = fb_id;
         myId = -1;
         Log.d(TAG, "Setting id..");
         try {
@@ -35,10 +33,16 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         Log.d(TAG, "You id is: " + myId);
     }
 
-    public static JdbcDatabaseHandler getInstance(){
+    public static JdbcDatabaseHandler getInstance(long fb_id){
         if(instance == null){
-           instance = new JdbcDatabaseHandler();
+            instance = new JdbcDatabaseHandler(fb_id);
         }
+        return instance;
+    }
+    public static JdbcDatabaseHandler getInstance(){
+        //if(instance == null){
+        //    instance = new JdbcDatabaseHandler();
+        //}
         return instance;
     }
 
