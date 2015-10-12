@@ -33,7 +33,16 @@ public class Profile {
     }
 
     public ArrayList<String> getInterests() {
+        if(interests == null) return new ArrayList<String>();
         return interests;
+    }
+
+    /**
+     * Sets interests
+     * @param interests
+     */
+    public void setInterests(ArrayList<String> interests) {
+        this.interests = interests;
     }
 
 
@@ -42,14 +51,34 @@ public class Profile {
      * Returns number of simular interests between profiles.
      * @return
      */
-    private Integer getNumberOfSimularInterests(ArrayList<String> yourInterests) {
+    public Integer getNumberOfSimularInterests(ArrayList<String> yourInterests) {
         Integer number = 0;
+        if(interests == null) return 0;
         for(String s:yourInterests) {
             if(this.interests.contains(s)) {
                 number +=1;
             }
         }
         return number;
+    }
+
+    /**
+     * Returns an arraylist of simular interest between this match and another match
+     * @param matchInterests
+     * @return
+     */
+    public ArrayList<String> getSimularInterestList(ArrayList<String> matchInterests) {
+        ArrayList<String> list = new ArrayList<>();
+        if(interests == null || matchInterests == null) return new ArrayList<String>();
+        if(!matchInterests.isEmpty()) {
+            for(String interest:this.interests) {
+                if(matchInterests.contains(interest)) {
+                    list.add(interest);
+                }
+            }
+
+        }
+        return list;
     }
 
     @Override

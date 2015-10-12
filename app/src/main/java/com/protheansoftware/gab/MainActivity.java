@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import java.sql.SQLException;
@@ -17,6 +18,7 @@ import com.protheansoftware.gab.chat.MessagingFragment;
 import com.protheansoftware.gab.model.Profile;
 import com.protheansoftware.gab.chat.MessageService;
 import com.protheansoftware.gab.model.JdbcDatabaseHandler;
+import java.util.HashMap;
 
 
 
@@ -31,6 +33,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     private TabsPagerAdapter tabsAdapter;
     private ActionBar actionBar;
     private ArrayList<Profile> matches;
+    private Profile me;
 
     //Reference to matchscreen to be able to build with user profile
     private MatchScreenFragment match;
@@ -41,6 +44,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getActionBar().setDisplayShowTitleEnabled(false);
         setContentView(R.layout.activity_tabbed);
 
 
@@ -50,9 +54,44 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             StrictMode.setThreadPolicy(policy);
         }
 
+        try {
+            me = JdbcDatabaseHandler.getInstance().getUser(getMyDbId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Log.e(TAG,"Could not generate me match");
+        }
 
 
+
+        ArrayList<String> list = new ArrayList<>();
+        list.add("Netflix");
+        Profile m1 = new Profile(1,11,"Karl",new ArrayList<String>());
+        Profile m2 = new Profile(1,1,"Anders",new ArrayList<String>());
+        Profile m3 = new Profile(1,144,"Sven",new ArrayList<String>());
+        m1.setInterests(list);
+        ArrayList<String> list2 = new ArrayList<>();
+        list2.add("Netflix");
+
+        list2.add("REACT");
+        m2.setInterests(list2);
+        ArrayList<String> list3 = new ArrayList<>();
+        list3.add("Netflix");
+        list3.add("REACT");
+        list3.add("Tofsen - Chalmers Kårtidning");
+        list3.add("Swag");
+        m3.setInterests(list3);
+        ArrayList<Profile> unsortedList = new ArrayList<>();
+        unsortedList.add(m1);
+        unsortedList.add(m2);
+        unsortedList.add(m3);
+        ArrayList<Profile> sortedList = sortMatches(unsortedList);
+        for(Profile m:sortedList) {
+            Log.d(TAG,m.getName() + "Simular interests: " + m.getSimularInterestList(me.getInterests()).toString());
+
+        }
         initTabStructure();
+
+
 
     }
 
@@ -67,7 +106,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         //Initialize
         viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar = getActionBar();
-        tabsAdapter = new TabsPagerAdapter(getSupportFragmentManager());
+        tabsAdapter = new TabsPagerAdapter(getSupportFragmentManager(), (TelephonyManager) getSystemService(this.TELEPHONY_SERVICE));
 
         viewPager.setAdapter(tabsAdapter);
         actionBar.setHomeButtonEnabled(false);
@@ -87,9 +126,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
             @Override
             public void onPageSelected(int position) {
-                if(position == 2){
+                if (position == 2) {
                     Log.d(TAG, "chat opened");
-                    if(actionBar.getTabCount()==3){
+                    if (actionBar.getTabCount() == 3) {
                         actionBar.removeTabAt(2);
                     }
                     String recipient = "null";
@@ -125,9 +164,17 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         AppEventsLogger.deactivateApp(this);
     }
 
+    /**
+     * Returns the current users db id.
+     * @return
+     */
+    public int getMyDbId() throws SQLException {
+       return JdbcDatabaseHandler.getInstance().getMyId();
+    }
+
 
     /**
-     * Starts a thread that search for matches
+     * Starts a thread that search for matches and then returns an arraylist with matches
      */
     private void searchForMatches() {
         //Start session and search for matches
@@ -142,16 +189,49 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             }
         });
         thread.run();
-
     }
 
     /**
-     * Generates matches from an arrayList from server
+     * Sorts an arraylist after simular interest with your interests.
+     * @param unsortedMatches
+     * @return
      */
-    public void generateMatches() {
+    private ArrayList<Profile> sortMatches(ArrayList<Profile> unsortedMatches) {
+        //Generate keymap of numofinterest as keys and matches as values
+        HashMap<Integer, ArrayList<Profile>> simularInterestMap = new HashMap<Integer, ArrayList<Profile>>();
+
+        ArrayList<Profile> sortedMatches = new ArrayList<Profile>();
+
+        //generate keymap
+        for (Profile match : unsortedMatches) {
+            Integer numofsiminterest = me.getNumberOfSimularInterests(match.getInterests());
+            Log.d(TAG, match.getName() + "HAs " + numofsiminterest + "interests ");
+            if (simularInterestMap.get(numofsiminterest) == null) {
+                ArrayList<Profile> matchList = new ArrayList<Profile>();
+                matchList.add(match);
+                simularInterestMap.put(numofsiminterest, matchList);
+            } else {
+                simularInterestMap.get(numofsiminterest).add(match);
+            }
+        }
+        for (Integer siminterest : simularInterestMap.keySet()) {
+            if (!(siminterest == 0)) {
+                for (Profile m : simularInterestMap.get(siminterest)) {
+                    sortedMatches.add(m);
+                }
+            }
+
+        }
+        //Add users with 0 interest last
+        if (simularInterestMap.get(0) != null) {
+            for (Profile m : simularInterestMap.get(0)) {
+                sortedMatches.add(m);
+            }
+
+        }
+        return sortedMatches;
 
     }
-
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
