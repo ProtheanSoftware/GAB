@@ -587,7 +587,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
             pstatement.setString(2, String.valueOf(getMyId()));
             pstatement.setString(3, String.valueOf(recieverId));
             pstatement.setString(4, message);
-            pstatement.setString(5, String.valueOf(sinch_id));
+            pstatement.setString(5, sinch_id);
             pstatement.executeUpdate();
         }catch (SQLException ex){
             Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
@@ -651,7 +651,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         ArrayList<Message> messages = new ArrayList<Message>();
 
         Connection con = null;
-        Statement statement =  null;
+        PreparedStatement pstatement = null;
 
         String url = "jdbc:mysql://" + Secrets.DB_IP + "/gab";
         String user = Secrets.DB_USER;
@@ -665,12 +665,9 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         try{
             con = DriverManager.getConnection(url, user, password);
 
-            statement = con.createStatement();
-
-            ResultSet rs = statement.executeQuery("SELECT * " +
-                    "FROM `t_messages` " +
-                    "WHERE `sinch_id` ="+sinch_id+
-                    " LIMIT 0, 30;");
+            pstatement = con.prepareStatement("SELECT * FROM `t_messages` WHERE `sinch_id` = ? LIMIT 0, 30");
+            pstatement.setString(1, sinch_id);
+            ResultSet rs = pstatement.executeQuery();
             while (rs.next()){
                 Message temp = new Message(rs.getInt("message_id"),rs.getInt("sender_id"), rs.getInt("reciever_id"), rs.getString("message"));
                 messages.add(temp);
@@ -681,8 +678,8 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
             lgr.log(Level.SEVERE, ex.getMessage(), ex);
         }finally {
             try {
-                if(statement != null){
-                    statement.close();
+                if(pstatement != null){
+                    pstatement.close();
                 }
                 if (con != null) {
                     con.close();

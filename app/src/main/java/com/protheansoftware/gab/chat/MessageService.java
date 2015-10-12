@@ -113,8 +113,21 @@ public class MessageService extends Service implements SinchClientListener {
     public void sendMessage(String recipientUserId, String textBody){
         if(messageClient != null){
             Log.d("MessageService", "sending message: " + textBody);
-            WritableMessage message = new WritableMessage(recipientUserId, textBody);
+            final WritableMessage message = new WritableMessage(recipientUserId, textBody);
             messageClient.send(message);
+
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    //Save in database
+                    JdbcDatabaseHandler.getInstance()
+                            .saveMessage(
+                                    Integer.parseInt(message.getRecipientIds().get(0)),
+                                    message.getTextBody(),
+                                    message.getMessageId());
+                }
+            });
+            thread.run();
         }
     }
 
