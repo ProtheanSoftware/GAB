@@ -28,7 +28,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     //    this.my_fb_id = id;
     //}
     private JdbcDatabaseHandler(){
-        my_fb_id = 7;
+        my_fb_id = 137;
         myId = -1;
         Log.d(TAG, "Setting id..");
         try {
@@ -533,7 +533,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
                     "AND `reciever_id` ="+user_id+" " +
                     "OR `sender_id` ="+user_id+" " +
                     "AND `reciever_id` ="+getMyId()+" " +
-                    "LIMIT 0, 30;");
+                    "ORDER BY message_id DESC LIMIT 0, 30;");
             while (rs.next()){
                 Message temp = new Message(rs.getInt("message_id"),rs.getInt("sender_id"), rs.getInt("reciever_id"), rs.getString("message"));
                 messages.add(temp);
