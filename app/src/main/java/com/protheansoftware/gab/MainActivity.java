@@ -80,35 +80,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             e.printStackTrace();
             Log.e(TAG,"Could not generate me match");
         }
-
-
-
-        ArrayList<String> list = new ArrayList<>();
-        list.add("Netflix");
-        Match m1 = new Match(1,11,"Karl",new ArrayList<String>());
-        Match m2 = new Match(1,1,"Anders",new ArrayList<String>());
-        Match m3 = new Match(1,144,"Sven",new ArrayList<String>());
-        m1.setInterests(list);
-        ArrayList<String> list2 = new ArrayList<>();
-        list2.add("Netflix");
-
-        list2.add("REACT");
-        m2.setInterests(list2);
-        ArrayList<String> list3 = new ArrayList<>();
-        list3.add("Netflix");
-        list3.add("REACT");
-        list3.add("Tofsen - Chalmers Kårtidning");
-        list3.add("Swag");
-        m3.setInterests(list3);
-        ArrayList<Match> unsortedList = new ArrayList<>();
-        unsortedList.add(m1);
-        unsortedList.add(m2);
-        unsortedList.add(m3);
-        ArrayList<Match> sortedList = sortMatches(unsortedList);
-        for(Match m:sortedList) {
-            Log.d(TAG,m.getName() + "Simular interests: " + m.getSimularInterestList(me.getInterests()).toString());
-
-        }
         initTabStructure();
 
 
@@ -208,44 +179,38 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     }
 
     /**
-     * Sorts an arraylist after simular interest with your interests.
+     * Sorts the matchlist after number of simular interests between you and the match
      * @param unsortedMatches
      * @return
      */
-    private ArrayList<Match> sortMatches(ArrayList<Match> unsortedMatches){
-        //Generate keymap of numofinterest as keys and matches as values
-        HashMap<Integer,ArrayList<Match>> simularInterestMap = new HashMap<Integer,ArrayList<Match>>();
+    private void sortMatches(ArrayList<Match> unsortedMatches){
+        boolean flag = true;
+        Match temp;
+        ArrayList<Match> matchesWithnoSimularInterests = new ArrayList<Match>();
 
-        ArrayList<Match> sortedMatches = new ArrayList<Match>();
-
-        //generate keymap
-        for(Match match:unsortedMatches) {
-            Integer numofsiminterest = me.getNumberOfSimularInterests(match.getInterests());
-            Log.d(TAG,match.getName()+ "HAs " + numofsiminterest + "interests ");
-            if(simularInterestMap.get(numofsiminterest) == null) {
-                ArrayList<Match> matchList = new ArrayList<Match>();
-                matchList.add(match);
-                simularInterestMap.put(numofsiminterest,matchList);
-            } else {
-                simularInterestMap.get(numofsiminterest).add(match);
-            }
-        }
-        for(Integer siminterest:simularInterestMap.keySet()) {
-            if(!(siminterest == 0)) {
-                for(Match m:simularInterestMap.get(siminterest)) {
-                    sortedMatches.add(m);
+        while(flag) {
+            flag = false;
+            for (int i = 0; i < unsortedMatches.size() - 1; i++) {
+                if (me.getNumberOfSimularInterests(unsortedMatches.get(i).getInterests()) != 0) {
+                    if (me.getNumberOfSimularInterests(unsortedMatches.get(i).getInterests()) <
+                            me.getNumberOfSimularInterests(unsortedMatches.get(i + 1).getInterests())) {
+                        temp = unsortedMatches.get(i);
+                        unsortedMatches.set(i, unsortedMatches.get(i + 1));
+                        unsortedMatches.set(i + 1, temp);
+                        flag = true;
+                    }
+                } else {
+                    matchesWithnoSimularInterests.add(unsortedMatches.get(i));
                 }
             }
-
-        }
-        //Add users with 0 interest last
-        if(simularInterestMap.get(0) != null) {
-            for (Match m : simularInterestMap.get(0)) {
-                sortedMatches.add(m);
+            if (!matchesWithnoSimularInterests.isEmpty()) {
+                for (Match m : matchesWithnoSimularInterests) {
+                    unsortedMatches.add(m);
+                }
             }
-
         }
-        return sortedMatches;
+
+
     }
 
     /**
