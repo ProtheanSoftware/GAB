@@ -2,7 +2,10 @@ package com.protheansoftware.gab.model;
 
 
 import android.util.Log;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -107,8 +110,9 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
             statement = con.createStatement();
 
             ResultSet rs = statement.executeQuery(query);
+            Gson gson = new Gson();
             while (rs.next()){
-                Profile temp = new Profile(rs.getString("name"),rs.getInt("user_id"), rs.getLong("fb_id"));
+                Profile temp = new Profile(rs.getInt("user_id"), rs.getLong("fb_id"), rs.getString("name"), gson.fromJson(rs.getString("interests"), new ArrayList<String>().getClass()));
                 profiles.add(temp);
             }
 
@@ -133,7 +137,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     }
 
     @Override
-    public void addUser(String name, long id) {
+    public void addUser(String name, long id, ArrayList<String> interests) {
         Connection con = null;
         PreparedStatement pstatement = null;
 
@@ -149,10 +153,11 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         try{
             con = DriverManager.getConnection(url, user, password);
 
-            pstatement = con.prepareStatement("INSERT INTO t_users(user_id, name, fb_id) VALUES(?,?,?);");
+            pstatement = con.prepareStatement("INSERT INTO t_users(user_id, name, fb_id, interests) VALUES(?,?,?,?);");
             pstatement.setString(1, null);
             pstatement.setString(2, name);
             pstatement.setString(3, String.valueOf(id));
+            pstatement.setString(4, new Gson().toJson(interests.toArray()));
             pstatement.executeUpdate();
         }catch (SQLException ex){
             Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
@@ -174,6 +179,13 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     }
 
     @Override
+    public ArrayList<String> getInterests(int id) {
+        ArrayList<String> interests = new ArrayList<String>();
+
+        return interests;
+    }
+
+    @Override
     public int getMyId() throws SQLException {
         int user_id = -1;
         if(myId != -1){
@@ -181,7 +193,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         }
         ArrayList<Profile> profiles = selectFromUsers("SELECT * FROM `t_users` WHERE `fb_id` =" + my_fb_id + " LIMIT 0 , 30;");
         if(profiles.size()>0){
-            user_id = profiles.get(0).getId();
+            user_id = profiles.get(0).getDatabaseId();
         }
         myId = user_id;
         return user_id;
@@ -440,7 +452,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         try {
             ArrayList<Like> myLikes = selectFromLikes("SELECT * FROM `t_likes` WHERE `origin_id`= " + getMyId() + " LIMIT 0 , 30;");
             for(Like temp: myLikes){
-                if(temp.getLikeId() == user.getId()){
+                if(temp.getLikeId() == user.getDatabaseId()){
                     return true;
                 }
             }
@@ -456,7 +468,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         try {
             ArrayList<Like> myDislikes = getDislikes();
             for(Like temp: myDislikes){
-                if(temp.getLikeId() == user.getId()){
+                if(temp.getLikeId() == user.getDatabaseId()){
                     return true;
                 }
             }
@@ -658,7 +670,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
             ResultSet rs = statement.executeQuery("SELECT * " +
                     "FROM `t_messages` " +
                     "WHERE `sinch_id` ="+sinch_id+
-                    "LIMIT 0, 30;");
+                    " LIMIT 0, 30;");
             while (rs.next()){
                 Message temp = new Message(rs.getInt("message_id"),rs.getInt("sender_id"), rs.getInt("reciever_id"), rs.getString("message"));
                 messages.add(temp);

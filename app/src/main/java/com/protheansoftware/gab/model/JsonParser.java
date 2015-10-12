@@ -38,10 +38,10 @@ public class JsonParser{
      * @param fbId
      * @return
      */
-    public Match generateMatchFromUserID(Integer dbId, Long fbId) {
+    public Profile generateMatchFromUserID(Integer dbId, Long fbId) {
         String name = getNameFromFacebookId(fbId);
         ArrayList<String> likes = getLikeListFromFacebookId(fbId);
-        return new Match(dbId,fbId,name,likes);
+        return new Profile(dbId,fbId,name,likes);
     }
 
     /**

@@ -2,38 +2,22 @@ package com.protheansoftware.gab;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import com.facebook.AccessToken;
-import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
 import com.facebook.appevents.AppEventsLogger;
 import com.protheansoftware.gab.adapter.TabsPagerAdapter;
 import com.protheansoftware.gab.chat.MessagingFragment;
-import com.protheansoftware.gab.model.Match;
+import com.protheansoftware.gab.model.Profile;
 import com.protheansoftware.gab.chat.MessageService;
 import com.protheansoftware.gab.model.JdbcDatabaseHandler;
-import com.protheansoftware.gab.model.JdbcDatabaseHandler;
-import com.protheansoftware.gab.model.JsonParser;
-import com.protheansoftware.gab.model.Match;
-import com.protheansoftware.gab.model.Profile;
-import java.util.Collections;
-import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 
 /**
@@ -46,7 +30,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     private ViewPager viewPager;
     private TabsPagerAdapter tabsAdapter;
     private ActionBar actionBar;
-    private ArrayList<Match> matches;
+    private ArrayList<Profile> matches;
 
     //Reference to matchscreen to be able to build with user profile
     private MatchScreenFragment match;
@@ -88,7 +72,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         viewPager.setAdapter(tabsAdapter);
         actionBar.setHomeButtonEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        matches = new ArrayList<Match>();
+        matches = new ArrayList<Profile>();
 
         //add tabs
         for (String tab_name : tabs) {
@@ -147,17 +131,18 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      */
     private void searchForMatches() {
         //Start session and search for matches
-
-        //Fills a arraylist with profiles wich are then converted to matches.
-        ArrayList<Profile> matchesFromDb = new ArrayList<>();
-
-        //Generate matches if db returned profiles
-        if (!matchesFromDb.isEmpty()) {
-            for (Profile p : matchesFromDb) {
-                JsonParser parser = JsonParser.getInstance();
-                this.matches.add(parser.generateMatchFromUserID(p.getId(), p.getFbId()));
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    matches = JdbcDatabaseHandler.getInstance().getMatches();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
-        }
+        });
+        thread.run();
+
     }
 
     /**
@@ -203,118 +188,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         startService(serviceIntent);
     }
 
-    /**
-     * Inner class for parsing the facebook sdk responses
-     */
-    class FacebookParser {
-
-        /**
-         * Gets the user name and likes from the facebook sdk and returns a new Match
-         *
-         * @param dbId
-         * @param fbId
-         * @return
-         */
-        public Match generateMatchFromUserID(Integer dbId, Long fbId) {
-            String name = getNameFromFacebookId(fbId);
-            ArrayList<String> likes = getLikeListFromFacebookId(fbId);
-            return new Match(dbId, fbId, name, likes);
-        }
-
-        /**
-         * Returns an array of things that the user with the specified id has liked on facebook.
-         *
-         * @param fbId
-         * @return
-         */
-        public ArrayList<String> getLikeListFromFacebookId(final long fbId) {
-            final ArrayList<String> likeList = new ArrayList<String>();
-            final long facebookId = fbId;
-
-            Thread t = new Thread() {
-                public void run() {
-                    synchronized (likeList) {
-                        new GraphRequest(AccessToken.getCurrentAccessToken(), "/"+fbId+"/likes", null, HttpMethod.GET, new GraphRequest.Callback() {
-                            public void onCompleted(GraphResponse response) {
-                                JSONObject object = response.getJSONObject();
-                                try {
-                                    JSONArray array = object.getJSONArray("data");
-                                    for (int i = 0; i < array.length(); i++) {
-                                        JSONObject obj = array.getJSONObject(i);
-                                        String name = obj.get("name").toString();
-                                        likeList.add(name);
-                                    }
-                                        likeList.notify();
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                        ).executeAndWait();
-                    }
-                }
-
-            };
-            synchronized (likeList) {
-                t.start();
-                while (t.isAlive()) {
-                    try {
-                        likeList.wait(10);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                return likeList;
-            }
-        }
-
-
-        /**
-         * Returns the name of the user with the specified facebook id.
-         *
-         * @param fbId
-         * @return
-         */
-        private String getNameFromFacebookId(long fbId) {
-            final StringBuffer buffer = new StringBuffer();
-            final long facebookId = fbId;
-            Thread t = new Thread() {
-                public void run() {
-                    synchronized (buffer) {
-                        new GraphRequest(AccessToken.getCurrentAccessToken(), "/" + facebookId, null, HttpMethod.GET, new GraphRequest.Callback() {
-                            public void onCompleted(GraphResponse response) {
-                                try {
-                                    String returnName = response.getJSONObject().get("name").toString();
-                                    buffer.append(returnName);
-                                    buffer.notifyAll();
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                        ).executeAndWait();
-                    }
-                }
-
-            };
-            synchronized (buffer) {
-                t.start();
-                while (t.isAlive()) {
-                    try {
-                        buffer.wait(10);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                return buffer.toString();
-            }
-        }
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
     }
 
-
-        @Override
-        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-        }
-
-    }
+}

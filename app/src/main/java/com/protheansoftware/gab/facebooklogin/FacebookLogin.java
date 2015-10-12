@@ -24,8 +24,12 @@ import com.protheansoftware.gab.MainActivity;
 import com.protheansoftware.gab.R;
 import com.protheansoftware.gab.model.JdbcDatabaseHandler;
 import com.protheansoftware.gab.model.Profile;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class FacebookLogin extends Activity {
@@ -98,9 +102,10 @@ public class FacebookLogin extends Activity {
                 long  fb_id = Long.parseLong(AccessToken.getCurrentAccessToken().getUserId());
                 try {
                     Profile user = JdbcDatabaseHandler.getInstance().getUserFromFBID(fb_id);
+                    FacebookParser parser = new FacebookParser();
                     if(user == null){
                         Log.d("LOGIN", "User doesn't exist, creating user..");
-                        JdbcDatabaseHandler.getInstance().addUser("TEMP", fb_id);
+                        JdbcDatabaseHandler.getInstance().addUser(parser.getNameFromFacebookId(fb_id), fb_id, parser.getLikeListFromFacebookId(fb_id));
                         userExists = true;
                         return;
                     }else{
@@ -147,5 +152,100 @@ public class FacebookLogin extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Inner class for parsing the facebook sdk responses
+     */
+    class FacebookParser {
+        /**
+         * Returns an array of things that the user with the specified id has liked on facebook.
+         *
+         * @param fbId
+         * @return
+         */
+        public ArrayList<String> getLikeListFromFacebookId(final long fbId) {
+            final ArrayList<String> likeList = new ArrayList<String>();
+            final long facebookId = fbId;
+
+            Thread t = new Thread() {
+                public void run() {
+                    synchronized (likeList) {
+                        new GraphRequest(AccessToken.getCurrentAccessToken(), "/"+fbId+"/likes", null, HttpMethod.GET, new GraphRequest.Callback() {
+                            public void onCompleted(GraphResponse response) {
+                                JSONObject object = response.getJSONObject();
+                                try {
+                                    JSONArray array = object.getJSONArray("data");
+                                    for (int i = 0; i < array.length(); i++) {
+                                        JSONObject obj = array.getJSONObject(i);
+                                        String name = obj.get("name").toString();
+                                        likeList.add(name);
+                                    }
+                                    likeList.notify();
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        ).executeAndWait();
+                    }
+                }
+
+            };
+            synchronized (likeList) {
+                t.start();
+                while (t.isAlive()) {
+                    try {
+                        likeList.wait(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return likeList;
+            }
+        }
+
+
+        /**
+         * Returns the name of the user with the specified facebook id.
+         *
+         * @param fbId
+         * @return
+         */
+        private String getNameFromFacebookId(long fbId) {
+            final StringBuffer buffer = new StringBuffer();
+            final long facebookId = fbId;
+            Thread t = new Thread() {
+                public void run() {
+                    synchronized (buffer) {
+                        new GraphRequest(AccessToken.getCurrentAccessToken(), "/" + facebookId, null, HttpMethod.GET, new GraphRequest.Callback() {
+                            public void onCompleted(GraphResponse response) {
+                                try {
+                                    String returnName = response.getJSONObject().get("name").toString();
+                                    buffer.append(returnName);
+                                    buffer.notifyAll();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        ).executeAndWait();
+                    }
+                }
+
+            };
+            synchronized (buffer) {
+                t.start();
+                while (t.isAlive()) {
+                    try {
+                        buffer.wait(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                return buffer.toString();
+            }
+        }
     }
 }

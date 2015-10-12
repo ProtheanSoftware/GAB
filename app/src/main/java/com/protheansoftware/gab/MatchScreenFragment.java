@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.protheansoftware.gab.model.BusHandler;
 import com.protheansoftware.gab.model.JdbcDatabaseHandler;
-import com.protheansoftware.gab.model.Match;
+import com.protheansoftware.gab.model.Profile;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     private JdbcDatabaseHandler jdb = JdbcDatabaseHandler.getInstance();
     private BusHandler bh = BusHandler.getInstance();
     // list of matches
-    private ArrayList<Match> matches;
+    private ArrayList<Profile> matches;
 
 
     @Override
@@ -30,7 +30,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
         super.onCreate(savedInstanceState);
 
     }
-    public void setMatches(ArrayList<Match> matches) {
+    public void setMatches(ArrayList<Profile> matches) {
         this.matches = matches;
     }
 
@@ -51,7 +51,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     }
 
     //Fills out the fragment with the match.
-    public void setMatch(final Match match){
+    public void setMatch(final Profile match){
         ((TextView)getActivity().findViewById(R.id.nameTag)).setText(match.getName());
         ((Button)getActivity().findViewById(R.id.dislikeButton)).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,7 +72,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
      */
     public void dislike(int id, String name) {
         try {
-            JdbcDatabaseHandler.getInstance().addDislike(JdbcDatabaseHandler.getInstance().getUserFromFBID(id).getId(), name);
+            JdbcDatabaseHandler.getInstance().addDislike(JdbcDatabaseHandler.getInstance().getUserFromFBID(id).getDatabaseId(), name);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -83,7 +83,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
      */
     public void like(int id, String name){
         try {
-            JdbcDatabaseHandler.getInstance().addLike(JdbcDatabaseHandler.getInstance().getUserFromFBID(id).getId(), name);
+            JdbcDatabaseHandler.getInstance().addLike(JdbcDatabaseHandler.getInstance().getUserFromFBID(id).getDatabaseId(), name);
         } catch (SQLException e) {
             e.printStackTrace();
         }

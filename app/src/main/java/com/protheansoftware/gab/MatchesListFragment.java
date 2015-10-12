@@ -66,7 +66,7 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
         int r_id = 0;
 
         if(parent.getItemAtPosition(position) instanceof Profile) {
-            r_id = ((Profile)parent.getItemAtPosition(position)).getId();
+            r_id = ((Profile)parent.getItemAtPosition(position)).getDatabaseId();
         }
         Log.d(TAG, "Opening chat with: " + r_id);
 
