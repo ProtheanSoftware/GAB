@@ -150,10 +150,7 @@ public class MessagingFragment extends Fragment {
                 messageAdapter = new MessageAdapter(getActivity());
                 list.setAdapter(messageAdapter);
             }
-            //Put read messages from db here (dont forget to empty current chat)
-            //For now the conversation between the current user and user 1 is retrieved and
-            //displayed. This will later be integrated and the variable recipientId will be used
-            //instead.
+            //Read messages from database
             if(messageAdapter.isEmpty()) {
                 Thread thread = new Thread(new Runnable() {
                     @Override
@@ -161,7 +158,7 @@ public class MessagingFragment extends Fragment {
                         ArrayList<com.protheansoftware.gab.model.Message> messages = dbh.getConversation(Integer.parseInt(recipientId));
                         messages = sortDescID(messages);
                         for (com.protheansoftware.gab.model.Message m : messages) {
-                            WritableMessage writableMessage = new WritableMessage(m.getId() + "", m.getMessage());
+                            WritableMessage writableMessage = new WritableMessage(String.valueOf(m.getId()), m.getMessage());
                             if (Integer.parseInt(currentUserId) == m.getRecieverId()) {
                                 messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_INCOMING);
                             } else {
@@ -238,25 +235,11 @@ public class MessagingFragment extends Fragment {
         }
 
         @Override
-        public void onMessageSent(MessageClient messageClient, final Message message, String s) {
+        public void onMessageSent(MessageClient messageClient, Message message, String s) {
             Log.d(TAG, "Displaying message");
-
             //Display the message just sent
             final WritableMessage writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
             messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_OUTGOING);
-
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    //Save in database
-                    JdbcDatabaseHandler.getInstance()
-                            .saveMessage(
-                                    Integer.parseInt(message.getRecipientIds().get(0)),
-                                    message.getTextBody(),
-                                    writableMessage.getMessageId());
-                }
-            });
-            thread.run();
         }
 
         @Override

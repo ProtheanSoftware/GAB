@@ -2,6 +2,7 @@ package com.protheansoftware.gab.model;
 
 
 import android.util.Log;
+import com.google.gson.Gson;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -12,17 +13,17 @@ import java.util.logging.Logger;
  * Created by oskar on 2015-09-26.
  */
 public class JdbcDatabaseHandler implements IDatabaseHandler {
-    private int my_fb_id;
+
+    private long my_fb_id;
     private int myId;
 
     private static JdbcDatabaseHandler instance;
 
     public static final String TAG = "MYSQLDBH";
-    //public JdbcDatabaseHandler(int id){
-    //    this.my_fb_id = id;
-    //}
-    private JdbcDatabaseHandler(){
-        my_fb_id = 137;
+
+
+    private JdbcDatabaseHandler(long fb_id){
+        my_fb_id = fb_id;
         myId = -1;
         Log.d(TAG, "Setting id..");
         try {
@@ -32,10 +33,16 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         Log.d(TAG, "You id is: " + myId);
     }
 
-    public static JdbcDatabaseHandler getInstance(){
+    public static JdbcDatabaseHandler getInstance(long fb_id){
         if(instance == null){
-           instance = new JdbcDatabaseHandler();
+            instance = new JdbcDatabaseHandler(fb_id);
         }
+        return instance;
+    }
+    public static JdbcDatabaseHandler getInstance(){
+        //if(instance == null){
+        //    instance = new JdbcDatabaseHandler();
+        //}
         return instance;
     }
 
@@ -107,8 +114,9 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
             statement = con.createStatement();
 
             ResultSet rs = statement.executeQuery(query);
+            Gson gson = new Gson();
             while (rs.next()){
-                Profile temp = new Profile(rs.getString("name"),rs.getInt("user_id"), rs.getLong("fb_id"));
+                Profile temp = new Profile(rs.getInt("user_id"), rs.getLong("fb_id"), rs.getString("name"), gson.fromJson(rs.getString("interests"), new ArrayList<String>().getClass()));
                 profiles.add(temp);
             }
 
@@ -133,7 +141,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     }
 
     @Override
-    public void addUser(String name, long id) {
+    public void addUser(String name, long id, ArrayList<String> interests) {
         Connection con = null;
         PreparedStatement pstatement = null;
 
@@ -149,10 +157,11 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         try{
             con = DriverManager.getConnection(url, user, password);
 
-            pstatement = con.prepareStatement("INSERT INTO t_users(user_id, name, fb_id) VALUES(?,?,?);");
+            pstatement = con.prepareStatement("INSERT INTO t_users(user_id, name, fb_id, interests) VALUES(?,?,?,?);");
             pstatement.setString(1, null);
             pstatement.setString(2, name);
             pstatement.setString(3, String.valueOf(id));
+            pstatement.setString(4, new Gson().toJson(interests.toArray()));
             pstatement.executeUpdate();
         }catch (SQLException ex){
             Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
@@ -174,6 +183,13 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     }
 
     @Override
+    public ArrayList<String> getInterests(int id) {
+        ArrayList<String> interests = new ArrayList<String>();
+
+        return interests;
+    }
+
+    @Override
     public int getMyId() throws SQLException {
         int user_id = -1;
         if(myId != -1){
@@ -181,7 +197,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         }
         ArrayList<Profile> profiles = selectFromUsers("SELECT * FROM `t_users` WHERE `fb_id` =" + my_fb_id + " LIMIT 0 , 30;");
         if(profiles.size()>0){
-            user_id = profiles.get(0).getId();
+            user_id = profiles.get(0).getDatabaseId();
         }
         myId = user_id;
         return user_id;
@@ -440,7 +456,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         try {
             ArrayList<Like> myLikes = selectFromLikes("SELECT * FROM `t_likes` WHERE `origin_id`= " + getMyId() + " LIMIT 0 , 30;");
             for(Like temp: myLikes){
-                if(temp.getLikeId() == user.getId()){
+                if(temp.getLikeId() == user.getDatabaseId()){
                     return true;
                 }
             }
@@ -456,7 +472,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         try {
             ArrayList<Like> myDislikes = getDislikes();
             for(Like temp: myDislikes){
-                if(temp.getLikeId() == user.getId()){
+                if(temp.getLikeId() == user.getDatabaseId()){
                     return true;
                 }
             }
@@ -575,7 +591,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
             pstatement.setString(2, String.valueOf(getMyId()));
             pstatement.setString(3, String.valueOf(recieverId));
             pstatement.setString(4, message);
-            pstatement.setString(5, String.valueOf(sinch_id));
+            pstatement.setString(5, sinch_id);
             pstatement.executeUpdate();
         }catch (SQLException ex){
             Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
@@ -639,7 +655,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         ArrayList<Message> messages = new ArrayList<Message>();
 
         Connection con = null;
-        Statement statement =  null;
+        PreparedStatement pstatement = null;
 
         String url = "jdbc:mysql://" + Secrets.DB_IP + "/gab";
         String user = Secrets.DB_USER;
@@ -653,12 +669,9 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         try{
             con = DriverManager.getConnection(url, user, password);
 
-            statement = con.createStatement();
-
-            ResultSet rs = statement.executeQuery("SELECT * " +
-                    "FROM `t_messages` " +
-                    "WHERE `sinch_id` ="+sinch_id+
-                    "LIMIT 0, 30;");
+            pstatement = con.prepareStatement("SELECT * FROM `t_messages` WHERE `sinch_id` = ? LIMIT 0, 30");
+            pstatement.setString(1, sinch_id);
+            ResultSet rs = pstatement.executeQuery();
             while (rs.next()){
                 Message temp = new Message(rs.getInt("message_id"),rs.getInt("sender_id"), rs.getInt("reciever_id"), rs.getString("message"));
                 messages.add(temp);
@@ -669,8 +682,8 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
             lgr.log(Level.SEVERE, ex.getMessage(), ex);
         }finally {
             try {
-                if(statement != null){
-                    statement.close();
+                if(pstatement != null){
+                    pstatement.close();
                 }
                 if (con != null) {
                     con.close();
