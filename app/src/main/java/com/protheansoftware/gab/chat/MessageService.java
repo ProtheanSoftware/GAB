@@ -45,6 +45,11 @@ public class MessageService extends Service implements SinchClientListener {
         }
         return super.onStartCommand(intent, flags, startID);
     }
+
+    /**
+     * Starts the sinch client with the app secrets and the correct environment using the user id
+     * @param username User id
+     */
     public void startSinchClient(String username) {
         sinchClient = Sinch.getSinchClientBuilder()
                 .context(this)
@@ -56,7 +61,7 @@ public class MessageService extends Service implements SinchClientListener {
         sinchClient.addSinchClientListener(this);
         //Allow messaging
         sinchClient.setSupportMessaging(true);
-        sinchClient.setSupportActiveConnectionInBackground(true);
+
 
         sinchClient.checkManifest();
         sinchClient.start();
@@ -100,6 +105,11 @@ public class MessageService extends Service implements SinchClientListener {
         return serviceInterface;
     }
 
+    /**
+     * Send messages to client
+     * @param recipientUserId recipient
+     * @param textBody message content
+     */
     public void sendMessage(String recipientUserId, String textBody){
         if(messageClient != null){
             Log.d("MessageService", "sending message: " + textBody);
