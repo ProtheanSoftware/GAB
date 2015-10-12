@@ -3,6 +3,7 @@ import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v4.app.FragmentActivity;
@@ -29,6 +30,7 @@ import com.protheansoftware.gab.model.JsonParser;
 import com.protheansoftware.gab.model.Match;
 import com.protheansoftware.gab.model.Profile;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -47,6 +49,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     private TabsPagerAdapter tabsAdapter;
     private ActionBar actionBar;
     private ArrayList<Match> matches;
+    private Match me;
+    private FacebookParser fbParser;
+
 
     //Reference to matchscreen to be able to build with user profile
     private MatchScreenFragment match;
@@ -65,10 +70,45 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
+        fbParser = new FacebookParser();
+        try {
+            me = fbParser.generateMatchFromUserID(getMyDbId(),getMyFacebookId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Log.e(TAG,"Could not generate me match");
+        }
 
 
 
+        ArrayList<String> list = new ArrayList<>();
+        list.add("Netflix");
+        Match m1 = new Match(1,11,"Karl",new ArrayList<String>());
+        Match m2 = new Match(1,1,"Anders",new ArrayList<String>());
+        Match m3 = new Match(1,144,"Sven",new ArrayList<String>());
+        m1.setInterests(list);
+        ArrayList<String> list2 = new ArrayList<>();
+        list2.add("Netflix");
+
+        list2.add("REACT");
+        m2.setInterests(list2);
+        ArrayList<String> list3 = new ArrayList<>();
+        list3.add("Netflix");
+        list3.add("REACT");
+        list3.add("Tofsen - Chalmers Kårtidning");
+        list3.add("Swag");
+        m3.setInterests(list3);
+        ArrayList<Match> unsortedList = new ArrayList<>();
+        unsortedList.add(m1);
+        unsortedList.add(m2);
+        unsortedList.add(m3);
+        ArrayList<Match> sortedList = sortMatches(unsortedList);
+        for(Match m:sortedList) {
+            Log.d(TAG,m.getName() + "Simular interests: " + m.getSimularInterestList(me.getInterests()).toString());
+
+        }
         initTabStructure();
+
+
 
     }
 
@@ -103,9 +143,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
             @Override
             public void onPageSelected(int position) {
-                if(position == 2){
+                if (position == 2) {
                     Log.d(TAG, "chat opened");
-                    if(actionBar.getTabCount()==3){
+                    if (actionBar.getTabCount() == 3) {
                         actionBar.removeTabAt(2);
                     }
                     String recipient = "null";
@@ -141,29 +181,89 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         AppEventsLogger.deactivateApp(this);
     }
 
+    /**
+     * Returns the current users db id.
+     * @return
+     */
+    public int getMyDbId() throws SQLException {
+       return JdbcDatabaseHandler.getInstance().getMyId();
+    }
+
 
     /**
-     * Starts a thread that search for matches
+     * Starts a thread that search for matches and then returns an arraylist with matches
      */
     private void searchForMatches() {
-        //Start session and search for matches
+        Thread searchThread = new Thread() {
+            public void run() {
 
-        //Fills a arraylist with profiles wich are then converted to matches.
-        ArrayList<Profile> matchesFromDb = new ArrayList<>();
+            //Fills a arraylist with profiles wich are then converted to matches.
+            ArrayList<Profile> matchesFromDb = new ArrayList<>();
+            //Generate matches if db returned profiles
+        }
+        };
+    }
 
-        //Generate matches if db returned profiles
-        if (!matchesFromDb.isEmpty()) {
-            for (Profile p : matchesFromDb) {
-                JsonParser parser = JsonParser.getInstance();
-                this.matches.add(parser.generateMatchFromUserID(p.getId(), p.getFbId()));
+    /**
+     * Sorts an arraylist after simular interest with your interests.
+     * @param unsortedMatches
+     * @return
+     */
+    private ArrayList<Match> sortMatches(ArrayList<Match> unsortedMatches){
+        //Generate keymap of numofinterest as keys and matches as values
+        HashMap<Integer,ArrayList<Match>> simularInterestMap = new HashMap<Integer,ArrayList<Match>>();
+
+        ArrayList<Match> sortedMatches = new ArrayList<Match>();
+
+        //generate keymap
+        for(Match match:unsortedMatches) {
+            Integer numofsiminterest = me.getNumberOfSimularInterests(match.getInterests());
+            Log.d(TAG,match.getName()+ "HAs " + numofsiminterest + "interests ");
+            if(simularInterestMap.get(numofsiminterest) == null) {
+                ArrayList<Match> matchList = new ArrayList<Match>();
+                matchList.add(match);
+                simularInterestMap.put(numofsiminterest,matchList);
+            } else {
+                simularInterestMap.get(numofsiminterest).add(match);
             }
         }
+        for(Integer siminterest:simularInterestMap.keySet()) {
+            if(!siminterest == 0) {
+                for(Match m:simularInterestMap.get(siminterest)) {
+                    sortedMatches.add(m);
+                }
+            }
+
+        }
+        //Add users with 0 interest last
+        if(simularInterestMap.get(0) != null) {
+            for (Match m : simularInterestMap.get(0)) {
+                sortedMatches.add(m);
+            }
+
+        }
+        return sortedMatches;
     }
+
+    /**
+     * Returns the facebook id for the current user
+     * @return
+     */
+    private Long getMyFacebookId() {
+        return Long.parseLong(AccessToken.getCurrentAccessToken().getUserId());
+    }
+
 
     /**
      * Generates matches from an arrayList from server
      */
-    public void generateMatches() {
+    public void generateMatches(ArrayList<Profile> dbMatches) {
+        if(!dbMatches.isEmpty())
+        {
+            for (Profile p : dbMatches) {
+                this.matches.add(fbParser.generateMatchFromUserID(p.getId(), p.getFbId()));
+            }
+        }
 
     }
 

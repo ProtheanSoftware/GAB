@@ -42,15 +42,43 @@ public class Match {
      * Returns number of simular interests between profiles.
      * @return
      */
-    private Integer getNumberOfSimularInterests(ArrayList<String> yourInterests) {
+    public Integer getNumberOfSimularInterests(ArrayList<String> matchInterests) {
         Integer number = 0;
-        for(String s:yourInterests) {
+        for(String s:matchInterests) {
             if(this.interests.contains(s)) {
                 number +=1;
             }
         }
         return number;
     }
+
+    /**
+     * Returns an arraylist of simular interest between this match and another match
+     * @param matchInterests
+     * @return
+     */
+    public ArrayList<String> getSimularInterestList(ArrayList<String> matchInterests) {
+        ArrayList<String> list = new ArrayList<>();
+        if(!matchInterests.isEmpty()) {
+            for(String interest:this.interests) {
+                if(matchInterests.contains(interest)) {
+                    list.add(interest);
+                }
+            }
+
+        }
+            return list;
+    }
+
+    /**
+     * Sets interests
+     * @param interests
+     */
+    public void setInterests(ArrayList<String> interests) {
+        this.interests = interests;
+    }
+
+
 
     @Override
     public String toString() {

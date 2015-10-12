@@ -4,7 +4,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.protheansoftware.gab.model.BusHandler;
@@ -32,6 +34,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     }
     public void setMatches(ArrayList<Match> matches) {
         this.matches = matches;
+        setMatch(matches.get(0));
     }
 
     @Override
@@ -53,18 +56,39 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     //Fills out the fragment with the match.
     public void setMatch(final Match match){
         ((TextView)getActivity().findViewById(R.id.nameTag)).setText(match.getName());
+        ListView list = (ListView)getActivity().findViewById(R.id.centerContentList);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,match.getInterests());
+        list.setAdapter(adapter);
+
         ((Button)getActivity().findViewById(R.id.dislikeButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dislike(match.getDatabaseId(), match.getName());
+                loadNextMatch(match);
             }
         });
         ((Button)getActivity().findViewById(R.id.likeButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 like(match.getDatabaseId(), match.getName());
+                loadNextMatch(match);
             }
         });
+    }
+
+
+    /**
+     * Loads the next match in the list
+     * @param currentMatch
+     */
+    private void loadNextMatch(Match currentMatch) {
+        this.matches.remove(currentMatch);
+        if(matches.isEmpty()) {
+            //notify main to change view
+        } else {
+            setMatch(this.matches.get(0));
+        }
+
     }
 
     /**
