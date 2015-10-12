@@ -85,5 +85,20 @@ public class MessageAdapter extends BaseAdapter {
 
         return convertView;
     }
-
+    public Pair<WritableMessage, Integer> getLatestSentMessage(){
+        for(Pair<WritableMessage, Integer> temp : messages){
+            if(temp.second == DIRECTION_OUTGOING){
+                return temp;
+            }
+        }
+        return null;
+    }
+    public Pair<WritableMessage, Integer> getLatestRecievedMessage(){
+        for(Pair<WritableMessage, Integer> temp : messages){
+            if(temp.second == DIRECTION_INCOMING){
+                return temp;
+            }
+        }
+        return null;
+    }
 }
