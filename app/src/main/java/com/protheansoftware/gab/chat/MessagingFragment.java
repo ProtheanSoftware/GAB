@@ -10,6 +10,7 @@ import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,9 +56,18 @@ public class MessagingFragment extends Fragment {
     private MessageAdapter messageAdapter;
     private boolean viewCreated;
 
+    /**
+     * Sets the recipientId for chat, later used inorder to send and retreive messages
+     * @param recipientId Recipient Id
+     */
     public static void setRecipientId(String recipientId) {
         MessagingFragment.recipientId = recipientId;
     }
+
+    /**
+     * Gets the recipient id
+     * @return recipient id
+     */
     public static String getRecipientId(){
         return recipientId;
     }
@@ -72,7 +82,7 @@ public class MessagingFragment extends Fragment {
 
         //Initialize variables
         dbh = JdbcDatabaseHandler.getInstance();
-        messageClientListener = new MySQLMessageClientListener();
+        messageClientListener = new SinchMessageClientListener();
 
 
         try {
@@ -129,22 +139,39 @@ public class MessagingFragment extends Fragment {
         if(isVisibleToUser){
             Log.d(TAG, "Switched to chat");
             ListView list = (ListView)getActivity().findViewById(R.id.listMessages);
-            list.setAdapter(null);
-            messageAdapter = new MessageAdapter(getActivity());
-            list.setAdapter(messageAdapter);
+
+            //check of i should empty messages(i.e if recipient id is same of conversation)
+            Pair<WritableMessage, Integer> latestSentMessage  = ((MessageAdapter)list.getAdapter()).getLatestSentMessage();
+            Pair<WritableMessage, Integer> latestRecievedMessage = ((MessageAdapter)list.getAdapter()).getLatestRecievedMessage();
+            if(latestSentMessage != null && latestSentMessage.first.getRecipientIds().contains(recipientId)){
+                Log.d(TAG, "chat is same as before");
+            }else {
+                list.setAdapter(null);
+                messageAdapter = new MessageAdapter(getActivity());
+                list.setAdapter(messageAdapter);
+            }
             //Put read messages from db here (dont forget to empty current chat)
             //For now the conversation between the current user and user 1 is retrieved and
             //displayed. This will later be integrated and the variable recipientId will be used
             //instead.
             if(messageAdapter.isEmpty()) {
-                for (com.protheansoftware.gab.model.Message m : dbh.getConversation(Integer.parseInt(recipientId))) {
-                    WritableMessage writableMessage = new WritableMessage(m.getId() + "", m.getMessage());
-                    if (Integer.parseInt(currentUserId) == m.getRecieverId()) {
-                        messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_INCOMING);
-                    } else {
-                        messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_OUTGOING);
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ArrayList<com.protheansoftware.gab.model.Message> messages = dbh.getConversation(Integer.parseInt(recipientId));
+                        messages = sortDescID(messages);
+                        for (com.protheansoftware.gab.model.Message m : messages) {
+                            WritableMessage writableMessage = new WritableMessage(m.getId() + "", m.getMessage());
+                            if (Integer.parseInt(currentUserId) == m.getRecieverId()) {
+                                messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_INCOMING);
+                            } else {
+                                messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_OUTGOING);
+                            }
+                        }
+                        return;
                     }
-                }
+                });
+                thread.run();
             }
         }
         if(!isVisibleToUser && viewCreated){
@@ -152,6 +179,29 @@ public class MessagingFragment extends Fragment {
             ((TabsPagerAdapter)pager.getAdapter()).setCount(2);
             getActivity().getActionBar().removeTabAt(2);
         }
+    }
+
+    /**
+     * Helper method for sorting messages so latest messages come at the bottom of the list
+     * @param messages entry list
+     * @return sorted list
+     */
+    private ArrayList<com.protheansoftware.gab.model.Message> sortDescID(ArrayList<com.protheansoftware.gab.model.Message> messages) {
+        if(messages == null) return null;
+        //If not null sort by bubblesort
+        com.protheansoftware.gab.model.Message temp;
+        for (int x=0; x<messages.size(); x++)
+        {
+            for (int i=0; i < messages.size()-x-1; i++) {
+                if (messages.get(i).getId() > (messages.get(i+1).getId()))
+                {
+                    temp = messages.get(i);
+                    messages.set(i,messages.get(i+1));
+                    messages.set(i+1, temp);
+                }
+            }
+        }
+        return messages;
     }
 
     private class MyServiceConnection implements ServiceConnection {
@@ -168,27 +218,45 @@ public class MessagingFragment extends Fragment {
         }
     }
 
-    private class MySQLMessageClientListener implements MessageClientListener {
+    private class SinchMessageClientListener implements MessageClientListener {
         @Override
-        public void onIncomingMessage(MessageClient messageClient, Message message) {
-            //Display
-            WritableMessage writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
-            messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_INCOMING);
+        public void onIncomingMessage(MessageClient messageClient, final Message message) {
+            //Display message if the list doesn't already have the message displayed
+            //This is required for sinch, sinch will try to redeliver all undelivered messages
+            //Since we also save in a mysqldatabase for message history these two will both get
+            //the same messages
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if (!conversationContainsMessage(message)){
+                        WritableMessage writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
+                        messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_INCOMING);
+                    }
+                }
+            });
+            thread.run();
         }
 
         @Override
-        public void onMessageSent(MessageClient messageClient, Message message, String s) {
+        public void onMessageSent(MessageClient messageClient, final Message message, String s) {
             Log.d(TAG, "Displaying message");
+
             //Display the message just sent
-            //Save in database
-            WritableMessage writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
+            final WritableMessage writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
             messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_OUTGOING);
 
-            JdbcDatabaseHandler.getInstance()
-                    .saveMessage(
-                            Integer.parseInt(message.getRecipientIds().get(0)),
-                            message.getTextBody(),
-                            writableMessage.getMessageId());
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    //Save in database
+                    JdbcDatabaseHandler.getInstance()
+                            .saveMessage(
+                                    Integer.parseInt(message.getRecipientIds().get(0)),
+                                    message.getTextBody(),
+                                    writableMessage.getMessageId());
+                }
+            });
+            thread.run();
         }
 
         @Override
@@ -206,5 +274,14 @@ public class MessagingFragment extends Fragment {
         public void onShouldSendPushData(MessageClient messageClient, Message message, List<PushPair> list) {
 
         }
+    }
+
+    /**
+     * Checks if current conversation contains message using the sinch id
+     * @param message message in question
+     * @return True; Database contains message, False; Database doesn't contain message
+     */
+    private boolean conversationContainsMessage(Message message) {
+        return JdbcDatabaseHandler.getInstance().messagesContains(message.getMessageId());
     }
 }
