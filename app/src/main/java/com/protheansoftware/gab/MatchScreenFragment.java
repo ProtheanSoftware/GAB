@@ -37,15 +37,6 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        updateWhenDoorsOpenedThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if(BusHandler.getInstance().hasDoorsOpened("171330")){
-                    //Searchmatches
-                    Log.d("MatchScreen", "SEARCHING MATCHES  GATES HAVE BEEN OPENED");
-                }
-            }
-        });
     }
     public void setMatches(ArrayList<Profile> matches) {
         this.matches = matches;
@@ -61,21 +52,27 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
             @Override
             public void run() {
                 boolean waitLong = false;
-                while(true) {
+                boolean running = true;
+                int waitTime = 240000;
+                while(running) {
                     try {
                         if (waitLong) {
-                            Thread.sleep(30000);
+                            Thread.sleep(waitTime * 2);
                             waitLong = false;
                         } else {
-                            Thread.sleep(13000);
+                            Thread.sleep(waitTime);
                         }
                     }catch (InterruptedException e){
 
                     }
                     try {
-                        if (BusHandler.getInstance().hasDoorsOpened("171330")) {
-                            //Searchmatches
-                            Log.d("MatchScreen", "SEARCHING MATCHES  GATES HAVE BEEN OPENED");
+                        if(!Thread.currentThread().isInterrupted()) {
+                            if (BusHandler.getInstance().hasDoorsOpened("171330", waitTime)) {
+                                //Searchmatches
+                                Log.d("MatchScreen", "SEARCHING MATCHES  GATES HAVE BEEN OPENED");
+                            }
+                        }else{
+                            running = false;
                         }
                     }catch (Exception e){
                         waitLong = true;
@@ -167,9 +164,14 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        if(updateWhenDoorsOpenedThread.isAlive()) updateWhenDoorsOpenedThread.interrupt();
+    }
+
+    @Override
     public void onStop() {
         super.onStop();
-        if(updateWhenDoorsOpenedThread.isAlive()) updateWhenDoorsOpenedThread.stop();
     }
 
     @Override
