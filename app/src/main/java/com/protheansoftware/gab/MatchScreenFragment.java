@@ -1,9 +1,11 @@
 package com.protheansoftware.gab;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.telephony.CellLocation;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,12 +31,21 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     private TelephonyManager telephonyManager;
     // list of matches
     private ArrayList<Profile> matches;
+    private Thread updateWhenDoorsOpenedThread;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        updateWhenDoorsOpenedThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(BusHandler.getInstance().hasDoorsOpened("171330")){
+                    //Searchmatches
+                    Log.d("MatchScreen", "SEARCHING MATCHES  GATES HAVE BEEN OPENED");
+                }
+            }
+        });
     }
     public void setMatches(ArrayList<Profile> matches) {
         this.matches = matches;
@@ -44,6 +55,35 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setPotentialMatches();
+        //Thread that, when the doors have been opened on your bus, reload our matches.
+        //If something goes wrong, wait 30 seconds before trying again
+        updateWhenDoorsOpenedThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                boolean waitLong = false;
+                while(true) {
+                    try {
+                        if (waitLong) {
+                            Thread.sleep(30000);
+                            waitLong = false;
+                        } else {
+                            Thread.sleep(13000);
+                        }
+                    }catch (InterruptedException e){
+
+                    }
+                    try {
+                        if (BusHandler.getInstance().hasDoorsOpened("171330")) {
+                            //Searchmatches
+                            Log.d("MatchScreen", "SEARCHING MATCHES  GATES HAVE BEEN OPENED");
+                        }
+                    }catch (Exception e){
+                        waitLong = true;
+                    }
+                }
+            }
+        });
+        updateWhenDoorsOpenedThread.start();
         View rootView = inflater.inflate(R.layout.fragment_match_screen,container,false);
         return rootView;
     }
@@ -53,7 +93,9 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     @Override
     public void onResume() {
         super.onResume();
-
+        if(!updateWhenDoorsOpenedThread.isAlive()){
+            updateWhenDoorsOpenedThread.start();
+        }
         bh.startSessionIfNeeded(this.getContext(), (GsmCellLocation) telephonyManager.getCellLocation());
     }
 
@@ -127,6 +169,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     @Override
     public void onStop() {
         super.onStop();
+        if(updateWhenDoorsOpenedThread.isAlive()) updateWhenDoorsOpenedThread.stop();
     }
 
     @Override

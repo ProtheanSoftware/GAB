@@ -127,4 +127,13 @@ public class BusHandler{
             //Display fragment prompting the user to connect to the buss network.
         }
     }
+    public boolean hasDoorsOpened(String busVin){
+        long newtime = System.currentTimeMillis();
+        long oldtime = newtime - 12000; //2 * 60 * 1000/10
+        String tmp = getJSON("https://ece01.ericsson.net:4443/ecity?dgw=Ericsson$" + busVin + "&resourceSpec=Ericsson$Open_Door_Value&t1=" + oldtime + "&t2=" + newtime);
+
+        Log.d(TAG, tmp);
+
+        return false;
+    }
 }
