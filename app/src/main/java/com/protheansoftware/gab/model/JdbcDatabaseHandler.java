@@ -3,6 +3,7 @@ package com.protheansoftware.gab.model;
 
 import android.util.Log;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -116,7 +117,8 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
             ResultSet rs = statement.executeQuery(query);
             Gson gson = new Gson();
             while (rs.next()){
-                Profile temp = new Profile(rs.getInt("user_id"), rs.getLong("fb_id"), rs.getString("name"), gson.fromJson(rs.getString("interests"), new ArrayList<String>().getClass()));
+                ArrayList<String> interests = gson.fromJson(rs.getString("interests"), new TypeToken<ArrayList<String>>() {}.getType());
+                Profile temp = new Profile(rs.getInt("user_id"), rs.getLong("fb_id"), rs.getString("name"), interests);
                 profiles.add(temp);
             }
 
@@ -185,7 +187,11 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     @Override
     public ArrayList<String> getInterests(int id) {
         ArrayList<String> interests = new ArrayList<String>();
-
+        try {
+            interests = getUser(id).getInterests();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return interests;
     }
 
