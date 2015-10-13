@@ -44,7 +44,7 @@ public class MessageService extends Service implements SinchClientListener {
     }
 
     /**
-     * Starts the sinch client with the app secrets and the correct environment using the user id
+     * Starts the sinch client with the app secrets and the correct environment for the current user
      * @param username User id
      */
     public void startSinchClient(String username) {
@@ -103,7 +103,7 @@ public class MessageService extends Service implements SinchClientListener {
     }
 
     /**
-     * Send messages to client
+     * Send messages to client and save to database with the unique sinch_id
      * @param recipientUserId recipient
      * @param textBody message content
      */
@@ -128,6 +128,11 @@ public class MessageService extends Service implements SinchClientListener {
         }
     }
 
+    /**
+     * Adds messagelistener to the client which can later call the methods OnMessageSent and
+     * onIncomingMessage in MessagingFragment
+     * @param listener target listener
+     */
     public void addMessageClientListener(MessageClientListener listener){
         if(messageClient != null){
             Log.d(TAG, "Adding messageclientlistener");
@@ -148,7 +153,9 @@ public class MessageService extends Service implements SinchClientListener {
     }
 
 
-    //public interface for ListUsersActivity & MessagingFragment
+    /**
+     * Used to call the message service from MessagingFragment
+     */
     public class MessageServiceInterface extends Binder {
         public void sendMessage(String recipientUserId, String textBody) {
             MessageService.this.sendMessage(recipientUserId, textBody);
