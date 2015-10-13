@@ -36,37 +36,40 @@ import java.util.Arrays;
 public class FacebookLogin extends Activity {
     LoginButton loginButton;
     CallbackManager callbackManager;
+    public static final String TAG = "FacebookLogin";
 
-    private boolean userExists;
+    private Boolean userExists;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         userExists = false;
-        Log.d("FacebookLogin", "FacebookLogin activity started");
+        Log.d(TAG, "FacebookLogin activity started");
 
         //initialize facebook sdk
         FacebookSdk.sdkInitialize(getApplicationContext());
-        Log.d("FacebookLogin", "Facebook sdk initialized");
+        Log.d(TAG, "Facebook sdk initialized");
 
-        Log.i("FacebookLogin","Tries to log in with previous user...");
+        Log.i(TAG,"Tries to log in with previous user...");
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("user_likes"));
 
         //Check if logged in, if tre, starts main activity
         if(AccessToken.getCurrentAccessToken() != null) {
-            Log.d("FacebookLogin", "User logged in sucessfully");
+            Log.d(TAG, "User logged in sucessfully");
             addUserIfNotExists();
-            while(!userExists){
+            synchronized (userExists) {
+            while(!userExists) {
                 try {
-                    Thread.sleep(10);
+                    userExists.wait(10);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+            }
             }
             if(userExists) {
                 startMainActivity();
             }
         } else {
-            Log.d("FacebookLogin","Could not log in previous user, will now show facebooklogin...");
+            Log.d(TAG, "Could not log in previous user, will now show facebooklogin...");
         }
 
         setContentView(R.layout.activity_facebook_login);
@@ -76,29 +79,31 @@ public class FacebookLogin extends Activity {
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Log.d("FacebookActivity", "Login sucessful");
+                Log.d(TAG, "Login sucessful");
                 addUserIfNotExists();
-                while(!userExists){
-                    try {
-                        Thread.sleep(10);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                synchronized (userExists) {
+                    while (!userExists) {
+                        try {
+                            userExists.wait(10);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-                if(userExists) {
-                    startMainActivity();
+                    if (userExists) {
+                        startMainActivity();
+                    }
                 }
             }
 
             @Override
             public void onCancel() {
-                Log.d("FacebookActivity", "login cancelled");
+                Log.d(TAG, "login cancelled");
                 Toast.makeText(getApplicationContext(), "Facebook login interrupted", Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onError(FacebookException e) {
-                Log.d("FacebookActivity", "FacebookLogin error");
+                Log.d(TAG, "FacebookLogin error");
                 Toast.makeText(getApplicationContext(), "There was an error, please try again", Toast.LENGTH_LONG).show();
 
             }
@@ -110,24 +115,26 @@ public class FacebookLogin extends Activity {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                long  fb_id = Long.parseLong(AccessToken.getCurrentAccessToken().getUserId());
-                Profile user = null;
+                synchronized (userExists) {
+                    long fb_id = Long.parseLong(AccessToken.getCurrentAccessToken().getUserId());
+                    Profile user = null;
 
-                try {
-                    user = JdbcDatabaseHandler.getInstance(fb_id).getUserFromFBID(fb_id);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+                    try {
+                        user = JdbcDatabaseHandler.getInstance(fb_id).getUserFromFBID(fb_id);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
 
-                FacebookParser parser = new FacebookParser();
-                if(user == null){
-                    Log.d("LOGIN", "User doesn't exist, creating user..");
-                    JdbcDatabaseHandler.getInstance().addUser(parser.getNameFromFacebookId(fb_id), fb_id, parser.getLikeListFromFacebookId(fb_id));
-                    userExists = true;
-                    return;
-                }else{
-                    userExists = true;
-                    return;
+                    FacebookParser parser = new FacebookParser();
+                    if (user == null) {
+                        Log.d(TAG, "User doesn't exist, creating user..");
+                        JdbcDatabaseHandler.getInstance().addUser(parser.getNameFromFacebookId(fb_id), fb_id, parser.getLikeListFromFacebookId(fb_id));
+                        userExists = true;
+                        return;
+                    } else {
+                        userExists = true;
+                        return;
+                    }
                 }
             }
         });
