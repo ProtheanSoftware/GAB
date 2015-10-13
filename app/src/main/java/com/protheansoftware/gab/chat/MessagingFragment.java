@@ -84,12 +84,7 @@ public class MessagingFragment extends Fragment {
         dbh = JdbcDatabaseHandler.getInstance();
         messageClientListener = new SinchMessageClientListener();
 
-
-        try {
-            currentUserId = String.valueOf(dbh.getMyId());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        currentUserId = String.valueOf(dbh.getMyId());
     }
 
     @Override

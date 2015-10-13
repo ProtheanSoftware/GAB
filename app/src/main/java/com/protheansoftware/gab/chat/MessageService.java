@@ -35,11 +35,8 @@ public class MessageService extends Service implements SinchClientListener {
         if(dbh == null){
             this.setDbh(JdbcDatabaseHandler.getInstance());
         }
-        try {
-            currentUserId = String.valueOf(dbh.getMyId());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        currentUserId = String.valueOf(dbh.getMyId());
+
         if(currentUserId != null && !isSinchClientStarted()){
             startSinchClient(currentUserId);
         }
