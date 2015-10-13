@@ -34,6 +34,12 @@ public class MessageAdapter extends BaseAdapter {
         messages = new ArrayList<Pair<WritableMessage, Integer>>();
     }
 
+    /**
+     * Adds message to the message with a direction I.E if recieved or sent(left vs right) list,
+     * notify frontend
+     * @param message Target message
+     * @param direction Direction, using DIRECTION_INCOMING or DIRECTION_OUTGOING
+     */
     public void addMessage(WritableMessage message, int direction){
         Log.d(TAG, "Adding message to adapater");
         messages.add(new Pair(message,direction));
@@ -85,17 +91,14 @@ public class MessageAdapter extends BaseAdapter {
 
         return convertView;
     }
+
+    /**
+     * Gets the latest sent message, perfect when you want to check who this chat belonged to.
+     * @return Latest message with direction outgoing
+     */
     public Pair<WritableMessage, Integer> getLatestSentMessage(){
         for(Pair<WritableMessage, Integer> temp : messages){
             if(temp.second == DIRECTION_OUTGOING){
-                return temp;
-            }
-        }
-        return null;
-    }
-    public Pair<WritableMessage, Integer> getLatestRecievedMessage(){
-        for(Pair<WritableMessage, Integer> temp : messages){
-            if(temp.second == DIRECTION_INCOMING){
                 return temp;
             }
         }
