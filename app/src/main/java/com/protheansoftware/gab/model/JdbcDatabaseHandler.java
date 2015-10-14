@@ -567,7 +567,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
                     "AND `reciever_id` ="+getMyId()+" " +
                     "ORDER BY message_id DESC LIMIT 0, 30;");
             while (rs.next()){
-                Message temp = new Message(rs.getInt("message_id"),rs.getInt("sender_id"), rs.getInt("reciever_id"), rs.getString("message"));
+                Message temp = new Message(rs.getInt("message_id"),rs.getInt("sender_id"), rs.getInt("reciever_id"), rs.getString("message"), rs.getString("sinch_id"));
                 messages.add(temp);
             }
 
@@ -671,51 +671,5 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
                 lgr.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
-    }
-    public boolean messagesContains(String sinch_id){
-
-        ArrayList<Message> messages = new ArrayList<Message>();
-
-        Connection con = null;
-        PreparedStatement pstatement = null;
-
-        String url = "jdbc:mysql://" + Secrets.DB_IP + "/gab";
-        String user = Secrets.DB_USER;
-        String password = Secrets.DB_PASSWORD;
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (Exception ex) {
-            System.err.println(ex.getMessage());
-        }
-
-        try{
-            con = DriverManager.getConnection(url, user, password);
-
-            pstatement = con.prepareStatement("SELECT * FROM `t_messages` WHERE `sinch_id` = ? LIMIT 0, 30");
-            pstatement.setString(1, sinch_id);
-            ResultSet rs = pstatement.executeQuery();
-            while (rs.next()){
-                Message temp = new Message(rs.getInt("message_id"),rs.getInt("sender_id"), rs.getInt("reciever_id"), rs.getString("message"));
-                messages.add(temp);
-            }
-
-        }catch (SQLException ex){
-            Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
-            lgr.log(Level.SEVERE, ex.getMessage(), ex);
-        }finally {
-            try {
-                if(pstatement != null){
-                    pstatement.close();
-                }
-                if (con != null) {
-                    con.close();
-                }
-
-            } catch (SQLException ex) {
-                Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
-                lgr.log(Level.SEVERE, ex.getMessage(), ex);
-            }
-        }
-        return messages.size()>0;
     }
 }

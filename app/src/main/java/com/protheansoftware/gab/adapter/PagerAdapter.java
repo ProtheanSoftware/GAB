@@ -17,6 +17,8 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     boolean hasMatches = false;
     Main2Activity main;
     MatchScreenFragment matchScreenFragment;
+    MessagingFragment messagingFragment;
+    MatchesListFragment matchesListFragment;
 
     public PagerAdapter(FragmentManager fm, int NumOfTabs, Main2Activity main) {
         super(fm);
@@ -36,15 +38,18 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                     matchScreenFragment = new MatchScreenFragment();
                     matchScreenFragment.setMain(main);
                 }
-                    return matchScreenFragment;
-
+                return matchScreenFragment;
             case 1:
-                MatchesListFragment tab2 = new MatchesListFragment();
-                tab2.setMain(main);
-                return tab2;
+                if(matchesListFragment == null) {
+                    matchesListFragment = new MatchesListFragment();
+                    matchesListFragment.setMain(main);
+                }
+                return matchesListFragment;
             case 2:
-                MessagingFragment tab3 = new MessagingFragment();
-                return tab3;
+                if(messagingFragment == null){
+                    messagingFragment = new MessagingFragment();
+                }
+                return messagingFragment;
             default:
                 return null;
         }

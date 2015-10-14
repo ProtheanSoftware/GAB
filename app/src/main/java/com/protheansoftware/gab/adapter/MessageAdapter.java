@@ -10,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import android.widget.Toast;
+import com.sinch.android.rtc.messaging.Message;
 import com.sinch.android.rtc.messaging.WritableMessage;
 
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class MessageAdapter extends BaseAdapter {
     public void addMessage(WritableMessage message, int direction){
         Log.d(TAG, "Adding message to adapater");
         messages.add(new Pair(message,direction));
+        Log.d(TAG, message.getMessageId());
         notifyDataSetChanged();
     }
     @Override
@@ -103,5 +105,12 @@ public class MessageAdapter extends BaseAdapter {
             }
         }
         return null;
+    }
+
+    public boolean contains(Message message) {
+        for(Pair<WritableMessage, Integer> temp : messages){
+            if(message.getMessageId() == temp.first.getMessageId()) return true;
+        }
+        return false;
     }
 }

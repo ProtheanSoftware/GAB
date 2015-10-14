@@ -8,13 +8,14 @@ public class Message {
     private int senderId;
     private int recieverId;
     private String message;
-
-    public Message(int id, int senderId, int recieverId, String message){
+    private String sinchID;
+    public Message(int id, int senderId, int recieverId, String message, String sinchID){
         this.id = id;
 
         this.senderId = senderId;
         this.recieverId = recieverId;
         this.message = message;
+        this.sinchID = sinchID;
     }
 
     public int getId() {
@@ -31,5 +32,9 @@ public class Message {
 
     public String getMessage() {
         return message;
+    }
+
+    public String getSinchID() {
+        return sinchID;
     }
 }

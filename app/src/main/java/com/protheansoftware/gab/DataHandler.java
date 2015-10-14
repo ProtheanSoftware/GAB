@@ -20,13 +20,17 @@ public class DataHandler {
     private ArrayList<Profile> matches = new ArrayList<Profile>();
     private Profile me;
     private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    private StrictMode.ThreadPolicy oldPolicy;
 
     /**
      * Initializes the DataHandler
      */
     public void init() {
         //Fix for mysql(jdbc)
+        //Mysql cannot be reached through threads using the default threadpolicy
+        //Here we save the oldpolicy so as to not change any settings on the device by mistake
         if (android.os.Build.VERSION.SDK_INT > 9) {
+            oldPolicy = StrictMode.getThreadPolicy();
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
@@ -139,6 +143,8 @@ public class DataHandler {
         return JdbcDatabaseHandler.getInstance().getMyId();
     }
 
-
+    public void destroy(){
+        StrictMode.setThreadPolicy(oldPolicy);
+    }
 
 }

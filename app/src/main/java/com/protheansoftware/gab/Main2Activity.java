@@ -163,4 +163,10 @@ public class Main2Activity extends AppCompatActivity implements PropertyChangeLi
 
         viewPager.setCurrentItem(2);
     }
+
+    @Override
+    protected void onDestroy() {
+        handler.destroy();
+        super.onDestroy();
+    }
 }
