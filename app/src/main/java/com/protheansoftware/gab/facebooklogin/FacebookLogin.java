@@ -20,9 +20,8 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
-import com.protheansoftware.gab.MainActivity;
+import com.protheansoftware.gab.Main2Activity;
 import com.protheansoftware.gab.R;
-import com.protheansoftware.gab.model.IDatabaseHandler;
 import com.protheansoftware.gab.model.JdbcDatabaseHandler;
 import com.protheansoftware.gab.model.Profile;
 import org.json.JSONArray;
@@ -152,7 +151,7 @@ public class FacebookLogin extends Activity {
      * Starts the main activity is user successfully logged in to facebook.
      */
     public void startMainActivity() {
-        Intent mainActivity = new Intent(this,MainActivity.class);
+        Intent mainActivity = new Intent(this,Main2Activity.class);
         startActivity(mainActivity);
     }
 

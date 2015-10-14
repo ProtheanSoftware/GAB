@@ -67,7 +67,8 @@
 
         <Button
             android:id="@+id/dislikeButton"
-            style="@style/btndislike"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_centerVertical="true"
             android:background="@drawable/dislike" />
     </RelativeLayout>
@@ -79,7 +80,8 @@
 
         <Button
             android:id="@+id/likeButton"
-            style="@style/btnlike"
+            android:layout_height="100dp"
+            android:layout_width="100dp"
             android:background="@drawable/like" />
 
 

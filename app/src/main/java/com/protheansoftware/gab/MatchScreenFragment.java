@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.telephony.CellLocation;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,8 @@ import com.protheansoftware.gab.model.BusHandler;
 import com.protheansoftware.gab.model.JdbcDatabaseHandler;
 import com.protheansoftware.gab.model.Profile;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -24,16 +27,20 @@ import java.util.ArrayList;
  * Shows the different matches retrieved
  */
 public class MatchScreenFragment extends Fragment implements View.OnClickListener {
+    public static final String TAG = "MatchScreen";
     private JdbcDatabaseHandler jdb = JdbcDatabaseHandler.getInstance();
     private BusHandler bh = BusHandler.getInstance();
     private TelephonyManager telephonyManager;
-    // list of matches
     private ArrayList<Profile> matches;
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
+
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
     }
     public void setMatches(ArrayList<Profile> matches) {
@@ -43,9 +50,10 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setPotentialMatches();
-        View rootView = inflater.inflate(R.layout.fragment_match_screen,container,false);
-        return rootView;
+            View rootView = inflater.inflate(R.layout.fragment_match_screen, container, false);
+            return rootView;
+
+
     }
 
 
@@ -53,14 +61,14 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     @Override
     public void onResume() {
         super.onResume();
-
-        bh.startSessionIfNeeded(this.getContext(), (GsmCellLocation) telephonyManager.getCellLocation());
+//        bh.startSessionIfNeeded(this.getContext(), (GsmCellLocation) telephonyManager.getCellLocation());
     }
 
     //Fills out the fragment with the match.
     public void setMatch(final Profile match){
-        ((TextView)getActivity().findViewById(R.id.nameTag)).setText(match.getName());
-        ListView list = (ListView)getActivity().findViewById(R.id.centerContentList);
+        Log.d(TAG,Boolean.toString(getView()==null));
+        ((TextView)getView().findViewById(R.id.nameTag)).setText(match.getName());
+        ListView list = (ListView)getView().findViewById(R.id.centerContentList);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,match.getInterests());
         list.setAdapter(adapter);
 
@@ -80,6 +88,14 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
         });
     }
 
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        this.pcs.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        this.pcs.removePropertyChangeListener(listener);
+    }
+
 
     /**
      * Loads the next match in the list
@@ -88,7 +104,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     private void loadNextMatch(Profile currentMatch) {
         this.matches.remove(currentMatch);
         if(matches.isEmpty()) {
-            //notify main to change view
+            pcs.firePropertyChange("No matches",null,null);
         } else {
             setMatch(this.matches.get(0));
         }
@@ -115,13 +131,6 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Sets  the list of potential matches
-     */
-    public void setPotentialMatches() {
-
     }
 
     @Override

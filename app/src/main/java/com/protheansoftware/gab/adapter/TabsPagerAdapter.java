@@ -42,7 +42,7 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
         switch(i) {
             case 0:
                 return fragments.get(0);
-            case 11:
+            case 4:
                 return fragments.get(1);
             case 1:
                 return fragments.get(2);

@@ -38,6 +38,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     //Reference to matchscreen to be able to build with user profile
     private MatchScreenFragment match;
+    private SearchforMatches matchSearch;
     private String name;
 
     //Tab titles
@@ -46,7 +47,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getActionBar().setDisplayShowTitleEnabled(false);
+        //getActionBar().setDisplayShowTitleEnabled(false);
         setContentView(R.layout.activity_tabbed);
 
 
@@ -62,7 +63,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             e.printStackTrace();
             Log.e(TAG, "Could not generate me match");
         }
+
+
         initTabStructure();
+
+
 
 
 
@@ -99,7 +104,19 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
             @Override
             public void onPageSelected(int position) {
-                if (position == 2) {
+                if(position == 0) {
+                    match = (MatchScreenFragment) tabsAdapter.getItem(0);
+                    if(matches.isEmpty()) {
+                       // searchForMatches();
+
+
+                    }else {
+                        sortMatches(matches);
+                        match.setMatches(matches);
+                    }
+
+                }
+               else if (position == 2) {
                     Log.d(TAG, "chat opened");
                     if (actionBar.getTabCount() == 3) {
                         actionBar.removeTabAt(2);
@@ -111,6 +128,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                     }
                     actionBar.addTab(actionBar.newTab().setText(recipient).setTabListener(MainActivity.this));
                 }
+                matches.add(new Profile(7,112,"ANders",new ArrayList<String>()));
                 actionBar.setSelectedNavigationItem(position);
             }
 
@@ -154,14 +172,27 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    matches = JdbcDatabaseHandler.getInstance().getMatches();
-                } catch (SQLException e) {
-                    e.printStackTrace();
+                synchronized (matches) {
+                    try {
+                        matches = JdbcDatabaseHandler.getInstance().getPotentialMatches();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
         thread.run();
+        synchronized (matches) {
+            while (thread.isAlive()) {
+                try {
+                    matches.wait(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
     }
 
     /**
@@ -204,25 +235,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     //Returns the fragment for the specified tag
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-        if(tab.getPosition() == 0) {
-            if(matches.size() == 0) {
-                viewPager.setCurrentItem(11);
-                searchForMatches();
-            } else {
-                viewPager.setCurrentItem(tab.getPosition());
-                this.match = (MatchScreenFragment)tabsAdapter.getItem(0);
-                match.setMatches(matches);
-            }
-           // if(matches.isEmpty()) {
-           //     //returns searchformatches
-           //     viewPager.setCurrentItem(11);
-           //     searchForMatches();
-           // } else {
-           //     viewPager.setCurrentItem(tab.getPosition());
-           //     this.match = (MatchScreenFragment)tabsAdapter.getItem(0);
-           //     match.setmatches(matches);
-           // }
-        }
         viewPager.setCurrentItem(tab.getPosition());
     }
     @Override
