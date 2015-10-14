@@ -1,9 +1,11 @@
 package com.protheansoftware.gab;
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.telephony.CellLocation;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,13 +42,28 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        matches = new ArrayList<Profile>();
 
 
     }
+
+    /**
+     * Sets the list of matches
+     * @param matches
+     */
     public void setMatches(ArrayList<Profile> matches) {
         this.matches = matches;
-        setMatch(matches.get(0));
     }
+
+    /**
+     * Shows the first match
+     */
+    public void showMatches() {
+        if(matches.size() != 0) {
+            setMatch(matches.get(0));
+        }
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,6 +71,10 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
             return rootView;
 
 
+    }
+    public void onInflate(Activity activity, AttributeSet attrs, Bundle savedInstanceState) {
+        super.onInflate(activity,attrs,savedInstanceState);
+        showMatches();
     }
 
 

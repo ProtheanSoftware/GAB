@@ -1,11 +1,13 @@
 package com.protheansoftware.gab;
 
+import android.support.v4.app.*;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.protheansoftware.gab.adapter.PagerAdapter;
@@ -42,6 +44,7 @@ public class Main2Activity extends AppCompatActivity implements PropertyChangeLi
 
         adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
+        handler.addPropertyChangeListener(this);
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
@@ -49,10 +52,16 @@ public class Main2Activity extends AppCompatActivity implements PropertyChangeLi
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 if(tab.getPosition() == 0 && hasMatches) {
-                    matchScreen = (MatchScreenFragment)adapter.getItem(0);
-                    matchScreen.setMatches(handler.getMatches());
+                    if(adapter.getItem(tab.getPosition()) instanceof MatchScreenFragment) {
+                        matchScreen = (MatchScreenFragment) adapter.getItem(0);
+                        matchScreen.setMatches(handler.getMatches());
+                        viewPager.setCurrentItem(tab.getPosition());
+                    }
+                } else {
+                    searchFormatches();
                 }
                 viewPager.setCurrentItem(tab.getPosition());
+
             }
 
             @Override
@@ -62,6 +71,14 @@ public class Main2Activity extends AppCompatActivity implements PropertyChangeLi
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
+                if(tab.getPosition() == 0 && hasMatches) {
+                    adapter.setHasMatches(hasMatches);
+                    matchScreen = (MatchScreenFragment)adapter.getItem(0);
+                    matchScreen.setMatches(handler.getMatches());
+
+                } else {
+                    searchFormatches();
+                }
                 viewPager.setCurrentItem(tab.getPosition());
 
             }
@@ -94,9 +111,8 @@ public class Main2Activity extends AppCompatActivity implements PropertyChangeLi
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
         if(propertyChangeEvent.getPropertyName().equals("MatchList")) {
-            Log.d("Yellow","wallah");
             this.hasMatches = true;
-            adapter.setHasMatches(true);
+
         }
     }
 }

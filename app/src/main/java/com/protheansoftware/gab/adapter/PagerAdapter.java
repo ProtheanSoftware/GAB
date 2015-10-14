@@ -2,6 +2,7 @@ package com.protheansoftware.gab.adapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.util.Log;
 
 import com.protheansoftware.gab.MatchScreenFragment;
 import com.protheansoftware.gab.MatchesListFragment;
@@ -30,7 +31,8 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                     SearchforMatches searchforMatches = new SearchforMatches();
                     return searchforMatches;
                 } else {
-                    return new MatchScreenFragment();
+                    MatchScreenFragment matchScreenFragment = new MatchScreenFragment();
+                    return matchScreenFragment;
                 }
             case 1:
                 MatchesListFragment tab2 = new MatchesListFragment();

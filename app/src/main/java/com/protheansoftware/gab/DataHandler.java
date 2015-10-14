@@ -60,7 +60,11 @@ public class DataHandler {
             @Override
             public void run() {
                 synchronized (matches) {
-                        matches.add(new Profile(7,1,"Karl",new ArrayList<String>()));
+                    try {
+                        matches= JdbcDatabaseHandler.getInstance().getPotentialMatches();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
 
                 }
             }
@@ -73,6 +77,9 @@ public class DataHandler {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+            }
+            for(Profile p: matches) {
+                Log.d("Match", p.getName());
             }
             if(matches != null || matches.isEmpty()) {
                 sortMatches(matches);
