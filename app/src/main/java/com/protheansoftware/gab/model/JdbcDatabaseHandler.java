@@ -469,6 +469,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     public ArrayList<Profile> getPotentialMatches() throws SQLException {
         ArrayList<Profile> profiles = new ArrayList<Profile>();
         ArrayList<Profile> allUsers = selectFromUsers("SELECT * FROM `t_users` LIMIT 0 , 60;");
+        //getUsersOnBuss();
         for(Profile temp: allUsers){
             if(!userExistsInDislikes(temp)){
                 if(!userExistsInLikes(temp)){
@@ -671,5 +672,19 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
                 lgr.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
+    }
+
+    public ArrayList<Profile> getUsersOnBuss() {
+        Session my_session = getSessionSSIDByUserId(getMyId());
+        ArrayList<Profile> profiles =
+                selectFromUsers(
+                        "SELECT `t_users`.`user_id`, `t_users`.`name`, `t_users`.`fb_id`, `t_users`.`interests` " +
+                                "FROM `t_users`, `t_sessions` " +
+                                "WHERE (" +
+                                "`t_users`.`user_id` = `t_sessions`.`user_id` AND " +
+                                "`t_sessions`.`wifi` = '" + my_session.ssid + "')");
+
+        Log.i(TAG, "Profiles on network: "+profiles);
+        return profiles;
     }
 }
