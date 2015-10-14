@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.protheansoftware.gab.Main2Activity;
 import com.protheansoftware.gab.adapter.TabsPagerAdapter;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.messaging.Message;
@@ -132,6 +133,7 @@ public class MessagingFragment extends Fragment {
         messageAdapter = new MessageAdapter(getActivity());
         messagesList.setAdapter(messageAdapter);
     }
+    
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
@@ -165,16 +167,10 @@ public class MessagingFragment extends Fragment {
                                 messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_OUTGOING);
                             }
                         }
-                        return;
                     }
                 });
                 thread.run();
             }
-        }
-        if(!isVisibleToUser && viewCreated){
-            ViewPager pager = (ViewPager) getActivity().findViewById(R.id.pager);
-            ((TabsPagerAdapter)pager.getAdapter()).setCount(2);
-            getActivity().getActionBar().removeTabAt(2);
         }
     }
 

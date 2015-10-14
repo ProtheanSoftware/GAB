@@ -1,5 +1,6 @@
 package com.protheansoftware.gab;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -9,9 +10,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.protheansoftware.gab.adapter.PagerAdapter;
+import com.protheansoftware.gab.chat.MessageService;
+import com.protheansoftware.gab.chat.MessagingFragment;
+import com.protheansoftware.gab.model.JdbcDatabaseHandler;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.sql.SQLException;
 
 
 public class Main2Activity extends AppCompatActivity implements PropertyChangeListener{
@@ -21,6 +26,22 @@ public class Main2Activity extends AppCompatActivity implements PropertyChangeLi
     private boolean hasMatches = false;
     private MatchScreenFragment matchScreen;
 
+    private Intent serviceIntent;
+
+    private final String TAG = "MainActivity";
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        serviceIntent = new Intent(getApplicationContext(), MessageService.class);
+        startService(serviceIntent);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopService(serviceIntent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,15 +53,14 @@ public class Main2Activity extends AppCompatActivity implements PropertyChangeLi
         setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.app_name);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        final TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Matchescreen"));
         tabLayout.addTab(tabLayout.newTab().setText("Matches"));
-        tabLayout.addTab(tabLayout.newTab().setText("Chat"));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-         viewPager = (ViewPager) findViewById(R.id.pager);
+        viewPager = (ViewPager) findViewById(R.id.pager);
 
-        adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        adapter = new PagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount(), this);
         viewPager.setAdapter(adapter);
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -54,7 +74,6 @@ public class Main2Activity extends AppCompatActivity implements PropertyChangeLi
                 }
                 viewPager.setCurrentItem(tab.getPosition());
             }
-
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
 
@@ -62,8 +81,8 @@ public class Main2Activity extends AppCompatActivity implements PropertyChangeLi
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-
+                //viewPager.setCurrentItem(tab.getPosition());
+                Log.d(TAG, "Tab Reselected");
             }
         });
     }
@@ -98,5 +117,23 @@ public class Main2Activity extends AppCompatActivity implements PropertyChangeLi
             this.hasMatches = true;
             adapter.setHasMatches(true);
         }
+    }
+    public void openChat(){
+        adapter.setCount(3);
+        Log.d(TAG, "Chat opened");
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+
+        //If chat is already opened remove current and reload
+        if(tabLayout.getTabCount() == 3){
+            tabLayout.removeTabAt(2);
+        }
+        String recipient = "null";
+        try{
+            recipient = JdbcDatabaseHandler.getInstance().getUser(Integer.parseInt(MessagingFragment.getRecipientId())).getName();
+        }catch (SQLException e){
+        }
+        tabLayout.addTab(tabLayout.newTab().setText(recipient));
+
+        viewPager.setCurrentItem(2);
     }
 }

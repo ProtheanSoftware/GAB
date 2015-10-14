@@ -3,19 +3,23 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import com.protheansoftware.gab.Main2Activity;
 import com.protheansoftware.gab.MatchScreenFragment;
 import com.protheansoftware.gab.MatchesListFragment;
 import com.protheansoftware.gab.SearchforMatches;
 import com.protheansoftware.gab.TabFragment2;
 import com.protheansoftware.gab.TabFragment3;
+import com.protheansoftware.gab.chat.MessagingFragment;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
     int mNumOfTabs;
     boolean hasMatches = false;
+    Main2Activity main;
 
-    public PagerAdapter(FragmentManager fm, int NumOfTabs) {
+    public PagerAdapter(FragmentManager fm, int NumOfTabs, Main2Activity main) {
         super(fm);
         this.mNumOfTabs = NumOfTabs;
+        this.main = main;
     }
     public void setHasMatches(boolean value) {
         hasMatches = value;
@@ -34,9 +38,10 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 }
             case 1:
                 MatchesListFragment tab2 = new MatchesListFragment();
+                tab2.setMain(main);
                 return tab2;
             case 2:
-                TabFragment3 tab3 = new TabFragment3();
+                MessagingFragment tab3 = new MessagingFragment();
                 return tab3;
             default:
                 return null;
@@ -46,5 +51,9 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         return mNumOfTabs;
+    }
+    public void setCount(int i){
+        this.mNumOfTabs = i;
+        notifyDataSetChanged();
     }
 }
