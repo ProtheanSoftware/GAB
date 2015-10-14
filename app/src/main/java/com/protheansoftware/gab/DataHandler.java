@@ -51,9 +51,6 @@ public class DataHandler {
      */
     public void searchForMatches() {
         Log.d(TAG,"Searching for matches...");
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
 
         //Start session and search for matches
         Thread thread = new Thread(new Runnable() {
@@ -78,20 +75,18 @@ public class DataHandler {
                     e.printStackTrace();
                 }
             }
-            for(Profile p: matches) {
-                Log.d("Match", p.getName());
-            }
-            if(matches != null || matches.isEmpty()) {
+            if(matches == null || matches.isEmpty()) {
+                pcs.firePropertyChange("NoMatches",null,null);
+            } else {
                 sortMatches(matches);
                 pcs.firePropertyChange("MatchList",null,matches);
             }
 
-        }
-            }
-        });
-        t.start();
 
+        }
     }
+
+
 
     /**
      * Returns the matches

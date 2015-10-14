@@ -51,22 +51,10 @@ public class FacebookLogin extends Activity {
         Log.i(TAG,"Tries to log in with previous user...");
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("user_likes"));
 
-        //Check if logged in, if tre, starts main activity
+        //Check if logged in, if true, starts main activity
         if(AccessToken.getCurrentAccessToken() != null) {
             Log.d(TAG, "User logged in sucessfully");
-            addUserIfNotExists();
-            synchronized (userExists) {
-            while(!userExists) {
-                try {
-                    userExists.wait(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            }
-            if(userExists) {
-                startMainActivity();
-            }
+            checkLoginAndStart();
         } else {
             Log.d(TAG, "Could not log in previous user, will now show facebooklogin...");
         }
@@ -79,19 +67,7 @@ public class FacebookLogin extends Activity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG, "Login sucessful");
-                addUserIfNotExists();
-                synchronized (userExists) {
-                    while (!userExists) {
-                        try {
-                            userExists.wait(10);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    if (userExists) {
-                        startMainActivity();
-                    }
-                }
+                checkLoginAndStart();
             }
 
             @Override
@@ -110,6 +86,28 @@ public class FacebookLogin extends Activity {
         });
     }
 
+    /**
+     * Waits with starting the main application until we have confirmed the user
+     * exists.
+     */
+    private void checkLoginAndStart() {
+        addUserIfNotExists();
+        synchronized (userExists) {
+            while(!userExists) {
+                try {
+                    userExists.wait(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        startMainActivity();
+    }
+
+    /**
+     * Checks if the user exists in database with Facebook id from Facebook SDK
+     * Flags userExists true when done, either done adding or done checking if exists
+     */
     private void addUserIfNotExists() {
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -148,7 +146,7 @@ public class FacebookLogin extends Activity {
 
 
     /**
-     * Starts the main activity is user successfully logged in to facebook.
+     * Starts the main activity.
      */
     public void startMainActivity() {
         Intent mainActivity = new Intent(this,Main2Activity.class);
@@ -180,7 +178,6 @@ public class FacebookLogin extends Activity {
     class FacebookParser {
         /**
          * Returns an array of things that the user with the specified id has liked on facebook.
-         *
          * @param fbId
          * @return
          */
@@ -229,7 +226,6 @@ public class FacebookLogin extends Activity {
 
         /**
          * Returns the name of the user with the specified facebook id.
-         *
          * @param fbId
          * @return
          */

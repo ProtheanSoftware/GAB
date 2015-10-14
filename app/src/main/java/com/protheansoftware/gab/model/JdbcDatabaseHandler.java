@@ -3,6 +3,7 @@ package com.protheansoftware.gab.model;
 
 import android.util.Log;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -21,31 +22,47 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
 
     public static final String TAG = "MYSQLDBH";
 
-
+    /**
+     * Initializes the JdbcDatabaseHandler singleton using the fb_id, the id is set since we call getMyId on
+     * several other methods in this class this will increase performance slightly
+     * @param fb_id The Facebook ID of the user
+     */
     private JdbcDatabaseHandler(long fb_id){
         my_fb_id = fb_id;
         myId = -1;
         Log.d(TAG, "Setting id..");
-        try {
-            myId = getMyId();
-        } catch (SQLException e) {
-        }
-        Log.d(TAG, "You id is: " + myId);
+        myId = getMyId();
+        Log.d(TAG, "Your id is: " + myId);
     }
 
+    /**
+     * Gets the instance of the JdbcDatabaseHandler, the fb_id here is only handled once since the second time
+     * this method is called it will simply return the instance,
+     * @param fb_id The Facebook ID of the user
+     * @return instance of JdbcDatabaseHandler
+     */
     public static JdbcDatabaseHandler getInstance(long fb_id){
         if(instance == null){
             instance = new JdbcDatabaseHandler(fb_id);
         }
         return instance;
     }
+    /**
+     * Possibly bad practice but since we have called getInstance(fb_id) in facebooklogin, where we make sure the user
+     * exists and nothing is out of the ordinary, this will be a sufficient solution for now.
+     */
     public static JdbcDatabaseHandler getInstance(){
-        //if(instance == null){
-        //    instance = new JdbcDatabaseHandler();
-        //}
+        if(instance == null){
+            throw new NullPointerException("Your facebook id has not been set, something has gone horribly wrong");
+        }
         return instance;
     }
 
+    /**
+     * Helper method to get from likes using a query
+     * @param query MySQL Query
+     * @return ArrayList of Likes, data model for handling of likes.
+     */
     private ArrayList<Like> selectFromLikes(String query){
         ArrayList<Like> likes = new ArrayList<Like>();
 
@@ -93,6 +110,11 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         return likes;
     }
 
+    /**
+     * Helper method to get users using query
+     * @param query MySQL Query
+     * @return ArrayList of Profiles
+     */
     private ArrayList<Profile> selectFromUsers(String query){
         ArrayList<Profile> profiles = new ArrayList<Profile>();
 
@@ -116,7 +138,8 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
             ResultSet rs = statement.executeQuery(query);
             Gson gson = new Gson();
             while (rs.next()){
-                Profile temp = new Profile(rs.getInt("user_id"), rs.getLong("fb_id"), rs.getString("name"), gson.fromJson(rs.getString("interests"), new ArrayList<String>().getClass()));
+                ArrayList<String> interests = gson.fromJson(rs.getString("interests"), new TypeToken<ArrayList<String>>() {}.getType());
+                Profile temp = new Profile(rs.getInt("user_id"), rs.getLong("fb_id"), rs.getString("name"), interests);
                 profiles.add(temp);
             }
 
@@ -185,12 +208,16 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     @Override
     public ArrayList<String> getInterests(int id) {
         ArrayList<String> interests = new ArrayList<String>();
-
+        try {
+            interests = getUser(id).getInterests();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return interests;
     }
 
     @Override
-    public int getMyId() throws SQLException {
+    public int getMyId() {
         int user_id = -1;
         if(myId != -1){
             return myId;
@@ -453,16 +480,11 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     }
 
     private boolean userExistsInLikes(Profile user) {
-        try {
-            ArrayList<Like> myLikes = selectFromLikes("SELECT * FROM `t_likes` WHERE `origin_id`= " + getMyId() + " LIMIT 0 , 30;");
-            for(Like temp: myLikes){
-                if(temp.getLikeId() == user.getDatabaseId()){
-                    return true;
-                }
+        ArrayList<Like> myLikes = selectFromLikes("SELECT * FROM `t_likes` WHERE `origin_id`= " + getMyId() + " LIMIT 0 , 30;");
+        for(Like temp: myLikes){
+            if(temp.getLikeId() == user.getDatabaseId()){
+                return true;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
         }
 
         return false;

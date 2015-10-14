@@ -1,5 +1,6 @@
 package com.protheansoftware.gab;
 
+import android.os.PersistableBundle;
 import android.util.Log;
 
 import android.content.Intent;
@@ -71,18 +72,14 @@ public class Main2Activity extends AppCompatActivity implements PropertyChangeLi
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                if(tab.getPosition() == 0 && hasMatches) {
-                    if(adapter.getItem(tab.getPosition()) instanceof MatchScreenFragment) {
-                        matchScreen = (MatchScreenFragment) adapter.getItem(0);
-                        matchScreen.setMatches(handler.getMatches());
-                        viewPager.setCurrentItem(tab.getPosition());
-                    }
-                } else {
-                    searchFormatches();
+                if (tab.getPosition() == 0) {
+                    matchScreen = (MatchScreenFragment) adapter.getItem(0);
+                    matchScreen.setMain(Main2Activity.this);
                 }
                 viewPager.setCurrentItem(tab.getPosition());
 
             }
+
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
 
@@ -90,9 +87,10 @@ public class Main2Activity extends AppCompatActivity implements PropertyChangeLi
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-                if(tab.getPosition() == 0 ){
-                    matchScreen = (MatchScreenFragment)adapter.getItem(0);
-                    if(!hasMatches) {
+                if (tab.getPosition() == 0) {
+                    matchScreen = (MatchScreenFragment) adapter.getItem(0);
+                    matchScreen.setMain(Main2Activity.this);
+                    if (!hasMatches) {
                         searchFormatches();
                     }
                 }
@@ -107,7 +105,7 @@ public class Main2Activity extends AppCompatActivity implements PropertyChangeLi
     /**
      * Tells datahandler to search for matches
      */
-    private void searchFormatches() {
+    public void searchFormatches() {
         handler.searchForMatches();
     }
 
@@ -130,9 +128,21 @@ public class Main2Activity extends AppCompatActivity implements PropertyChangeLi
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
         if(propertyChangeEvent.getPropertyName().equals("MatchList")) {
+            Log.d("Swag","hello");
             this.hasMatches = true;
-            matchScreen.set();
+            if(matchScreen == null) {
+                matchScreen = (MatchScreenFragment)adapter.getItem(0);
+            }
+            matchScreen.setMatches(handler.getMatches());
+            matchScreen.setHasMatches();
 
+
+        }
+        if(propertyChangeEvent.getPropertyName().equals("NoMatches")) {
+            if(matchScreen == null) {
+                matchScreen = (MatchScreenFragment)adapter.getItem(0);
+            }
+            matchScreen.setNoMatches();
         }
     }
     public void openChat(){

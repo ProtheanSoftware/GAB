@@ -76,7 +76,7 @@ public class MessagingFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Initialize base items for messaging functionality
+
         viewCreated = false;
 
         Log.d(TAG, "Initializing messagefragment");
@@ -85,12 +85,7 @@ public class MessagingFragment extends Fragment {
         dbh = JdbcDatabaseHandler.getInstance();
         messageClientListener = new SinchMessageClientListener();
 
-
-        try {
-            currentUserId = String.valueOf(dbh.getMyId());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        currentUserId = String.valueOf(dbh.getMyId());
     }
 
     @Override
@@ -137,40 +132,48 @@ public class MessagingFragment extends Fragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-
         if(isVisibleToUser){
             Log.d(TAG, "Switched to chat");
-            ListView list = (ListView)getActivity().findViewById(R.id.listMessages);
+            fillChatIfNeeded();
+        }
+    }
 
-            //check of i should empty messages(i.e if recipient id is same of conversation)
-            Pair<WritableMessage, Integer> latestSentMessage  = ((MessageAdapter)list.getAdapter()).getLatestSentMessage();
-            Pair<WritableMessage, Integer> latestRecievedMessage = ((MessageAdapter)list.getAdapter()).getLatestRecievedMessage();
-            if(latestSentMessage != null && latestSentMessage.first.getRecipientIds().contains(recipientId)){
-                Log.d(TAG, "chat is same as before");
-            }else {
-                list.setAdapter(null);
-                messageAdapter = new MessageAdapter(getActivity());
-                list.setAdapter(messageAdapter);
-            }
-            //Read messages from database
-            if(messageAdapter.isEmpty()) {
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ArrayList<com.protheansoftware.gab.model.Message> messages = dbh.getConversation(Integer.parseInt(recipientId));
-                        messages = sortDescID(messages);
-                        for (com.protheansoftware.gab.model.Message m : messages) {
-                            WritableMessage writableMessage = new WritableMessage(String.valueOf(m.getId()), m.getMessage());
-                            if (Integer.parseInt(currentUserId) == m.getRecieverId()) {
-                                messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_INCOMING);
-                            } else {
-                                messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_OUTGOING);
-                            }
+    /**
+     * Empties and refills the chat if the recipient has been switched
+     *
+     */
+    private void fillChatIfNeeded() {
+        ListView list = (ListView)getActivity().findViewById(R.id.listMessages);
+
+        //check if should empty messages(i.e if recipient id is same of conversation)
+        Pair<WritableMessage, Integer> latestSentMessage  = ((MessageAdapter)list.getAdapter()).getLatestSentMessage();
+        if(latestSentMessage != null && latestSentMessage.first.getRecipientIds().contains(recipientId)){
+            Log.d(TAG, "chat is same as before");
+        }else {
+            //Empty chat
+            list.setAdapter(null);
+            messageAdapter = new MessageAdapter(getActivity());
+            list.setAdapter(messageAdapter);
+        }
+        //Read messages from database, fill out chat.
+        if(messageAdapter.isEmpty()) {
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    ArrayList<com.protheansoftware.gab.model.Message> messages = dbh.getConversation(Integer.parseInt(recipientId));
+                    messages = sortDescID(messages);
+                    for (com.protheansoftware.gab.model.Message m : messages) {
+                        WritableMessage writableMessage = new WritableMessage(String.valueOf(m.getId()), m.getMessage());
+                        if (Integer.parseInt(currentUserId) == m.getRecieverId()) {
+                            messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_INCOMING);
+                        } else {
+                            messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_OUTGOING);
                         }
                     }
-                });
-                thread.run();
-            }
+                    return;
+                }
+            });
+            thread.run();
         }
     }
 
@@ -197,6 +200,10 @@ public class MessagingFragment extends Fragment {
         return messages;
     }
 
+    /**
+     * Needed to listen to when the service has been connected so we can start listening
+     * for messages.
+     */
     private class MyServiceConnection implements ServiceConnection {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -211,13 +218,18 @@ public class MessagingFragment extends Fragment {
         }
     }
 
+    /**
+     * Does all the "frontend" for chat aswell as calls the backend to add messags
+     */
     private class SinchMessageClientListener implements MessageClientListener {
         @Override
         public void onIncomingMessage(MessageClient messageClient, final Message message) {
-            //Display message if the list doesn't already have the message displayed
-            //This is required for sinch, sinch will try to redeliver all undelivered messages
-            //Since we also save in a mysqldatabase for message history these two will both get
-            //the same messages
+            /**
+             * Display message if the list doesn't already have the message displayed
+             * This is required for sinch, sinch will try to redeliver all undelivered messages
+             * Since we also save in a mysqldatabase for message history these two will both get
+             * the same messages
+             */
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {

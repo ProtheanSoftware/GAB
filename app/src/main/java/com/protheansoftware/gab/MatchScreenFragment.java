@@ -1,11 +1,8 @@
 package com.protheansoftware.gab;
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.telephony.CellLocation;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,8 +32,10 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     private TelephonyManager telephonyManager;
     private ArrayList<Profile> matches;
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+    Main2Activity main;
 
 
+    private Thread updateWhenDoorsOpenedThread;
 
 
     @Override
@@ -46,6 +45,9 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
 
 
     }
+    public void setMain(Main2Activity main) {
+        this.main = main;
+    }
 
     /**
      * Sets the list of matches
@@ -53,32 +55,65 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
      */
     public void setMatches(ArrayList<Profile> matches) {
         this.matches = matches;
+        setMatch(matches.get(0));
     }
 
     /**
-     * Shows the first match
+     * Is called if no matches could be retrieved from the server
      */
-    public void showMatches() {
-        if(matches.size() != 0) {
-            setMatch(matches.get(0));
-        }
+    public void setNoMatches() {
+        setMessage("KUnde ej hitta matchningar");
     }
-    public void set() {
-        getView().findViewById(R.id.searchScreen).setVisibility(View.GONE);
-        getView().findViewById(R.id.mainMatchScreen).setVisibility(View.VISIBLE);
+
+
+
+
+    public void setHasMatches() {
+        getActivity().findViewById(R.id.searchScreen).setVisibility(View.GONE);
+        getActivity().findViewById(R.id.mainMatchScreen).setVisibility(View.VISIBLE);
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_match_screen, container, false);
-            return rootView;
 
+        //Thread that, when the doors have been opened on your bus, reload our matches.
+        //If something goes wrong, wait 30 seconds before trying again
+        updateWhenDoorsOpenedThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                boolean waitLong = false;
+                boolean running = true;
+                int waitTime = 240000; // 24 sec
+                while(running) {
+                    try {
+                        if (waitLong) {
+                            Thread.sleep(waitTime * 2);
+                            waitLong = false;
+                        } else {
+                            Thread.sleep(waitTime);
+                        }
+                    }catch (InterruptedException e){
 
-    }
-    public void onInflate(Activity activity, AttributeSet attrs, Bundle savedInstanceState) {
-        super.onInflate(activity,attrs,savedInstanceState);
-        showMatches();
+                    }
+                    try {
+                        if(!Thread.currentThread().isInterrupted()) {
+                            if (BusHandler.getInstance().hasDoorsOpened("171330", waitTime)) {
+                                //Searchmatches
+                                Log.d("MatchScreen", "SEARCHING MATCHES  GATES HAVE BEEN OPENED");
+                            }
+                        }else{
+                            running = false;
+                        }
+                    }catch (Exception e){
+                        waitLong = true;
+                    }
+                }
+            }
+        });
+        updateWhenDoorsOpenedThread.start();
+        View rootView = inflater.inflate(R.layout.fragment_match_screen,container,false);
+        return rootView;
     }
 
 
@@ -87,13 +122,17 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     public void onResume() {
         super.onResume();
 //        bh.startSessionIfNeeded(this.getContext(), (GsmCellLocation) telephonyManager.getCellLocation());
+        if(!updateWhenDoorsOpenedThread.isAlive()){
+            updateWhenDoorsOpenedThread.start();
+        }
+       // bh.startSessionIfNeeded(this.getContext(), (GsmCellLocation) telephonyManager.getCellLocation());
     }
 
     //Fills out the fragment with the match.
     public void setMatch(final Profile match){
-        Log.d(TAG,Boolean.toString(getView()==null));
-        ((TextView)getView().findViewById(R.id.nameTag)).setText(match.getName());
-        ListView list = (ListView)getView().findViewById(R.id.centerContentList);
+        Log.d(TAG, Boolean.toString(getView() == null));
+        ((TextView)getActivity().findViewById(R.id.nameTag)).setText(match.getName());
+        ListView list = (ListView)getActivity().findViewById(R.id.centerContentList);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,match.getInterests());
         list.setAdapter(adapter);
 
@@ -141,7 +180,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
      */
     public void dislike(int id, String name) {
         try {
-            JdbcDatabaseHandler.getInstance().addDislike(JdbcDatabaseHandler.getInstance().getUserFromFBID(id).getDatabaseId(), name);
+            JdbcDatabaseHandler.getInstance().addDislike(JdbcDatabaseHandler.getInstance().getUser(id).getDatabaseId(), name);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -152,10 +191,37 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
      */
     public void like(int id, String name){
         try {
-            JdbcDatabaseHandler.getInstance().addLike(JdbcDatabaseHandler.getInstance().getUserFromFBID(id).getDatabaseId(), name);
+            JdbcDatabaseHandler.getInstance().addLike(JdbcDatabaseHandler.getInstance().getUser(id).getDatabaseId(), name);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Sets the searchmessage
+     */
+    private void setMessage(String message) {
+        ((TextView)getActivity().findViewById(R.id.message)).setText(message);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(updateWhenDoorsOpenedThread.isAlive()) updateWhenDoorsOpenedThread.interrupt();
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Button search = ((Button)getActivity().findViewById(R.id.searchbtn));
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setMessage("Söker efter matchningar...");
+                main.searchFormatches();
+            }
+        });
     }
 
     @Override

@@ -17,7 +17,8 @@ import java.util.regex.Pattern;
 import javax.net.ssl.HttpsURLConnection;
 
 /**
- * Created by Marcus on 09/10/15.
+ * @author oskar
+ * Created by oskar on 09/10/15.
  */
 public class BusHandler{
     private final String TAG = "GAB";
@@ -34,6 +35,7 @@ public class BusHandler{
         return instance;
     }
 
+
     public ArrayList<String> getWifis() {
         long newtime = System.currentTimeMillis();
         long oldtime = newtime - 100000;
@@ -47,11 +49,22 @@ public class BusHandler{
         return sa;
     }
 
+    /**
+     * Gets the device wifi
+     * @param context The devices context
+     * @return SSID of wifi
+     */
     public String getMyWifi(Context context){
         WifiManager mngr = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         String wifi = mngr.getConnectionInfo().getSSID();
         return wifi;
     }
+
+    /**
+     * Gets from Electricitys API using target URL
+     * @param target Target url to get from
+     * @return String of response, in JSON form.
+     */
     private String getJSON(String target){
         try {
             byte[] authEncBytes = Base64.encode(Secrets.API.getBytes(), Base64.DEFAULT);
@@ -126,5 +139,29 @@ public class BusHandler{
             //Im not currently on any buss network!
             //Display fragment prompting the user to connect to the buss network.
         }
+    }
+
+    /**
+     * Checks if the doors have been opened on the target bus within deltaTime
+     * @param busVin Target bus
+     * @param deltaTime Time to check from
+     * @return True if the bus have been opened at anytime in the deltaTime, False else.
+     */
+    public boolean hasDoorsOpened(String busVin, int deltaTime){
+        long newtime = System.currentTimeMillis();
+        long oldtime = newtime - deltaTime; //2 * 60 * 1000/10
+        String tmp = getJSON("https://ece01.ericsson.net:4443/ecity?dgw=Ericsson$" + busVin + "&resourceSpec=Ericsson$Open_Door_Value&t1=" + oldtime + "&t2=" + newtime);
+
+        Log.d(TAG, tmp);
+
+        //Search for value using regex, gets the string next to value, in this case either true or false.
+        ArrayList<String> sa = new ArrayList<>();
+        Matcher m = Pattern.compile("(?<=\"value\":\")([^\"]*)").matcher(tmp);
+
+        while (m.find()) {
+            if(m.group().equals("true")) return true;
+        }
+
+        return false;
     }
 }
