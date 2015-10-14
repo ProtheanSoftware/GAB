@@ -125,6 +125,14 @@ public class Main2Activity extends AppCompatActivity implements PropertyChangeLi
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Sets if there are matches
+     * @param value
+     */
+    public void setHasMatches(boolean value) {
+        hasMatches  =value;
+    }
+
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
         if(propertyChangeEvent.getPropertyName().equals("MatchList")) {
