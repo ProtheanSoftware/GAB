@@ -16,6 +16,7 @@ import com.facebook.AccessToken;
 import com.facebook.appevents.AppEventsLogger;
 import com.protheansoftware.gab.adapter.TabsPagerAdapter;
 import com.protheansoftware.gab.chat.MessagingFragment;
+import com.protheansoftware.gab.model.BusHandler;
 import com.protheansoftware.gab.model.Profile;
 import com.protheansoftware.gab.chat.MessageService;
 import com.protheansoftware.gab.model.JdbcDatabaseHandler;
@@ -44,6 +45,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     private String[] tabs = {"Match Screen","Matches"};
     private Intent serviceIntent;
 
+    private StrictMode.ThreadPolicy oldPolicy;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActionBar().setDisplayShowTitleEnabled(false);
@@ -51,7 +54,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
 
         //Fix for mysql(jdbc)
+        //Mysql cannot be reached through threads using the default threadpolicy
+        //Here we save the oldpolicy so as to not change any settings on the device by mistake
         if (android.os.Build.VERSION.SDK_INT > 9) {
+            oldPolicy = StrictMode.getThreadPolicy();
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
@@ -242,4 +248,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //Set the oldpolicy back
+        StrictMode.setThreadPolicy(oldPolicy);
+    }
 }

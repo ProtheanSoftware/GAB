@@ -1,8 +1,7 @@
 package com.protheansoftware.gab;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.telephony.CellLocation;
+
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
@@ -53,7 +52,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
             public void run() {
                 boolean waitLong = false;
                 boolean running = true;
-                int waitTime = 240000;
+                int waitTime = 240000; // 24 sec
                 while(running) {
                     try {
                         if (waitLong) {
