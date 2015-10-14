@@ -63,6 +63,10 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
             setMatch(matches.get(0));
         }
     }
+    public void set() {
+        getView().findViewById(R.id.searchScreen).setVisibility(View.GONE);
+        getView().findViewById(R.id.mainMatchScreen).setVisibility(View.VISIBLE);
+    }
 
 
     @Override

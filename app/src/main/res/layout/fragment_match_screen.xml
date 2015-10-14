@@ -1,7 +1,21 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
+    <RelativeLayout
+        android:id="@+id/searchScreen"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/orange">
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/mainMatchScreen"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+        android:visibility="gone">
 
     <!--Top bar-->
 
@@ -97,3 +111,4 @@
 
 
 </RelativeLayout>
+</FrameLayout>
