@@ -2,6 +2,7 @@ package com.protheansoftware.gab;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -33,8 +34,10 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
 
     private static final String TAG = "MatchesListFragment";
     private IDatabaseHandler dbh;
+    private Main2Activity main;
 
     public Observable notifier;
+
 
 
     @Override
@@ -72,9 +75,11 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
 
         MessagingFragment.setRecipientId(String.valueOf(r_id));
 
-        //Switch tab
-        ViewPager pager = (ViewPager) getActivity().findViewById(R.id.pager);
-        ((TabsPagerAdapter)pager.getAdapter()).setCount(3);
-        pager.setCurrentItem(2);
+        //Switch tab and open chat
+        main.openChat();
+    }
+
+    public void setMain(Main2Activity main) {
+        this.main = main;
     }
 }

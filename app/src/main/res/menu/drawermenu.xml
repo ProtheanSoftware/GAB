@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" android:layout_height="40dp" android:layout_width="match_parent">
+
+
+
+    <item android:title="implementera detta"
+        android:id="@+id/nav_item_inbox"/>
+
+
+</menu>

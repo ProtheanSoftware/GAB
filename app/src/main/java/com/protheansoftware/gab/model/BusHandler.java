@@ -101,11 +101,11 @@ public class BusHandler{
         return null;
     }
 
-    public void startSessionIfNeeded(Context context, GsmCellLocation cellLocation) {
+    public void startSessionIfNeeded(Context context) {
         JdbcDatabaseHandler jdb = JdbcDatabaseHandler.getInstance(); //Maybe pass this class around instead?
-        int user_id = 237; //Will be passed to this function as a param
+        int user_id = jdb.getMyId(); //Will be passed to this function as a param
         ArrayList<String> wifis = getWifis();
-        String my_wifi = Integer.toHexString(cellLocation.getCid()).toUpperCase();
+        String my_wifi = "1111111";
 
         if (my_wifi.length() < 8) {
             my_wifi = "0" + my_wifi;

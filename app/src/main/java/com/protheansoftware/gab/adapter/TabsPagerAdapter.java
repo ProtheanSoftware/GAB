@@ -20,12 +20,10 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
     private int count;
     private ArrayList<Fragment> fragments;
 
-    public TabsPagerAdapter(FragmentManager fragmentManager, TelephonyManager telephonyManager) {
+    public TabsPagerAdapter(FragmentManager fragmentManager) {
         super(fragmentManager);
-        MatchScreenFragment msf = new MatchScreenFragment();
-        msf.init(telephonyManager);
         fragments = new ArrayList<Fragment>();
-        fragments.add(msf);
+        fragments.add(new MatchScreenFragment());
         fragments.add(new SearchforMatches());
         fragments.add(new MatchesListFragment());
         fragments.add(new MessagingFragment());
@@ -42,7 +40,7 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
         switch(i) {
             case 0:
                 return fragments.get(0);
-            case 11:
+            case 4:
                 return fragments.get(1);
             case 1:
                 return fragments.get(2);
