@@ -29,7 +29,6 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     public static final String TAG = "MatchScreen";
     private JdbcDatabaseHandler jdb = JdbcDatabaseHandler.getInstance();
     private BusHandler bh = BusHandler.getInstance();
-    private TelephonyManager telephonyManager;
     private ArrayList<Profile> matches;
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     Main2Activity main;
@@ -125,7 +124,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
         if(!updateWhenDoorsOpenedThread.isAlive()){
             updateWhenDoorsOpenedThread.start();
         }
-       // bh.startSessionIfNeeded(this.getContext(), (GsmCellLocation) telephonyManager.getCellLocation());
+        bh.startSessionIfNeeded(this.getContext());
     }
 
     //Fills out the fragment with the match.
@@ -238,9 +237,5 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     public void onClick(View v) {
 
         
-    }
-
-    public void init(TelephonyManager telephonyManager) {
-        this.telephonyManager = telephonyManager;
     }
 }

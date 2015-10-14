@@ -90,7 +90,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         //Initialize
         viewPager = (ViewPager) findViewById(R.id.pager);
         actionBar = getActionBar();
-        tabsAdapter = new TabsPagerAdapter(getSupportFragmentManager(), (TelephonyManager) getSystemService(this.TELEPHONY_SERVICE));
+        tabsAdapter = new TabsPagerAdapter(getSupportFragmentManager());
 
         viewPager.setAdapter(tabsAdapter);
         actionBar.setHomeButtonEnabled(false);
