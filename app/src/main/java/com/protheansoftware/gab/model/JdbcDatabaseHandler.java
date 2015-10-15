@@ -462,7 +462,42 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
 
     @Override
     public void removeLike(int likeId) {
+        Connection con = null;
+        PreparedStatement pstatement = null;
 
+        String url = "jdbc:mysql://" + Secrets.DB_IP + "/gab";
+        String user = Secrets.DB_USER;
+        String password = Secrets.DB_PASSWORD;
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+
+        try{
+            con = DriverManager.getConnection(url, user, password);
+
+            pstatement = con.prepareStatement("DELETE FROM t_likes WHERE like_id = ? AND origin_id = ?;");
+            pstatement.setString(1, String.valueOf(likeId));
+            pstatement.setString(2, String.valueOf(getMyId()));
+            pstatement.executeUpdate();
+        }catch (SQLException ex){
+            Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
+            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+        }finally {
+            try {
+                if (pstatement != null) {
+                    pstatement.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+
+            } catch (SQLException ex) {
+                Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
+                lgr.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+        }
     }
 
     @Override
