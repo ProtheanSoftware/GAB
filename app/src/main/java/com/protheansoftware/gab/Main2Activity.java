@@ -177,4 +177,13 @@ public class Main2Activity extends AppCompatActivity implements PropertyChangeLi
         handler.destroy();
         super.onDestroy();
     }
+
+    public void closeChat() {
+        //Make sure chat is opened
+        if(adapter.getCount() > 2){
+            TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+            tabLayout.removeTabAt(2);
+            adapter.setCount(adapter.getCount()-1);
+        }
+    }
 }
