@@ -15,11 +15,13 @@
     <string name="title_activity_facebook_login">FacebookLoginActivity</string>
     <string name="splash_screen_text">gab</string>
     <string name="title_activity_main">Main</string>
+    <string name="remove_user_msg">Removed user: </string>
+    <string name="remove_btn_message">Ta bort</string>
 
     <string name="hello_world">Hello world!</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_main2">Main2Activity</string>
+    <string name="title_activity_main2">gab</string>
 
 </resources>
