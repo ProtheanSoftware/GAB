@@ -7,10 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.*;
 
 import com.protheansoftware.gab.model.BusHandler;
 import com.protheansoftware.gab.model.JdbcDatabaseHandler;
@@ -103,7 +100,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
             public void run() {
                 boolean waitLong = false;
                 boolean running = true;
-                int waitTime = 240000; // 24 sec
+                int waitTime = 24000; // 24 sec
                 while(running) {
                     try {
                         if (waitLong) {
@@ -117,9 +114,12 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
                     }
                     try {
                         if(!Thread.currentThread().isInterrupted()) {
-                            if (BusHandler.getInstance().hasDoorsOpened("171330", waitTime)) {
+                            if (BusHandler.getInstance().hasDoorsOpened("Vin_Num_001", waitTime)) {
                                 //Searchmatches
-                                Log.d("MatchScreen", "SEARCHING MATCHES  GATES HAVE BEEN OPENED");
+                                Toast toast = new Toast(getContext());
+                                toast.setDuration(Toast.LENGTH_LONG);
+                                toast.setText("Doors have been opened, reloading potential matches..");
+                                toast.show();
                             }
                         }else{
                             running = false;
@@ -141,10 +141,12 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     public void onResume() {
         super.onResume();
 //        bh.startSessionIfNeeded(this.getContext(), (GsmCellLocation) telephonyManager.getCellLocation());
-        if(!updateWhenDoorsOpenedThread.isAlive()){
+        if(!updateWhenDoorsOpenedThread.isAlive()) {
             updateWhenDoorsOpenedThread.start();
         }
-        bh.startSessionIfNeeded(this.getContext());
+        if (bh.startSessionIfNeeded(this.getContext()) == false) {
+            setMessage("You need to be on a buss network to match with other people!");
+        }
     }
 
     //Fills out the fragment with the match.
