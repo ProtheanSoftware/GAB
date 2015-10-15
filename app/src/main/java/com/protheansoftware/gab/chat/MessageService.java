@@ -13,9 +13,6 @@ import com.sinch.android.rtc.messaging.WritableMessage;
 import com.protheansoftware.gab.model.IDatabaseHandler;
 import com.protheansoftware.gab.model.JdbcDatabaseHandler;
 
-import java.sql.SQLException;
-import java.util.logging.Logger;
-
 /**
  * @author oskar 
  * Created by oskar on 2015-10-06.
@@ -37,7 +34,7 @@ public class MessageService extends Service implements SinchClientListener {
         }
         currentUserId = String.valueOf(dbh.getMyId());
 
-        if(currentUserId != null && !isSinchClientStarted()){
+        if(!isSinchClientStarted()){
             startSinchClient(currentUserId);
         }
         return super.onStartCommand(intent, flags, startID);
@@ -148,7 +145,6 @@ public class MessageService extends Service implements SinchClientListener {
 
     @Override
     public void onDestroy() {
-        sinchClient.stopListeningOnActiveConnection();
         sinchClient.terminate();
     }
 

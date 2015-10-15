@@ -30,7 +30,6 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     private JdbcDatabaseHandler jdb = JdbcDatabaseHandler.getInstance();
     private BusHandler bh = BusHandler.getInstance();
     private ArrayList<Profile> matches;
-    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     Main2Activity main;
 
 
@@ -61,12 +60,33 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
      * Is called if no matches could be retrieved from the server
      */
     public void setNoMatches() {
-        setMessage("KUnde ej hitta matchningar");
+        setMessage("Kunde ej hitta matchningar");
+    }
+
+    /**
+     * When all the potential matches has been shown, show the searchscreen again.
+     */
+    private void noMoreMatches() {
+        clearMatchScreen();
+        getActivity().findViewById(R.id.searchScreen).setVisibility(View.VISIBLE);
+        getActivity().findViewById(R.id.mainMatchScreen).setVisibility(View.GONE);
+        main.setHasMatches(false);
+        main.searchFormatches();
+
+
+    }
+
+    /**
+     * Clears the matchscreen
+     */
+    private void clearMatchScreen() {
+        ((TextView)getActivity().findViewById(R.id.nameTag)).setText("");
     }
 
 
-
-
+    /**
+     * Hides the searchscreen and shows the matchscreen
+     */
     public void setHasMatches() {
         getActivity().findViewById(R.id.searchScreen).setVisibility(View.GONE);
         getActivity().findViewById(R.id.mainMatchScreen).setVisibility(View.VISIBLE);
@@ -129,7 +149,6 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
 
     //Fills out the fragment with the match.
     public void setMatch(final Profile match){
-        Log.d(TAG, Boolean.toString(getView() == null));
         ((TextView)getActivity().findViewById(R.id.nameTag)).setText(match.getName());
         ListView list = (ListView)getActivity().findViewById(R.id.centerContentList);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,match.getInterests());
@@ -151,14 +170,6 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
         });
     }
 
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        this.pcs.addPropertyChangeListener(listener);
-    }
-
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        this.pcs.removePropertyChangeListener(listener);
-    }
-
 
     /**
      * Loads the next match in the list
@@ -167,7 +178,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     private void loadNextMatch(Profile currentMatch) {
         this.matches.remove(currentMatch);
         if(matches.isEmpty()) {
-            pcs.firePropertyChange("No matches",null,null);
+            noMoreMatches();
         } else {
             setMatch(this.matches.get(0));
         }

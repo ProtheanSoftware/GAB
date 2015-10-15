@@ -224,6 +224,7 @@ public class MessagingFragment extends Fragment {
     private class SinchMessageClientListener implements MessageClientListener {
         @Override
         public void onIncomingMessage(MessageClient messageClient, final Message message) {
+            Log.d(TAG, "MESSAGE RECIEVING: " + message.getMessageId());
             /**
              * Display message if the list doesn't already have the message displayed
              * This is required for sinch, sinch will try to redeliver all undelivered messages
@@ -234,6 +235,7 @@ public class MessagingFragment extends Fragment {
                 @Override
                 public void run() {
                     if (!conversationContainsMessage(message)){
+                        Log.d(TAG, "ASDF");
                         WritableMessage writableMessage = new WritableMessage(message.getRecipientIds().get(0), message.getTextBody());
                         messageAdapter.addMessage(writableMessage, MessageAdapter.DIRECTION_INCOMING);
                     }
@@ -273,6 +275,7 @@ public class MessagingFragment extends Fragment {
      * @return True; Database contains message, False; Database doesn't contain message
      */
     private boolean conversationContainsMessage(Message message) {
-        return JdbcDatabaseHandler.getInstance().messagesContains(message.getMessageId());
+        return messageAdapter.contains(message);
+        //return JdbcDatabaseHandler.getInstance().messagesContains(message.getMessageId());
     }
 }
