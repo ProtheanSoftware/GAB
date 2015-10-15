@@ -1,6 +1,8 @@
 package com.protheansoftware.gab;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,28 +30,43 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
     private IDatabaseHandler dbh;
     private Main2Activity main;
 
+    private ListAdapter matchesListAdapter;
+    private SwipeRefreshLayout swipeContainer;
+    private Handler handler = new Handler();
+
     public Observable notifier;
-
-
+    private boolean refreshing;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         setDbh(JdbcDatabaseHandler.getInstance());
-        List<Profile> matches = new ArrayList<Profile>();
-        try {
-            matches = dbh.getMatches();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        reloadMatches();
 
-        ListAdapter matchesListAdapter = new MatchesListAdapter(getActivity(), matches);
-        setListAdapter(matchesListAdapter);
+        swipeContainer = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                setRefreshing(true);
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        reloadMatches();
+                        setRefreshing(false);
+                    }
+                });
+                thread.start();
+                handler.post(refresh);
+            }
+        });
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
 
         getListView().setOnItemClickListener(this);
     }
-    
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_item_list,container,false);
@@ -74,8 +91,38 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
         //Switch tab and open chat
         main.openChat();
     }
+    private final Runnable refresh = new Runnable() {
+        @Override
+        public void run() {
+            if (isRefreshing()) {
+                handler.postDelayed(this, 500);
+            } else {
+                swipeContainer.setRefreshing(false);
+            }
+        }
+    };
+
+    private void reloadMatches(){
+        List<Profile> matches = new ArrayList<Profile>();
+        try {
+            matches = dbh.getMatches();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        matchesListAdapter = new MatchesListAdapter(getActivity(), matches);
+        setListAdapter(matchesListAdapter);
+    }
 
     public void setMain(Main2Activity main) {
         this.main = main;
+    }
+
+    public boolean isRefreshing() {
+        return refreshing;
+    }
+
+    public void setRefreshing(boolean refreshing) {
+        this.refreshing = refreshing;
     }
 }
