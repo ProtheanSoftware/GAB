@@ -471,9 +471,11 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         ArrayList<Profile> allUsers = selectFromUsers("SELECT * FROM `t_users` LIMIT 0 , 60;");
         //getUsersOnBuss();
         for(Profile temp: allUsers){
-            if(!userExistsInDislikes(temp)){
-                if(!userExistsInLikes(temp)){
-                    profiles.add(temp);
+            if(temp.getDbId() != getMyId()) {
+                if (!userExistsInDislikes(temp)) {
+                    if (!userExistsInLikes(temp)) {
+                        profiles.add(temp);
+                    }
                 }
             }
         }
