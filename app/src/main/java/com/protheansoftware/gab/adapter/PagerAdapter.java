@@ -48,6 +48,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
             case 2:
                 if(messagingFragment == null){
                     messagingFragment = new MessagingFragment();
+                    messagingFragment.setMain(main);
                 }
                 return messagingFragment;
             default:
