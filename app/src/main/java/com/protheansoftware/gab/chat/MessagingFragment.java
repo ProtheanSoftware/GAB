@@ -57,8 +57,6 @@ public class MessagingFragment extends Fragment {
     private MessageAdapter messageAdapter;
     private boolean viewCreated;
 
-    private Main2Activity main;
-
     /**
      * Sets the recipientId for chat, later used inorder to send and retreive messages
      * @param recipientId Recipient Id
@@ -137,8 +135,6 @@ public class MessagingFragment extends Fragment {
         if(isVisibleToUser){
             Log.d(TAG, "Switched to chat");
             fillChatIfNeeded();
-        }else if(viewCreated){
-            main.closeChat();
         }
     }
 
@@ -202,10 +198,6 @@ public class MessagingFragment extends Fragment {
             }
         }
         return messages;
-    }
-
-    public void setMain(Main2Activity main) {
-        this.main = main;
     }
 
     /**
