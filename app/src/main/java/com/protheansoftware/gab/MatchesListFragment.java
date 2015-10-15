@@ -30,6 +30,8 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
     private IDatabaseHandler dbh;
     private Main2Activity main;
 
+    private ArrayList<Profile> matches;
+
     private ListAdapter matchesListAdapter;
     private SwipeRefreshLayout swipeContainer;
     private Handler handler = new Handler();
@@ -42,6 +44,9 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
         super.onActivityCreated(savedInstanceState);
         setDbh(JdbcDatabaseHandler.getInstance());
         reloadMatches();
+
+        matchesListAdapter = new MatchesListAdapter(getActivity(), matches);
+        setListAdapter(matchesListAdapter);
 
         swipeContainer = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -58,6 +63,7 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
                 thread.start();
                 handler.post(refresh);
             }
+
         });
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
@@ -98,20 +104,19 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
                 handler.postDelayed(this, 500);
             } else {
                 swipeContainer.setRefreshing(false);
+                matchesListAdapter = new MatchesListAdapter(getActivity(), matches);
+                setListAdapter(matchesListAdapter);
             }
         }
     };
 
     private void reloadMatches(){
-        List<Profile> matches = new ArrayList<Profile>();
+        matches = new ArrayList<Profile>();
         try {
             matches = dbh.getMatches();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        matchesListAdapter = new MatchesListAdapter(getActivity(), matches);
-        setListAdapter(matchesListAdapter);
     }
 
     public void setMain(Main2Activity main) {
