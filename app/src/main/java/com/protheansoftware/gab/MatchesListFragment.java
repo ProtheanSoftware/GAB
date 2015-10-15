@@ -8,8 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListAdapter;
+import android.widget.TextView;
 
+import com.flipboard.bottomsheet.BottomSheetLayout;
 import com.protheansoftware.gab.model.IDatabaseHandler;
 import com.protheansoftware.gab.model.Profile;
 import com.protheansoftware.gab.adapter.MatchesListAdapter;
@@ -35,6 +38,7 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
     private ListAdapter matchesListAdapter;
     private SwipeRefreshLayout swipeContainer;
     private Handler handler = new Handler();
+    private Profile currentProfile;
 
     public Observable notifier;
     private boolean refreshing;
@@ -71,6 +75,7 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
                 android.R.color.holo_red_light);
 
         getListView().setOnItemClickListener(this);
+        initBottomSheetLayout();
     }
 
     @Override
@@ -106,6 +111,7 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
                 swipeContainer.setRefreshing(false);
                 matchesListAdapter = new MatchesListAdapter(getActivity(), matches);
                 setListAdapter(matchesListAdapter);
+                initBottomSheetLayout();
             }
         }
     };
@@ -117,6 +123,34 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void initBottomSheetLayout() {
+        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+                                           int pos, long id) {
+                if (arg0.getItemAtPosition(pos) instanceof Profile) {
+                    currentProfile = null;
+                    currentProfile = ((Profile) arg0.getItemAtPosition(pos));
+                   BottomSheetLayout bottomSheetLayout = (BottomSheetLayout) getActivity().findViewById(R.id.bottomsheet);
+                    bottomSheetLayout.showWithSheetView(getActivity().getLayoutInflater().inflate(R.layout.remove_menu, bottomSheetLayout, false));
+                    ((TextView) getActivity().findViewById(R.id.deleteNameTag)).setText(currentProfile.getName());
+
+                    ((Button) getActivity().findViewById(R.id.btn_remove)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            JdbcDatabaseHandler.getInstance().removeLike(currentProfile.getDbId());
+                            reloadMatches();
+                            ((BottomSheetLayout)getActivity().findViewById(R.id.bottomsheet)).dismissSheet();
+                            matchesListAdapter = new MatchesListAdapter(getActivity(), matches);
+                        }
+                    });
+                }
+                    return true;
+
+                }
+        });
+
     }
 
     public void setMain(Main2Activity main) {

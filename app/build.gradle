@@ -39,6 +39,8 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:4.6.0'
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.android.support:design:22.2.0'
+    compile 'com.flipboard:bottomsheet-core:1.4.3'
+    compile 'com.flipboard:bottomsheet-commons:1.4.3' // optional
     //compile 'com.google.android.gms:play-services:8.1.0'
 
 }
