@@ -1,26 +1,18 @@
 package com.protheansoftware.gab;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
-import android.widget.Toast;
 
-import com.protheansoftware.gab.adapter.TabsPagerAdapter;
 import com.protheansoftware.gab.model.IDatabaseHandler;
 import com.protheansoftware.gab.model.Profile;
 import com.protheansoftware.gab.adapter.MatchesListAdapter;
 import com.protheansoftware.gab.model.JdbcDatabaseHandler;
-import com.protheansoftware.gab.chat.MessageService;
 import com.protheansoftware.gab.chat.MessagingFragment;
-import com.protheansoftware.gab.model.IDatabaseHandler;
-import com.protheansoftware.gab.model.Profile;
-import com.protheansoftware.gab.adapter.MatchesListAdapter;
-import com.protheansoftware.gab.model.JdbcDatabaseHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,8 +36,6 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-
-
         setDbh(JdbcDatabaseHandler.getInstance());
         List<Profile> matches = new ArrayList<Profile>();
         try {
@@ -58,6 +48,12 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
         setListAdapter(matchesListAdapter);
 
         getListView().setOnItemClickListener(this);
+    }
+    
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_item_list,container,false);
+        return rootView;
     }
 
     public void setDbh(IDatabaseHandler dbh){
