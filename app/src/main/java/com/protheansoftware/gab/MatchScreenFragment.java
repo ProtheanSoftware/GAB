@@ -141,10 +141,12 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     public void onResume() {
         super.onResume();
 //        bh.startSessionIfNeeded(this.getContext(), (GsmCellLocation) telephonyManager.getCellLocation());
-        if(!updateWhenDoorsOpenedThread.isAlive()){
+        if(!updateWhenDoorsOpenedThread.isAlive()) {
             updateWhenDoorsOpenedThread.start();
         }
-        bh.startSessionIfNeeded(this.getContext());
+        if (bh.startSessionIfNeeded(this.getContext()) == false) {
+            setMessage("You need to be on a buss network to match with other people!");
+        }
     }
 
     //Fills out the fragment with the match.
