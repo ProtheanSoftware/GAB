@@ -231,7 +231,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     }
 
     @Override
-    public void sessionStart(String wifi) {
+    public void sessionStart(String bus_vin) {
         Connection con = null;
         PreparedStatement pstatement = null;
 
@@ -247,10 +247,10 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         try{
             con = DriverManager.getConnection(url, user, password);
 
-            pstatement = con.prepareStatement("INSERT INTO t_sessions(session_id, user_id, wifi, timestamp) VALUES(?,?,?,?);");
+            pstatement = con.prepareStatement("INSERT INTO t_sessions(session_id, user_id, VIN, timestamp) VALUES(?,?,?,?);");
             pstatement.setString(1, null);
             pstatement.setString(2, String.valueOf(getMyId()));
-            pstatement.setString(3, wifi);
+            pstatement.setString(3, bus_vin);
             pstatement.setString(4, null);
             pstatement.executeUpdate();
         }catch (SQLException ex){
@@ -315,7 +315,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         }
     }
 
-    public Session getSessionSSIDByUserId(int user_id) {
+    public Session getSessionVINByUserId(int user_id) {
         Session session = null;
 
         Connection con = null;
@@ -342,7 +342,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
             if (rs.next()) {
                 session = new Session(rs.getInt("session_id"),
                         rs.getInt("user_id"),
-                        rs.getString("wifi"),
+                        rs.getString("VIN"),
                         rs.getTimestamp("timestamp"));
             }
 
@@ -635,7 +635,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         }
     }
 
-    public void updateSession(String my_wifi, int user_id) {
+    public void updateSession(String bus_vin, int user_id) {
         Connection con = null;
         PreparedStatement pstatement = null;
 
@@ -651,8 +651,8 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         try{
             con = DriverManager.getConnection(url, user, password);
 
-            pstatement = con.prepareStatement("UPDATE t_sessions SET wifi = ? WHERE user_id = ?");
-            pstatement.setString(1, my_wifi);
+            pstatement = con.prepareStatement("UPDATE t_sessions SET VIN = ? WHERE user_id = ?");
+            pstatement.setString(1, bus_vin);
             pstatement.setInt(2, user_id);
             pstatement.executeUpdate();
         }catch (SQLException ex){
@@ -675,14 +675,14 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     }
 
     public ArrayList<Profile> getUsersOnBuss() {
-        Session my_session = getSessionSSIDByUserId(getMyId());
+        Session my_session = getSessionVINByUserId(getMyId());
         ArrayList<Profile> profiles =
                 selectFromUsers(
                         "SELECT `t_users`.`user_id`, `t_users`.`name`, `t_users`.`fb_id`, `t_users`.`interests` " +
                                 "FROM `t_users`, `t_sessions` " +
                                 "WHERE (" +
                                 "`t_users`.`user_id` = `t_sessions`.`user_id` AND " +
-                                "`t_sessions`.`wifi` = '" + my_session.ssid + "')");
+                                "`t_sessions`.`VIN` = '" + my_session.VIN + "')");
 
         Log.i(TAG, "Profiles on network: "+profiles);
         return profiles;

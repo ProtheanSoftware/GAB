@@ -2,8 +2,6 @@ package com.protheansoftware.gab.model;
 
 import android.content.Context;
 import android.net.wifi.WifiManager;
-import android.telephony.CellLocation;
-import android.telephony.gsm.GsmCellLocation;
 import android.util.Base64;
 import android.util.Log;
 
@@ -39,7 +37,7 @@ public class BusHandler{
         return instance;
     }
 
-    public String getBusWifi() {
+    public String getBusVIN() {
         long newtime = System.currentTimeMillis();
         long oldtime = newtime - 100000;
 
@@ -49,10 +47,6 @@ public class BusHandler{
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<system>\n" +
                 "    <system_id type=\"integer\">2501069301</system_id>\n" +
-                "</system>" +
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "<system>\n" +
-                "    <system_id type=\"integer\">1086</system_id>\n" +
                 "</system>"
                 ;
 
@@ -155,54 +149,34 @@ public class BusHandler{
     public boolean startSessionIfNeeded(Context context) {
         flag = false;
         int user_id = jdb.getMyId(); //Will be passed to this function as a param
-        String bus_wifi = getBusWifi();
+        String bus_vin = getBusVIN();
 
-        Log.e(TAG, "VIN: "+bus_wifi);
+        Log.e(TAG, "VIN: "+bus_vin);
 
         if (flag) {
             //We are not on a bus network or cant access local api
             //return false;
         }
 
-        String my_wifi = "1111111";
-
-        if (my_wifi.length() < 8) {
-            my_wifi = "0" + my_wifi;
-        }
-
-        bus_wifi = my_wifi;
-
         Session session;
-        Log.e(TAG, "My network: "+my_wifi+" Bussnetworks: "+bus_wifi);
-        if ((session = jdb.getSessionSSIDByUserId(user_id)) != null) {
-            if (session.ssid.equals(my_wifi)) {
+        if ((session = jdb.getSessionVINByUserId(user_id)) != null) {
+            if (session.VIN.equals(bus_vin)) {
                 Log.e(TAG, "Session running. Fetch and display matches.");
                 //already on this bus network and session is started
                 //Display my matches
-                return true;
-            } else if (bus_wifi.equals(my_wifi)){
-                Log.e(TAG, "Updating session ssid.");
-                Log.e(TAG, "User wifi is a bus wifi but not the same as the session wifi. " +
-                        "My ssid: " + my_wifi + ". Session ssid: " + session.ssid);
-                //Im on a another bus network, update the session
-                jdb.updateSession(my_wifi, user_id);
-                return true;
             } else {
-                return false;
-                //I have a session running but is currently not on a buss network.
-                //Dont allow matches.
+                Log.e(TAG, "Updating session VIN.");
+                Log.e(TAG, "User is on a bus but not the same as the session. " +
+                        "My VIN: " + bus_vin + ". Session VIN: " + session.VIN);
+                //Im on a another bus network, update the session
+                jdb.updateSession(bus_vin, user_id);
             }
-        } else if (bus_wifi.equals(my_wifi)){
+        } else {
             Log.e(TAG, "Starting a new session...");
             //Im on a bus network and no session is started, start a new session
-            jdb.sessionStart(my_wifi);
-            return true;
-        } else {
-            Log.e(TAG, "IM NOT ON A BUS NETWORK!");
-            return false;
-            //Im not currently on any buss network!
-            //Display fragment prompting the user to connect to the buss network.
+            jdb.sessionStart(bus_vin);
         }
+        return true;
     }
 
     /**
