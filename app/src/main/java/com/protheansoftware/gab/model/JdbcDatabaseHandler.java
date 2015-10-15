@@ -468,8 +468,8 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     @Override
     public ArrayList<Profile> getPotentialMatches() throws SQLException {
         ArrayList<Profile> profiles = new ArrayList<Profile>();
-        ArrayList<Profile> allUsers = selectFromUsers("SELECT * FROM `t_users` LIMIT 0 , 60;");
-        //getUsersOnBuss();
+        //ArrayList<Profile> allUsers = selectFromUsers("SELECT * FROM `t_users` LIMIT 0 , 60;");
+        ArrayList<Profile> allUsers = getUsersOnBuss();
         for(Profile temp: allUsers){
             if(!userExistsInDislikes(temp)){
                 if(!userExistsInLikes(temp)){
@@ -686,5 +686,51 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
 
         Log.i(TAG, "Profiles on network: "+profiles);
         return profiles;
+    }
+
+    public String getVINFromSystemId(String target) {
+        String result = "";
+
+        Connection con = null;
+        Statement statement =  null;
+
+        String url = "jdbc:mysql://" + Secrets.DB_IP + "/gab";
+        String user = Secrets.DB_USER;
+        String password = Secrets.DB_PASSWORD;
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+
+        try{
+            con = DriverManager.getConnection(url, user, password);
+
+            statement = con.createStatement();
+
+            ResultSet rs = statement.executeQuery("SELECT * FROM `t_busses` WHERE `system_id` = "+target);
+
+            while (rs.next()){
+                result = rs.getString("VIN");
+            }
+
+        }catch (SQLException ex){
+            Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
+            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+        }finally {
+            try {
+                if(statement != null){
+                    statement.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+
+            } catch (SQLException ex) {
+                Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
+                lgr.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+        }
+        return result;
     }
 }
