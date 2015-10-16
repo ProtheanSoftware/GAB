@@ -42,19 +42,24 @@ public class BusHandler{
         long oldtime = newtime - 100000;
 
         //String tmp = getJSON("https://ece01.ericsson.net:4443/ecity?resourceSpec=Ericsson$Cell_Id_Value&t1=" + oldtime + "&t2=" + newtime);
-        //String tmp = getXML("http://www.ombord.info/api/xml/system/");
-        String tmp = "" +
+        String tmp = getXML("http://www.ombord.info/api/xml/system/");
+        /*String tmp = "" +
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<system>\n" +
                 "    <system_id type=\"integer\">2501069301</system_id>\n" +
                 "</system>"
-                ;
+                ;*/
+
+        if(tmp == null) {
+            flag = true;
+            return null;
+        }
 
         ArrayList<String> sa = new ArrayList<>();
         Matcher m = Pattern.compile("(?<=<system_id type=\"integer\">)([^<]*)").matcher(tmp);
         while (m.find()) {sa.add(m.group());}
         if (sa == null) return null;
-
+        Log.e(TAG, "HEJ: "+sa.get(0));
         String result = jdb.getVINFromSystemId(sa.get(0));
 
         return result;
@@ -65,6 +70,7 @@ public class BusHandler{
             URL url = new URL(target);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
+            connection.setConnectTimeout(3000);
             connection.connect();
 
             int status = connection.getResponseCode();
@@ -85,7 +91,6 @@ public class BusHandler{
                     return sb.toString();
             }
         } catch (ConnectException e) {
-            flag = true;
             Log.d(TAG, "Couldn't connect: "+e);
         } catch(Exception e) {
             Log.e(TAG, "ERROR: "+e);
@@ -155,11 +160,11 @@ public class BusHandler{
 
         if (flag) {
             //We are not on a bus network or cant access local api
-            //return false;
+            return false;
         }
 
-        Session session;
-        if ((session = jdb.getSessionVINByUserId(user_id)) != null) {
+        Session session = jdb.getSessionVINByUserId(user_id);
+        if (session != null) {
             if (session.VIN.equals(bus_vin)) {
                 Log.e(TAG, "Session running. Fetch and display matches.");
                 //already on this bus network and session is started
@@ -180,14 +185,14 @@ public class BusHandler{
     }
 
     /**
-     * Checks if the doors have been opened on the target bus within deltaTime
-     * @param busVin Target bus
+     * Checks if the doors have been opened on the users bus within deltaTime
      * @param deltaTime Time to check from
      * @return True if the bus have been opened at anytime in the deltaTime, False else.
      */
-    public boolean hasDoorsOpened(String busVin, int deltaTime){
+    public boolean hasDoorsOpened(int deltaTime){
         long newtime = System.currentTimeMillis();
         long oldtime = newtime - deltaTime; //2 * 60 * 1000/10
+        String busVin = jdb.getSessionVINByUserId(jdb.getMyId()).VIN;
         String tmp = getJSON("https://ece01.ericsson.net:4443/ecity?dgw=Ericsson$" + busVin + "&resourceSpec=Ericsson$Open_Door_Value&t1=" + oldtime + "&t2=" + newtime);
 
         Log.d(TAG, tmp);
