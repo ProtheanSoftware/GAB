@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.*;
 
 import com.protheansoftware.gab.model.BusHandler;
@@ -23,6 +25,8 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     private BusHandler bh = BusHandler.getInstance();
     private ArrayList<Profile> matches;
     Main2Activity main;
+    ImageView searchImage;
+    Animation searchAnimation;
 
 
     private Thread updateWhenDoorsOpenedThread;
@@ -221,14 +225,19 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     @Override
     public void onStart() {
         super.onStart();
-        Button search = ((Button)getActivity().findViewById(R.id.searchbtn));
+        final ImageButton search = ((ImageButton)getActivity().findViewById(R.id.searchbtn));
         search.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
-                setMessage("Söker efter matchningar...");
+                searchImage = ((ImageView)getActivity().findViewById(R.id.searchImage));
+                searchAnimation = AnimationUtils.loadAnimation(getContext(),R.anim.fade);
+                setMessage(String.valueOf(R.string.searchForMatchesMessage));
+                searchImage.startAnimation(searchAnimation);
                 main.searchFormatches();
             }
         });
+
     }
 
     @Override
