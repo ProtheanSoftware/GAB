@@ -1,8 +1,10 @@
 package com.protheansoftware.gab;
 
+import android.os.Handler;
 import android.os.StrictMode;
 import android.util.Log;
 
+import com.mysql.jdbc.JDBC4CallableStatement;
 import com.protheansoftware.gab.model.JdbcDatabaseHandler;
 import com.protheansoftware.gab.model.Profile;
 
@@ -22,6 +24,10 @@ public class DataHandler {
     private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     private StrictMode.ThreadPolicy oldPolicy;
 
+    private JdbcDatabaseHandler jdb;
+
+    private Handler handler;
+
     /**
      * Initializes the DataHandler
      */
@@ -34,12 +40,14 @@ public class DataHandler {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
+        jdb = JdbcDatabaseHandler.getInstance();
         try {
-            me = JdbcDatabaseHandler.getInstance().getUser(getMyDbId());
+            me = jdb.getUser(getMyDbId());
         } catch (SQLException e) {
             e.printStackTrace();
             Log.e(TAG, "Could not generate me match");
         }
+        handler = new Handler();
 
     }
 
@@ -50,14 +58,35 @@ public class DataHandler {
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         this.pcs.removePropertyChangeListener(listener);
     }
+
+    private Runnable searchMatches = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                matches = jdb.getPotentialMatches();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            if(matches == null || matches.isEmpty()) {
+                pcs.firePropertyChange("NoMatches",null,null);
+            } else {
+                sortMatches(matches);
+                pcs.firePropertyChange("MatchList",null,matches);
+            }
+        }
+    };
+
     /**
      * Starts a thread that search for matches and then returns an arraylist with matches
      */
     public void searchForMatches() {
-        Log.d(TAG,"Searching for matches...");
+        Log.d(TAG, "Searching for matches...");
 
         //Start session and search for matches
-        Thread thread = new Thread(new Runnable() {
+        if(jdb.getSessionVINByUserId(jdb.getMyId())!=null) {
+            handler.post(searchMatches);
+        }
+       /* Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 synchronized (matches) {
@@ -85,9 +114,7 @@ public class DataHandler {
                 sortMatches(matches);
                 pcs.firePropertyChange("MatchList",null,matches);
             }
-
-
-        }
+        }*/
     }
 
 
