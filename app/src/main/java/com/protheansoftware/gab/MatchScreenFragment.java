@@ -104,7 +104,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
         //Thread that, when the doors have been opened on your bus, reload our matches.
         //If something goes wrong, wait 30 seconds before trying again
         doorsHandler = new Handler();
-        if(jdb.getSessionVINByUserId(jdb.getMyId()) != null) doorsHandler.post(doorsThread);
+        if(jdb.getSessiondgwByUserId(jdb.getMyId()) != null) doorsHandler.post(doorsThread);
     }
 
     //Fills out the fragment with the match.
