@@ -20,7 +20,7 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
-import com.protheansoftware.gab.Main2Activity;
+import com.protheansoftware.gab.MainActivity;
 import com.protheansoftware.gab.R;
 import com.protheansoftware.gab.model.JdbcDatabaseHandler;
 import com.protheansoftware.gab.model.Profile;
@@ -49,7 +49,7 @@ public class FacebookLogin extends Activity {
         Log.d(TAG, "Facebook sdk initialized");
 
         Log.i(TAG,"Tries to log in with previous user...");
-        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("user_likes"));
+        //LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("user_likes"));
 
         //Check if logged in, if true, starts main activity
         if(AccessToken.getCurrentAccessToken() != null) {
@@ -149,7 +149,7 @@ public class FacebookLogin extends Activity {
      * Starts the main activity.
      */
     public void startMainActivity() {
-        Intent mainActivity = new Intent(this,Main2Activity.class);
+        Intent mainActivity = new Intent(this,MainActivity.class);
         startActivity(mainActivity);
     }
 

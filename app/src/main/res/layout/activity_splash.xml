@@ -19,7 +19,9 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/splash_screen_text"
         android:id="@+id/textView"
+        android:textColor="@color/white"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:textSize="100sp"
         android:layout_marginBottom="66dp" />
 </RelativeLayout>

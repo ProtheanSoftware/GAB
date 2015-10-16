@@ -2,7 +2,6 @@ package com.protheansoftware.gab;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +24,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     private JdbcDatabaseHandler jdb = JdbcDatabaseHandler.getInstance();
     private BusHandler bh = BusHandler.getInstance();
     private ArrayList<Profile> matches;
-    Main2Activity main;
+    MainActivity main;
     ImageView searchImage;
     Animation searchAnimation;
 
@@ -40,7 +39,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
 
 
     }
-    public void setMain(Main2Activity main) {
+    public void setMain(MainActivity main) {
         this.main = main;
     }
 

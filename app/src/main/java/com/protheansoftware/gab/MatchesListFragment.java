@@ -20,7 +20,6 @@ import com.protheansoftware.gab.model.JdbcDatabaseHandler;
 import com.protheansoftware.gab.chat.MessagingFragment;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Observable;
 
 
@@ -31,7 +30,7 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
 
     private static final String TAG = "MatchesListFragment";
     private IDatabaseHandler dbh;
-    private Main2Activity main;
+    private MainActivity main;
 
     private ArrayList<Profile> matches;
 
@@ -153,7 +152,7 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
 
     }
 
-    public void setMain(Main2Activity main) {
+    public void setMain(MainActivity main) {
         this.main = main;
     }
 

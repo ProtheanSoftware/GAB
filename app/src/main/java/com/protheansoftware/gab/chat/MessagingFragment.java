@@ -8,7 +8,6 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -18,8 +17,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.protheansoftware.gab.Main2Activity;
-import com.protheansoftware.gab.adapter.TabsPagerAdapter;
+import com.protheansoftware.gab.MainActivity;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.messaging.Message;
 import com.sinch.android.rtc.messaging.MessageClient;
@@ -28,7 +26,6 @@ import com.sinch.android.rtc.messaging.MessageDeliveryInfo;
 import com.sinch.android.rtc.messaging.MessageFailureInfo;
 import com.sinch.android.rtc.messaging.WritableMessage;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +54,7 @@ public class MessagingFragment extends Fragment {
     private MessageAdapter messageAdapter;
     private boolean viewCreated;
 
-    private Main2Activity main;
+    private MainActivity main;
 
     /**
      * Sets the recipientId for chat, later used inorder to send and retreive messages
@@ -204,7 +201,7 @@ public class MessagingFragment extends Fragment {
         return messages;
     }
 
-    public void setMain(Main2Activity main) {
+    public void setMain(MainActivity main) {
         this.main = main;
     }
 
