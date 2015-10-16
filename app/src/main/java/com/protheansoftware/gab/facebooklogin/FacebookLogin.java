@@ -49,7 +49,7 @@ public class FacebookLogin extends Activity {
         Log.d(TAG, "Facebook sdk initialized");
 
         Log.i(TAG,"Tries to log in with previous user...");
-        //LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("user_likes"));
+        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("user_likes"));
 
         //Check if logged in, if true, starts main activity
         if(AccessToken.getCurrentAccessToken() != null) {
