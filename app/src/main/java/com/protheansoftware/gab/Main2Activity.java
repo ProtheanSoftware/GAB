@@ -72,7 +72,7 @@ public class Main2Activity extends AppCompatActivity implements PropertyChangeLi
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                if (tab.getPosition() == 0) {
+                if (tab.getPosition() == 0 && matchScreen == null) {
                     matchScreen = (MatchScreenFragment) adapter.getItem(0);
                     matchScreen.setMain(Main2Activity.this);
                 }
@@ -88,8 +88,10 @@ public class Main2Activity extends AppCompatActivity implements PropertyChangeLi
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
                 if (tab.getPosition() == 0) {
-                    matchScreen = (MatchScreenFragment) adapter.getItem(0);
-                    matchScreen.setMain(Main2Activity.this);
+                    if(matchScreen == null) {
+                        matchScreen = (MatchScreenFragment) adapter.getItem(0);
+                        matchScreen.setMain(Main2Activity.this);
+                    }
                     if (!hasMatches) {
                         searchFormatches();
                     }
