@@ -62,14 +62,17 @@ public class DataHandler {
     private Runnable searchMatches = new Runnable() {
         @Override
         public void run() {
+            Log.d(TAG, "Searching for matches");
             try {
                 matches = jdb.getPotentialMatches();
             } catch (SQLException e) {
+                Log.e(TAG,"Error: "+e);
                 e.printStackTrace();
             }
-            if(matches == null || matches.isEmpty()) {
+            Log.d(TAG, matches.toString());
+            if(matches == null || matches.isEmpty()){
                 pcs.firePropertyChange("NoMatches",null,null);
-            } else {
+            }else{
                 sortMatches(matches);
                 pcs.firePropertyChange("MatchList",null,matches);
             }
@@ -83,38 +86,9 @@ public class DataHandler {
         Log.d(TAG, "Searching for matches...");
 
         //Start session and search for matches
-        if(jdb.getSessionVINByUserId(jdb.getMyId())!=null) {
+        if(jdb.getSessiondgwByUserId(jdb.getMyId())!=null) {
             handler.post(searchMatches);
         }
-       /* Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (matches) {
-                    try {
-                        matches= JdbcDatabaseHandler.getInstance().getPotentialMatches();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        });
-        thread.run();
-        synchronized (matches) {
-            while (thread.isAlive()) {
-                try {
-                    matches.wait(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            if(matches == null || matches.isEmpty()) {
-                pcs.firePropertyChange("NoMatches",null,null);
-            } else {
-                sortMatches(matches);
-                pcs.firePropertyChange("MatchList",null,matches);
-            }
-        }*/
     }
 
 

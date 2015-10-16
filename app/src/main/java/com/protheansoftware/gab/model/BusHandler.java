@@ -42,13 +42,13 @@ public class BusHandler{
         long oldtime = newtime - 100000;
 
         //String tmp = getJSON("https://ece01.ericsson.net:4443/ecity?resourceSpec=Ericsson$Cell_Id_Value&t1=" + oldtime + "&t2=" + newtime);
-        String tmp = getXML("http://www.ombord.info/api/xml/system/");
-        /*String tmp = "" +
+        //String tmp = getXML("http://www.ombord.info/api/xml/system/");
+        String tmp = "" +
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<system>\n" +
                 "    <system_id type=\"integer\">2501069301</system_id>\n" +
                 "</system>"
-                ;*/
+                ;
 
         if(tmp == null) {
             flag = true;
@@ -60,7 +60,7 @@ public class BusHandler{
         while (m.find()) {sa.add(m.group());}
         if (sa == null) return null;
         Log.e(TAG, "HEJ: "+sa.get(0));
-        String result = jdb.getVINFromSystemId(sa.get(0));
+        String result = jdb.getdgwFromSystemId(sa.get(0));
 
         return result;
     }
@@ -163,16 +163,16 @@ public class BusHandler{
             return false;
         }
 
-        Session session = jdb.getSessionVINByUserId(user_id);
+        Session session = jdb.getSessiondgwByUserId(user_id);
         if (session != null) {
-            if (session.VIN.equals(bus_vin)) {
+            if (session.dgw.equals(bus_vin)) {
                 Log.e(TAG, "Session running. Fetch and display matches.");
                 //already on this bus network and session is started
                 //Display my matches
             } else {
                 Log.e(TAG, "Updating session VIN.");
                 Log.e(TAG, "User is on a bus but not the same as the session. " +
-                        "My VIN: " + bus_vin + ". Session VIN: " + session.VIN);
+                        "My VIN: " + bus_vin + ". Session VIN: " + session.dgw);
                 //Im on a another bus network, update the session
                 jdb.updateSession(bus_vin, user_id);
             }
@@ -192,8 +192,8 @@ public class BusHandler{
     public boolean hasDoorsOpened(int deltaTime){
         long newtime = System.currentTimeMillis();
         long oldtime = newtime - deltaTime; //2 * 60 * 1000/10
-        String busVin = jdb.getSessionVINByUserId(jdb.getMyId()).VIN;
-        String tmp = getJSON("https://ece01.ericsson.net:4443/ecity?dgw=Ericsson$" + busVin + "&resourceSpec=Ericsson$Open_Door_Value&t1=" + oldtime + "&t2=" + newtime);
+        String busVin = jdb.getSessiondgwByUserId(jdb.getMyId()).dgw;
+        String tmp = getJSON("https://ece01.ericsson.net:4443/ecity?dgw=" + busVin + "&resourceSpec=Ericsson$Open_Door_Value&t1=" + oldtime + "&t2=" + newtime);
 
         Log.d(TAG, tmp);
 

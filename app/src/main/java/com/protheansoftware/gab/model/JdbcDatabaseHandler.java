@@ -231,7 +231,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     }
 
     @Override
-    public void sessionStart(String bus_vin) {
+    public void sessionStart(String bus_dgw) {
         Connection con = null;
         PreparedStatement pstatement = null;
 
@@ -247,10 +247,10 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         try{
             con = DriverManager.getConnection(url, user, password);
 
-            pstatement = con.prepareStatement("INSERT INTO t_sessions(session_id, user_id, VIN, timestamp) VALUES(?,?,?,?);");
+            pstatement = con.prepareStatement("INSERT INTO t_sessions(session_id, user_id, dgw, timestamp) VALUES(?,?,?,?);");
             pstatement.setString(1, null);
             pstatement.setString(2, String.valueOf(getMyId()));
-            pstatement.setString(3, bus_vin);
+            pstatement.setString(3, bus_dgw);
             pstatement.setString(4, null);
             pstatement.executeUpdate();
         }catch (SQLException ex){
@@ -315,7 +315,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         }
     }
 
-    public Session getSessionVINByUserId(int user_id) {
+    public Session getSessiondgwByUserId(int user_id) {
         Session session = null;
 
         Connection con = null;
@@ -342,7 +342,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
             if (rs.next()) {
                 session = new Session(rs.getInt("session_id"),
                         rs.getInt("user_id"),
-                        rs.getString("VIN"),
+                        rs.getString("dgw"),
                         rs.getTimestamp("timestamp"));
             }
 
@@ -672,7 +672,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         }
     }
 
-    public void updateSession(String bus_vin, int user_id) {
+    public void updateSession(String bus_dgw, int user_id) {
         Connection con = null;
         PreparedStatement pstatement = null;
 
@@ -688,8 +688,8 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         try{
             con = DriverManager.getConnection(url, user, password);
 
-            pstatement = con.prepareStatement("UPDATE t_sessions SET VIN = ? WHERE user_id = ?");
-            pstatement.setString(1, bus_vin);
+            pstatement = con.prepareStatement("UPDATE t_sessions SET dgw = ? WHERE user_id = ?");
+            pstatement.setString(1, bus_dgw);
             pstatement.setInt(2, user_id);
             pstatement.executeUpdate();
         }catch (SQLException ex){
@@ -712,20 +712,20 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     }
 
     public ArrayList<Profile> getUsersOnBuss() {
-        Session my_session = getSessionVINByUserId(getMyId());
+        Session my_session = getSessiondgwByUserId(getMyId());
         ArrayList<Profile> profiles =
                 selectFromUsers(
                         "SELECT `t_users`.`user_id`, `t_users`.`name`, `t_users`.`fb_id`, `t_users`.`interests` " +
                                 "FROM `t_users`, `t_sessions` " +
                                 "WHERE (" +
                                 "`t_users`.`user_id` = `t_sessions`.`user_id` AND " +
-                                "`t_sessions`.`VIN` = '" + my_session.VIN + "')");
+                                "`t_sessions`.`dgw` = '" + my_session.dgw + "')");
 
         Log.i(TAG, "Profiles on network: "+profiles);
         return profiles;
     }
 
-    public String getVINFromSystemId(String target) {
+    public String getdgwFromSystemId(String target) {
         String result = "";
 
         Connection con = null;
@@ -748,7 +748,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
             ResultSet rs = statement.executeQuery("SELECT * FROM `t_busses` WHERE `system_id` = "+target);
 
             while (rs.next()){
-                result = rs.getString("VIN");
+                result = rs.getString("dgw");
             }
 
         }catch (SQLException ex){
