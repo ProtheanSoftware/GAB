@@ -11,7 +11,7 @@
         android:id="@+id/txtMessage"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:background="#40d93f"
+        android:background="@drawable/gab_chat_bubble_left"
         android:textColor="#fcfffe"
         android:padding="7dp"
         android:textSize="16dp"

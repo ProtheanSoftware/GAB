@@ -9,10 +9,11 @@
         android:layout_height="wrap_content"
         android:text="a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a"
         android:id="@+id/txtMessage"
+
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="false"
-        android:background="#40d93f"
-        android:textColor="#fcfffe"
+        android:background="@drawable/gab_chat_bubble_right"
+        android:textColor="@android:color/black"
         android:padding="7dp"
         android:textSize="16dp"
         android:layout_alignParentEnd="true" android:layout_marginLeft="60dp" android:layout_marginTop="4dp"
