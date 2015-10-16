@@ -1,5 +1,6 @@
 package com.protheansoftware.gab;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,7 +26,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     Main2Activity main;
 
 
-    private Thread updateWhenDoorsOpenedThread;
+    private Handler doorsHandler;
 
 
     @Override
@@ -87,45 +88,6 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        //Thread that, when the doors have been opened on your bus, reload our matches.
-        //If something goes wrong, wait 30 seconds before trying again
-        updateWhenDoorsOpenedThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                boolean waitLong = false;
-                boolean running = true;
-                int waitTime = 24000; // 24 sec
-                while(running) {
-                    try {
-                        if (waitLong) {
-                            Thread.sleep(waitTime * 2);
-                            waitLong = false;
-                        } else {
-                            Thread.sleep(waitTime);
-                        }
-                    }catch (InterruptedException e){
-
-                    }
-                    try {
-                        if(!Thread.currentThread().isInterrupted()) {
-                            if (BusHandler.getInstance().hasDoorsOpened("Vin_Num_001", waitTime)) {
-                                //Searchmatches
-                                Toast toast = new Toast(getContext());
-                                toast.setDuration(Toast.LENGTH_LONG);
-                                toast.setText("Doors have been opened, reloading potential matches..");
-                                toast.show();
-                            }
-                        }else{
-                            running = false;
-                        }
-                    }catch (Exception e){
-                        waitLong = true;
-                    }
-                }
-            }
-        });
-        updateWhenDoorsOpenedThread.start();
         View rootView = inflater.inflate(R.layout.fragment_match_screen,container,false);
         return rootView;
     }
@@ -136,12 +98,13 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     public void onResume() {
         super.onResume();
 //        bh.startSessionIfNeeded(this.getContext(), (GsmCellLocation) telephonyManager.getCellLocation());
-        if(!updateWhenDoorsOpenedThread.isAlive()) {
-            updateWhenDoorsOpenedThread.start();
-        }
         if (bh.startSessionIfNeeded(this.getContext()) == false) {
             setMessage("You need to be on a buss network to match with other people!");
         }
+        //Thread that, when the doors have been opened on your bus, reload our matches.
+        //If something goes wrong, wait 30 seconds before trying again
+        doorsHandler = new Handler();
+        if(jdb.getSessionVINByUserId(jdb.getMyId()) != null) doorsHandler.post(doorsThread);
     }
 
     //Fills out the fragment with the match.
@@ -214,7 +177,6 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     @Override
     public void onPause() {
         super.onPause();
-        if(updateWhenDoorsOpenedThread.isAlive()) updateWhenDoorsOpenedThread.interrupt();
     }
 
 
@@ -243,7 +205,27 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
-
-        
     }
+    private Runnable doorsThread = new Runnable() {
+        @Override
+        public void run() {
+            boolean waitLong = false;
+            int waitTime = 24000; // 24 sec
+            if(waitLong){
+                doorsHandler.postDelayed(doorsThread, waitTime * 2);
+            }else {
+                doorsHandler.postDelayed(doorsThread, waitTime);
+            }
+            try {
+                if (BusHandler.getInstance().hasDoorsOpened(waitTime)) {
+                    //Searchmatches
+                    Toast.makeText(getActivity().getApplicationContext(),
+                            "Doors have been opened, reloading potential matches..",
+                            Toast.LENGTH_LONG).show();
+                }
+            }catch (Exception e){
+                waitLong = true;
+            }
+        }
+    };
 }
