@@ -1,4 +1,4 @@
-package com.protheansoftware.gab;
+package com.protheansoftware.gab.fragments;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,11 +13,12 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.flipboard.bottomsheet.BottomSheetLayout;
-import com.protheansoftware.gab.model.IDatabaseHandler;
+import com.protheansoftware.gab.R;
+import com.protheansoftware.gab.activities.MainActivity;
+import com.protheansoftware.gab.handlers.IDatabaseHandler;
 import com.protheansoftware.gab.model.Profile;
 import com.protheansoftware.gab.adapter.MatchesListAdapter;
-import com.protheansoftware.gab.model.JdbcDatabaseHandler;
-import com.protheansoftware.gab.chat.MessagingFragment;
+import com.protheansoftware.gab.handlers.JdbcDatabaseHandler;
 
 import java.util.ArrayList;
 import java.util.Observable;

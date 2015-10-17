@@ -10,7 +10,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/swipeContainer"
-    tools:context="com.protheansoftware.gab.MatchesListFragment">
+    tools:context="com.protheansoftware.gab.fragments.MatchesListFragment">
 
     <ListView
         android:id="@android:id/list"

@@ -1,4 +1,8 @@
-package com.protheansoftware.gab.model;
+package com.protheansoftware.gab.handlers;
+
+import com.protheansoftware.gab.model.Like;
+import com.protheansoftware.gab.model.Message;
+import com.protheansoftware.gab.model.Profile;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

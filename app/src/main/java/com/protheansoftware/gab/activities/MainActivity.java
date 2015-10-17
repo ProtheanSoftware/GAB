@@ -1,4 +1,4 @@
-package com.protheansoftware.gab;
+package com.protheansoftware.gab.activities;
 
 import android.util.Log;
 
@@ -10,10 +10,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.protheansoftware.gab.handlers.DataHandler;
+import com.protheansoftware.gab.fragments.MatchScreenFragment;
+import com.protheansoftware.gab.R;
 import com.protheansoftware.gab.adapter.PagerAdapter;
-import com.protheansoftware.gab.chat.MessageService;
-import com.protheansoftware.gab.chat.MessagingFragment;
-import com.protheansoftware.gab.model.JdbcDatabaseHandler;
+import com.protheansoftware.gab.handlers.MessageService;
+import com.protheansoftware.gab.fragments.MessagingFragment;
+import com.protheansoftware.gab.handlers.JdbcDatabaseHandler;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -52,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements PropertyChangeLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
+        setContentView(R.layout.activity_main);
         handler = new DataHandler();
         handler.init();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

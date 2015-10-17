@@ -1,4 +1,4 @@
-package com.protheansoftware.gab.chat;
+package com.protheansoftware.gab.handlers;
 
 import android.app.Service;
 import android.content.Intent;
@@ -10,8 +10,6 @@ import com.sinch.android.rtc.*;
 import com.sinch.android.rtc.messaging.MessageClient;
 import com.sinch.android.rtc.messaging.MessageClientListener;
 import com.sinch.android.rtc.messaging.WritableMessage;
-import com.protheansoftware.gab.model.IDatabaseHandler;
-import com.protheansoftware.gab.model.JdbcDatabaseHandler;
 
 /**
  * @author oskar 

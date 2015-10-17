@@ -1,9 +1,12 @@
-package com.protheansoftware.gab.model;
+package com.protheansoftware.gab.handlers;
 
 import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.util.Base64;
 import android.util.Log;
+
+import com.protheansoftware.gab.model.Secrets;
+import com.protheansoftware.gab.model.Session;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

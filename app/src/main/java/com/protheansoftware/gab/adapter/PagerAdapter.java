@@ -3,10 +3,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.protheansoftware.gab.MainActivity;
-import com.protheansoftware.gab.MatchScreenFragment;
-import com.protheansoftware.gab.MatchesListFragment;
-import com.protheansoftware.gab.chat.MessagingFragment;
+import com.protheansoftware.gab.activities.MainActivity;
+import com.protheansoftware.gab.fragments.MatchScreenFragment;
+import com.protheansoftware.gab.fragments.MatchesListFragment;
+import com.protheansoftware.gab.fragments.MessagingFragment;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
     int mNumOfTabs;

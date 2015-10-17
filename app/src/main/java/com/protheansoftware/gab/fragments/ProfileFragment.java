@@ -1,17 +1,15 @@
-package com.protheansoftware.gab;
+package com.protheansoftware.gab.fragments;
 
-import android.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.facebook.login.LoginManager;
 import com.facebook.login.widget.LoginButton;
-import com.protheansoftware.gab.model.JdbcDatabaseHandler;
+import com.protheansoftware.gab.R;
+import com.protheansoftware.gab.handlers.JdbcDatabaseHandler;
 
 import java.sql.SQLException;
 

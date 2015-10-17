@@ -1,11 +1,9 @@
-package com.protheansoftware.gab;
+package com.protheansoftware.gab.handlers;
 
 import android.os.Handler;
 import android.os.StrictMode;
 import android.util.Log;
 
-import com.mysql.jdbc.JDBC4CallableStatement;
-import com.protheansoftware.gab.model.JdbcDatabaseHandler;
 import com.protheansoftware.gab.model.Profile;
 
 import java.beans.PropertyChangeListener;

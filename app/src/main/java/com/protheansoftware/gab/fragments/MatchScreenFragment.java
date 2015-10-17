@@ -1,4 +1,4 @@
-package com.protheansoftware.gab;
+package com.protheansoftware.gab.fragments;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -9,8 +9,10 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.*;
 
-import com.protheansoftware.gab.model.BusHandler;
-import com.protheansoftware.gab.model.JdbcDatabaseHandler;
+import com.protheansoftware.gab.R;
+import com.protheansoftware.gab.activities.MainActivity;
+import com.protheansoftware.gab.handlers.BusHandler;
+import com.protheansoftware.gab.handlers.JdbcDatabaseHandler;
 import com.protheansoftware.gab.model.Profile;
 import java.sql.SQLException;
 import java.util.ArrayList;

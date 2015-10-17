@@ -1,4 +1,4 @@
-package com.protheansoftware.gab.facebooklogin;
+package com.protheansoftware.gab.activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -20,9 +20,8 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
-import com.protheansoftware.gab.MainActivity;
 import com.protheansoftware.gab.R;
-import com.protheansoftware.gab.model.JdbcDatabaseHandler;
+import com.protheansoftware.gab.handlers.JdbcDatabaseHandler;
 import com.protheansoftware.gab.model.Profile;
 import org.json.JSONArray;
 import org.json.JSONException;

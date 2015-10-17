@@ -1,11 +1,11 @@
-package com.protheansoftware.gab;
+package com.protheansoftware.gab.activities;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.protheansoftware.gab.facebooklogin.FacebookLogin;
+import com.protheansoftware.gab.R;
 
 /**
  * Created by isoa3 on 07/10/15.

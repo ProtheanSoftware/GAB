@@ -1,4 +1,4 @@
-package com.protheansoftware.gab.chat;
+package com.protheansoftware.gab.fragments;
 
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -17,7 +17,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.protheansoftware.gab.MainActivity;
+import com.protheansoftware.gab.activities.MainActivity;
+import com.protheansoftware.gab.handlers.MessageService;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.messaging.Message;
 import com.sinch.android.rtc.messaging.MessageClient;
@@ -31,8 +32,8 @@ import java.util.List;
 
 import com.protheansoftware.gab.R;
 import com.protheansoftware.gab.adapter.MessageAdapter;
-import com.protheansoftware.gab.model.IDatabaseHandler;
-import com.protheansoftware.gab.model.JdbcDatabaseHandler;
+import com.protheansoftware.gab.handlers.IDatabaseHandler;
+import com.protheansoftware.gab.handlers.JdbcDatabaseHandler;
 
 /**
  * Created by boking on 2015-10-07.

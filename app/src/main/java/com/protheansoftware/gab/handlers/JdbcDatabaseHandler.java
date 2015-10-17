@@ -1,9 +1,14 @@
-package com.protheansoftware.gab.model;
+package com.protheansoftware.gab.handlers;
 
 
 import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.protheansoftware.gab.model.Like;
+import com.protheansoftware.gab.model.Message;
+import com.protheansoftware.gab.model.Profile;
+import com.protheansoftware.gab.model.Secrets;
+import com.protheansoftware.gab.model.Session;
 
 import java.sql.*;
 import java.util.ArrayList;
