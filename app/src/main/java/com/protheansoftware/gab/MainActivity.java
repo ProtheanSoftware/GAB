@@ -1,5 +1,11 @@
 package com.protheansoftware.gab;
 
+import android.app.DialogFragment;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.graphics.drawable.ColorDrawable;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import android.content.Intent;
@@ -8,8 +14,16 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
+
+import com.facebook.login.LoginManager;
+import com.facebook.login.widget.LoginButton;
 import com.protheansoftware.gab.adapter.PagerAdapter;
 import com.protheansoftware.gab.chat.MessageService;
 import com.protheansoftware.gab.chat.MessagingFragment;
@@ -24,7 +38,7 @@ import java.sql.SQLException;
  * The main activity for the application
  * @author Tobias Alldén
  */
-public class MainActivity extends AppCompatActivity implements PropertyChangeListener{
+public class MainActivity extends AppCompatActivity implements PropertyChangeListener, LogoutFragment.NoticeDialogListener{
     private DataHandler handler;
     private PagerAdapter adapter;
     private ViewPager viewPager;
@@ -124,9 +138,11 @@ public class MainActivity extends AppCompatActivity implements PropertyChangeLis
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            FragmentManager manager = getFragmentManager();
+            LogoutFragment editNameDialog = new LogoutFragment();
+            editNameDialog.show(manager, "fragment_edit_name");
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -190,5 +206,16 @@ public class MainActivity extends AppCompatActivity implements PropertyChangeLis
             tabLayout.removeTabAt(2);
             adapter.setCount(adapter.getCount()-1);
         }
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        Log.d("logout", "back in main positive click");
+        LoginManager.getInstance().logOut();
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+
     }
 }
