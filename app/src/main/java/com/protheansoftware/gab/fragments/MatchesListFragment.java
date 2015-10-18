@@ -76,6 +76,13 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
 
         getListView().setOnItemClickListener(this);
         initBottomSheetLayout();
+
+        //Start a thread that check if you have been matched with someone
+        Thread t1 = new Thread(matchCheckThread);
+        t1.start();
+        handler.post(t1);
+        //end matchThread
+
     }
 
     @Override
@@ -129,11 +136,6 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
                                            int pos, long id) {
-                //Matchpopup debug, not to be here. Delete on sight .OH
-                MatchPopup pop = new MatchPopup();
-                pop.show(getFragmentManager(),"popup");
-                //End debug
-
                 if (arg0.getItemAtPosition(pos) instanceof Profile) {
                     currentProfile = null;
                     currentProfile = ((Profile) arg0.getItemAtPosition(pos));
@@ -169,4 +171,27 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
     public void setRefreshing(boolean refreshing) {
         this.refreshing = refreshing;
     }
+
+
+    private Runnable matchCheckThread = new Runnable() {
+        @Override
+        public void run() {
+            int waitTime = 15000; // 15 sec
+            //Create a new instance of thread to check again after waitTime .OH
+                handler.postDelayed(matchCheckThread, waitTime);
+            try {
+
+
+                  ArrayList<Profile> oldList = matches;
+                  reloadMatches();
+                  if (oldList.size() != matches.size()) {
+                    //move this code to a custom handler instead. Should only send a msg to handler here. Buuuut will be debuged right now. .OH
+                    MatchPopup mp = new MatchPopup();
+                    mp.show(getFragmentManager(), "New match");
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    };
 }

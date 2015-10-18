@@ -20,7 +20,7 @@ public class MatchPopup extends DialogFragment {
             builder.setMessage(R.string.match_popup_text)
                     .setPositiveButton(R.string.match_popup_ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            // Take me to the chat
+                            // Take me to the matchesScreen
                         }
                     })
                     .setNegativeButton(R.string.match_popup_cancel, new DialogInterface.OnClickListener() {
