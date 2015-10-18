@@ -129,6 +129,11 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
                                            int pos, long id) {
+                //Matchpopup debug, not to be here. Delete on sight .OH
+                MatchPopup pop = new MatchPopup();
+                pop.show(getFragmentManager(),"popup");
+                //End debug
+
                 if (arg0.getItemAtPosition(pos) instanceof Profile) {
                     currentProfile = null;
                     currentProfile = ((Profile) arg0.getItemAtPosition(pos));

@@ -1,4 +1,5 @@
 package com.protheansoftware.gab.fragments;
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -123,6 +124,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
             @Override
             public void onClick(View v) {
                 dislike(match.getDatabaseId(), match.getName());
+                Toast.makeText(getContext(),match.getName() + " rejected", Toast.LENGTH_LONG ).show();
                 loadNextMatch(match);
             }
         });
@@ -130,6 +132,8 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
             @Override
             public void onClick(View v) {
                 like(match.getDatabaseId(), match.getName());
+                //Mayby toast a better message?
+                Toast.makeText(getContext(), match.getName() + " liked", Toast.LENGTH_LONG).show();
                 loadNextMatch(match);
             }
         });
