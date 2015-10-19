@@ -459,9 +459,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     @Override
     public ArrayList<Like> getDislikes() throws SQLException{
         ArrayList<Like> dislikes = new ArrayList<Like>();
-
-        selectFromLikes("SELECT * FROM `t_dislikes` WHERE `origin_id`= " + getMyId() + " LIMIT 0 , 30;");
-
+        dislikes = selectFromLikes("SELECT * FROM `t_dislikes` WHERE `origin_id`= " + getMyId() + " LIMIT 0 , 30;");
         return dislikes;
     }
 
@@ -551,12 +549,14 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
 
     @Override
     public ArrayList<Profile> getMatches() throws SQLException {
-        ArrayList<Like> likes = selectFromLikes("SELECT * FROM `t_likes` WHERE `origin_id`= " + getMyId() + " LIMIT 0 , 30;");
+        //This query was a bit off. If you liked 40 persons in the database and you just get the 30 first ones,
+        // you have 10 potential matches which you won't check for in the comparison. I changed it to work with a view .OH
+        ArrayList<Like> likes = selectFromLikes("SELECT * FROM `v_matches` WHERE `origin_id`= " + getMyId() + " LIMIT 0 , 30;");
         ArrayList<Profile> matches = new ArrayList<Profile>();
         for(Like temp : likes){
-            if(hasLikedMe(temp.getLikeId())){
+            //if(hasLikedMe(temp.getLikeId())){
                 matches.add(getUser(temp.getLikeId()));
-            }
+            //}
         }
         return matches;
     }

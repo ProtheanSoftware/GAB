@@ -123,18 +123,45 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
         ((Button)getActivity().findViewById(R.id.dislikeButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dislike(match.getDatabaseId(), match.getName());
-                Toast.makeText(getContext(),match.getName() + " rejected", Toast.LENGTH_LONG ).show();
-                loadNextMatch(match);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        doorsHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getContext(),match.getName() + " rejected", Toast.LENGTH_LONG ).show();
+                                loadNextMatch(match);
+                            }
+                        });
+                        dislike(match.getDatabaseId(), match.getName());
+                    }
+                }).start();
             }
         });
         ((Button)getActivity().findViewById(R.id.likeButton)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                like(match.getDatabaseId(), match.getName());
-                //Mayby toast a better message?
-                Toast.makeText(getContext(), match.getName() + " liked", Toast.LENGTH_LONG).show();
-                loadNextMatch(match);
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getContext(), match.getName() + " liked", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        doorsHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                loadNextMatch(match);
+                            }
+                        });
+                        like(match.getDatabaseId(), match.getName());
+                    }
+                }).start();
+
+
             }
         });
     }

@@ -6,6 +6,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.protheansoftware.gab.model.Secrets;
 import com.sinch.android.rtc.*;
 import com.sinch.android.rtc.messaging.MessageClient;
 import com.sinch.android.rtc.messaging.MessageClientListener;
@@ -18,8 +19,8 @@ import com.sinch.android.rtc.messaging.WritableMessage;
 public class MessageService extends Service implements SinchClientListener {
     private static final String TAG = "MESSAGE SERVICE";
     private IDatabaseHandler dbh = null;
-    private static final String APP_KEY = "ca2d3532-28fa-47a0-9b86-770b33c28c63";
-    private static final String APP_SECRET = "ZnbCNoNYAkGV4nKVvvivmQ==";
+    private static final String APP_KEY = Secrets.APP_KEY;
+    private static final String APP_SECRET = Secrets.APP_SECRET;
     private static final String ENVIRONMENT = "sandbox.sinch.com";
     private final MessageServiceInterface serviceInterface = new MessageServiceInterface();
     private SinchClient sinchClient = null;

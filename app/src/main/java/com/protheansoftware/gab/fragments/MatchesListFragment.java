@@ -78,9 +78,7 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
         initBottomSheetLayout();
 
         //Start a thread that check if you have been matched with someone
-        Thread t1 = new Thread(matchCheckThread);
-        t1.start();
-        handler.post(t1);
+        //Thread handler.post(matchCheckThread);
         //end matchThread
 
     }
@@ -150,6 +148,7 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
                             reloadMatches();
                             ((BottomSheetLayout)getActivity().findViewById(R.id.bottomsheet)).dismissSheet();
                             matchesListAdapter = new MatchesListAdapter(getActivity(), matches);
+                            handler.post(refresh);
                         }
                     });
                 }
@@ -173,15 +172,14 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
     }
 
 
-    private Runnable matchCheckThread = new Runnable() {
+  /**  This thread have been cut out of the demo product. .OH
+   * private Runnable matchCheckThread = new Runnable() {
         @Override
         public void run() {
             int waitTime = 15000; // 15 sec
             //Create a new instance of thread to check again after waitTime .OH
-                handler.postDelayed(matchCheckThread, waitTime);
+            handler.postDelayed(matchCheckThread, waitTime);
             try {
-
-
                   ArrayList<Profile> oldList = matches;
                   reloadMatches();
                   if (oldList.size() != matches.size()) {
@@ -193,5 +191,5 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
                 e.printStackTrace();
             }
         }
-    };
+    };*/
 }
