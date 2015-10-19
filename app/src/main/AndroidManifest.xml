@@ -34,7 +34,8 @@
 
         <activity
             android:name=".activities.FacebookLogin"
-            android:label="@string/app_name" />
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"/>
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -42,6 +43,7 @@
 
         <activity
             android:name=".activities.SplashScreen"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -52,6 +54,7 @@
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:screenOrientation="portrait"
             android:label="@string/app_name"/>
 
         <service android:name=".handlers.MessageService" >
@@ -59,6 +62,7 @@
 
         <activity
             android:name=".activities.MainActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_main2" >
         </activity>
     </application>
