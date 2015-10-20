@@ -251,22 +251,23 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
         @Override
         public void run() {
             boolean waitLong = false;
-            int waitTime = 24000; // 24 sec
+            int waitTime = 48000; // 48 sec
+            try {
+                //if (BusHandler.getInstance().hasDoorsOpened(waitTime)) {
+                    //Searchmatches
+                    Toast.makeText(getActivity().getApplicationContext(),
+                            "Doors have been opened, reloading potential matches..",
+                            Toast.LENGTH_SHORT).show();
+
+                //
+                // }
+            }catch (Exception e){
+                waitLong = true;
+            }
             if(waitLong){
                 doorsHandler.postDelayed(doorsThread, waitTime * 2);
             }else {
                 doorsHandler.postDelayed(doorsThread, waitTime);
-            }
-            try {
-                if (BusHandler.getInstance().hasDoorsOpened(waitTime)) {
-                    //Searchmatches
-                    Toast.makeText(getActivity().getApplicationContext(),
-                            "Doors have been opened, reloading potential matches..",
-                            Toast.LENGTH_LONG).show();
-
-                }
-            }catch (Exception e){
-                waitLong = true;
             }
         }
     };
