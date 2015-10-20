@@ -106,9 +106,9 @@ public class MainActivity extends AppCompatActivity implements PropertyChangeLis
                         matchScreen = (MatchScreenFragment) adapter.getItem(0);
                         matchScreen.setMain(MainActivity.this);
                     }
-                    if (!hasMatches) {
+                    /*if (!hasMatches) {
                         searchFormatches();
-                    }
+                    }*/
                 }
                 viewPager.setCurrentItem(tab.getPosition());
 
