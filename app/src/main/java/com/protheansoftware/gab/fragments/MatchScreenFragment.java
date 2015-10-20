@@ -263,6 +263,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
                     Toast.makeText(getActivity().getApplicationContext(),
                             "Doors have been opened, reloading potential matches..",
                             Toast.LENGTH_LONG).show();
+
                 }
             }catch (Exception e){
                 waitLong = true;
