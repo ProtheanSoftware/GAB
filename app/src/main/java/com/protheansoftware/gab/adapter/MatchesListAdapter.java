@@ -15,17 +15,18 @@ import com.protheansoftware.gab.R;
 import com.protheansoftware.gab.fragments.MatchScreenFragment;
 import com.protheansoftware.gab.handlers.BusHandler;
 import com.protheansoftware.gab.handlers.JdbcDatabaseHandler;
+import com.protheansoftware.gab.model.MatchProfile;
 import com.protheansoftware.gab.model.Profile;
 import com.protheansoftware.gab.model.Session;
 
 /**
  * Created by Oscar Hall on 01/10/15.
  */
-public class MatchesListAdapter extends ArrayAdapter<Profile>{
+public class MatchesListAdapter extends ArrayAdapter<MatchProfile>{
 
     private Session mySession;
 
-    public MatchesListAdapter(Context context, List<Profile> profiles)
+    public MatchesListAdapter(Context context, List<MatchProfile> profiles)
     {
         super(context, R.layout.matches_list_row_template , profiles);
     }
@@ -36,7 +37,7 @@ public class MatchesListAdapter extends ArrayAdapter<Profile>{
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View custom_row = inflater.inflate(R.layout.matches_list_row_template, parent, false);
 
-        final Profile singleMatchItem = getItem(position);
+        final MatchProfile singleMatchItem = getItem(position);
 
         TextView matchedNameText = (TextView) custom_row.findViewById(R.id.matchedNameText);
         ImageView matchedPicture = (ImageView) custom_row.findViewById(R.id.matchedPicture);
@@ -45,14 +46,13 @@ public class MatchesListAdapter extends ArrayAdapter<Profile>{
         matchedNameText.setText(singleMatchItem.getName());
         matchedPicture.setImageResource(R.drawable.noprofpic);
 
-        Session session = JdbcDatabaseHandler.getInstance().getSessiondgwByUserId(singleMatchItem.getDatabaseId());
-        if(session != null) {
+        if(singleMatchItem.getDgw() != null) {
 
             if(mySession == null) {
                 mySession = JdbcDatabaseHandler.getInstance().getSessiondgwByUserId(JdbcDatabaseHandler.getInstance().getMyId());
             }
 
-            if (session.dgw.equals(mySession.dgw)) {
+            if (singleMatchItem.getDgw().equals(mySession.dgw)) {
                 status.setImageResource(R.drawable.circle_green);
             }else{
                 status.setImageResource(R.drawable.circle_blue);

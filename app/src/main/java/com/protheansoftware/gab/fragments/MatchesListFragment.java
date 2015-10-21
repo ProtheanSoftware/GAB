@@ -16,6 +16,7 @@ import com.flipboard.bottomsheet.BottomSheetLayout;
 import com.protheansoftware.gab.R;
 import com.protheansoftware.gab.activities.MainActivity;
 import com.protheansoftware.gab.handlers.IDatabaseHandler;
+import com.protheansoftware.gab.model.MatchProfile;
 import com.protheansoftware.gab.model.Profile;
 import com.protheansoftware.gab.adapter.MatchesListAdapter;
 import com.protheansoftware.gab.handlers.JdbcDatabaseHandler;
@@ -33,7 +34,7 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
     private IDatabaseHandler dbh;
     private MainActivity main;
 
-    private ArrayList<Profile> matches;
+    private ArrayList<MatchProfile> matches;
 
     private ListAdapter matchesListAdapter;
     private SwipeRefreshLayout swipeContainer;
@@ -122,7 +123,7 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
     };
 
     private void reloadMatches(){
-        matches = new ArrayList<Profile>();
+        matches = new ArrayList<MatchProfile>();
         try {
             matches = dbh.getMatches();
         } catch (Exception e) {

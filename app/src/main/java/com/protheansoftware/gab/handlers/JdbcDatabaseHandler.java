@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.protheansoftware.gab.model.Like;
+import com.protheansoftware.gab.model.MatchProfile;
 import com.protheansoftware.gab.model.Message;
 import com.protheansoftware.gab.model.Profile;
 import com.protheansoftware.gab.model.Secrets;
@@ -145,6 +146,54 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
             while (rs.next()){
                 ArrayList<String> interests = gson.fromJson(rs.getString("interests"), new TypeToken<ArrayList<String>>() {}.getType());
                 Profile temp = new Profile(rs.getInt("user_id"), rs.getLong("fb_id"), rs.getString("name"), interests);
+                profiles.add(temp);
+            }
+
+        }catch (SQLException ex){
+            Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
+            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+        }finally {
+            try {
+                if(statement != null){
+                    statement.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+
+            } catch (SQLException ex) {
+                Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
+                lgr.log(Level.SEVERE, ex.getMessage(), ex);
+            }
+        }
+        return profiles;
+    }
+
+    private ArrayList<MatchProfile> selectFromMatches(String query){
+        ArrayList<MatchProfile> profiles = new ArrayList<MatchProfile>();
+
+        Connection con = null;
+        Statement statement =  null;
+
+        String url = "jdbc:mysql://" + Secrets.DB_IP + "/gab";
+        String user = Secrets.DB_USER;
+        String password = Secrets.DB_PASSWORD;
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (Exception ex) {
+            System.err.println(ex.getMessage());
+        }
+
+        try{
+            con = DriverManager.getConnection(url, user, password);
+
+            statement = con.createStatement();
+
+            ResultSet rs = statement.executeQuery(query);
+            Gson gson = new Gson();
+            while (rs.next()){
+                ArrayList<String> interests = new ArrayList<String>();
+                MatchProfile temp = new MatchProfile(rs.getInt("like_id"), rs.getLong("fb_id"), rs.getString("like_name"), interests, rs.getString("dgw"));
                 profiles.add(temp);
             }
 
@@ -548,16 +597,11 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     }
 
     @Override
-    public ArrayList<Profile> getMatches() throws SQLException {
+    public ArrayList<MatchProfile> getMatches() throws SQLException {
         //This query was a bit off. If you liked 40 persons in the database and you just get the 30 first ones,
         // you have 10 potential matches which you won't check for in the comparison. I changed it to work with a view .OH
-        ArrayList<Like> likes = selectFromLikes("SELECT * FROM `v_matches` WHERE `origin_id`= " + getMyId() + " LIMIT 0 , 30;");
-        ArrayList<Profile> matches = new ArrayList<Profile>();
-        for(Like temp : likes){
-            //if(hasLikedMe(temp.getLikeId())){
-                matches.add(getUser(temp.getLikeId()));
-            //}
-        }
+        ArrayList<MatchProfile> matches = selectFromMatches(
+                "SELECT * FROM `v_matches` WHERE `origin_id`= " + getMyId() + " LIMIT 0 , 30;");
         return matches;
     }
 

@@ -1,6 +1,7 @@
 package com.protheansoftware.gab.handlers;
 
 import com.protheansoftware.gab.model.Like;
+import com.protheansoftware.gab.model.MatchProfile;
 import com.protheansoftware.gab.model.Message;
 import com.protheansoftware.gab.model.Profile;
 
@@ -84,7 +85,7 @@ public interface IDatabaseHandler {
      * @return ArrayList of Profiles.
      * @throws SQLException
      */
-    ArrayList<Profile> getMatches() throws SQLException;
+    ArrayList<MatchProfile> getMatches() throws SQLException;
 
     /**
      * Checks if the target user have liked the current user
