@@ -57,6 +57,14 @@ public class DataHandler {
         this.pcs.removePropertyChangeListener(listener);
     }
 
+    /**
+     * Returns the profile of the current user
+     * @return
+     */
+    public Profile getMyProfile() {
+        return me;
+    }
+
     private Runnable searchMatches = new Runnable() {
         @Override
         public void run() {

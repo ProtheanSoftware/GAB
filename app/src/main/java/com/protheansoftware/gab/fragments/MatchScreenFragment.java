@@ -117,7 +117,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     public void setMatch(final Profile match){
         ((TextView)getActivity().findViewById(R.id.nameTag)).setText(match.getName());
         ListView list = (ListView)getActivity().findViewById(R.id.centerContentList);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,match.getInterests());
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,main.getDataHandler().getMyProfile().getSimularInterestList(match.getInterests()));
         list.setAdapter(adapter);
 
         ((Button)getActivity().findViewById(R.id.dislikeButton)).setOnClickListener(new View.OnClickListener() {

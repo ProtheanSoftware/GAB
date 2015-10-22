@@ -171,6 +171,14 @@ public class MainActivity extends AppCompatActivity implements PropertyChangeLis
             matchScreen.setNoMatches();
         }
     }
+
+    /**
+     * Returns the datahandler
+     * @return
+     */
+    public DataHandler getDataHandler() {
+        return this.handler;
+    }
     public void openChat(){
         adapter.setCount(3);
         Log.d(TAG, "Chat opened");
