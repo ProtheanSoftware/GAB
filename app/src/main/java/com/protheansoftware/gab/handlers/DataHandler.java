@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.StrictMode;
 import android.util.Log;
 
+import com.protheansoftware.gab.activities.MainActivity;
 import com.protheansoftware.gab.model.Profile;
 
 import java.beans.PropertyChangeListener;
@@ -65,7 +66,7 @@ public class DataHandler {
         return me;
     }
 
-    private Runnable searchMatches = new Runnable() {
+    public Runnable searchMatches = new Runnable() {
         @Override
         public void run() {
             Log.d(TAG, "Searching for matches");
@@ -76,12 +77,17 @@ public class DataHandler {
                 e.printStackTrace();
             }
             Log.d(TAG, matches.toString());
-            if(matches == null || matches.isEmpty()){
-                pcs.firePropertyChange("NoMatches",null,null);
-            }else{
-                sortMatches(matches);
-                pcs.firePropertyChange("MatchList",null,matches);
-            }
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if(matches == null || matches.isEmpty()){
+                        pcs.firePropertyChange("NoMatches",null,null);
+                    }else{
+                        sortMatches(matches);
+                        pcs.firePropertyChange("MatchList",null,matches);
+                    }
+                }
+            });
         }
     };
 
@@ -93,7 +99,8 @@ public class DataHandler {
 
         //Start session and search for matches
         if(jdb.getSessiondgwByUserId(jdb.getMyId())!=null) {
-            handler.post(searchMatches);
+            Thread t = new Thread(searchMatches);
+            t.start();
         }
     }
 

@@ -52,12 +52,15 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
 
         matchesListAdapter = new MatchesListAdapter(getActivity(), matches);
         setListAdapter(matchesListAdapter);
-
+        //Initializes the swipecontainer, enables reload through "pull-to-refresh"-pattern
         swipeContainer = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 setRefreshing(true);
+                /**
+                 * Thread that will start reloading the matches, once done flags refreshing=false
+                 */
                 Thread thread = new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -70,6 +73,7 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
             }
 
         });
+        //Colors of the "loader-circle"
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
@@ -86,8 +90,7 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_item_list,container,false);
-        return rootView;
+        return inflater.inflate(R.layout.fragment_item_list,container,false);
     }
 
     public void setDbh(IDatabaseHandler dbh){
@@ -108,6 +111,12 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
         //Switch tab and open chat
         main.openChat();
     }
+
+    /**
+     * Runnable that checks if the matches are still reloading, once the matches have been loaded
+     * isRefreshing() will return false and the Runnable will set the "Swipe Container-spinner"
+     * to stop spinning aswell as reload the adapter using the new matches
+     */
     private final Runnable refresh = new Runnable() {
         @Override
         public void run() {
@@ -122,6 +131,9 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
         }
     };
 
+    /**
+     * Polls the database for new matches
+     */
     private void reloadMatches(){
         matches = new ArrayList<MatchProfile>();
         try {
