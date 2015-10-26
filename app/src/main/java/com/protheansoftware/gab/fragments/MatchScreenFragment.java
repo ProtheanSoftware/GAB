@@ -53,7 +53,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
      */
     public void setMatches(ArrayList<Profile> matches) {
         this.matches = matches;
-        setMatch(matches.get(0));
+        if(matches.size()>0) setMatch(matches.get(0));
     }
 
     /**
