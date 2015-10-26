@@ -1,4 +1,4 @@
-package com.protheansoftware.gab;
+package com.protheansoftware.gab.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -6,9 +6,6 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
-
-import com.facebook.login.LoginManager;
 
 /**
  * Created by boking on 2015-10-17.

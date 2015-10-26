@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -47,7 +48,7 @@ public class FacebookLogin extends Activity {
         FacebookSdk.sdkInitialize(getApplicationContext());
         Log.d(TAG, "Facebook sdk initialized");
 
-        Log.i(TAG,"Tries to log in with previous user...");
+        Log.i(TAG, "Tries to log in with previous user...");
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("user_likes"));
 
         //Check if logged in, if true, starts main activity
@@ -83,6 +84,27 @@ public class FacebookLogin extends Activity {
             }
 
         });
+    }
+
+    /**
+     * This method is called when the "developer login" button is pressed, and allows for using the
+     * app without the need for a facebook account (anly accessable to developers)
+     */
+    public void developerLogin(View view) {
+        //makeshift facebook id
+        long fb_id = 11235813;
+        addTempUserIfNotExists(fb_id);
+        synchronized (userExists) {
+            while(!userExists) {
+                try {
+                    userExists.wait(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        startMainActivity();
+
     }
 
     /**
@@ -125,6 +147,40 @@ public class FacebookLogin extends Activity {
                     if (user == null) {
                         Log.d(TAG, "User doesn't exist, creating user..");
                         JdbcDatabaseHandler.getInstance().addUser(parser.getNameFromFacebookId(fb_id), fb_id, parser.getLikeListFromFacebookId(fb_id));
+                        userExists = true;
+                        return;
+                    } else {
+                        userExists = true;
+                        return;
+                    }
+                }
+            }
+        });
+        thread.start();
+    }
+
+    /**
+     * Simular to addUserIfNotExists, to be used with a makeshift facebook id (Developer login)
+     */
+    private void addTempUserIfNotExists(final long fb_id) {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (userExists) {
+                    Profile user = null;
+
+                    try {
+                        user = JdbcDatabaseHandler.getInstance(fb_id).getUserFromFBID(fb_id);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    ArrayList<String> likes = new ArrayList<String>();
+                    likes.add("Netflix");
+                    likes.add("Snubbar med slips");
+                    likes.add("Chalmers University of Technology");
+                    if (user == null) {
+                        Log.d(TAG, "Temp User doesn't exist, creating user..");
+                        JdbcDatabaseHandler.getInstance().addUser("Gilfoyle", fb_id, likes);
                         userExists = true;
                         return;
                     } else {

@@ -1,11 +1,7 @@
 package com.protheansoftware.gab.activities;
 
 import android.app.DialogFragment;
-import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.graphics.drawable.ColorDrawable;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import android.content.Intent;
@@ -17,7 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.protheansoftware.gab.LogoutFragment;
+import com.protheansoftware.gab.fragments.LogoutFragment;
 import com.protheansoftware.gab.handlers.DataHandler;
 import com.protheansoftware.gab.fragments.MatchScreenFragment;
 import com.protheansoftware.gab.R;

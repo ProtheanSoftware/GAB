@@ -32,5 +32,14 @@
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="100dp" />
+    <Button
+        android:id="@+id/debugLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Developer Login"
+        android:onClick="developerLogin"
+        />
 
 </RelativeLayout>
