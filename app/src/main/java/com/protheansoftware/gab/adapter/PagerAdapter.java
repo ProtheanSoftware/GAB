@@ -56,6 +56,11 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public int getCount() {
         return mNumOfTabs;
     }
+
+    /**
+     * Sets the count of tabs and notifies the list
+     * @param i The new tab count
+     */
     public void setCount(int i){
         this.mNumOfTabs = i;
         notifyDataSetChanged();

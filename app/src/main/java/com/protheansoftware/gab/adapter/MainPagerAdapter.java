@@ -8,7 +8,8 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 /**
- * Created by Marcus on 09/10/15.
+ * @author allden
+ * Created by Allden on 09/10/15.
  */
 public class MainPagerAdapter extends PagerAdapter {
     //Holds all current views
