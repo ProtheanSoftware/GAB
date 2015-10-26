@@ -1,10 +1,11 @@
-package com.protheansoftware.gab.model;
+package com.protheansoftware.gab.handlers;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.google.gson.Gson;
 
+import com.protheansoftware.gab.model.Profile;
 import org.json.JSONArray;
 import org.json.JSONException;
 
