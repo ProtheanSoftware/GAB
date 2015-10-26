@@ -115,7 +115,7 @@ public class MessagingFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 messageBody = messageBodyField.getText().toString();
-
+                //Sends the message to the message service which sends to server and Sinch
                 Log.d(TAG, "sending message: " + messageBody + ", To: " + recipientId);
                 if (!messageBody.isEmpty()) {
                     messageService.sendMessage(recipientId, messageBody);
@@ -136,13 +136,13 @@ public class MessagingFragment extends Fragment {
             Log.d(TAG, "Switched to chat");
             fillChatIfNeeded();
         }else if(viewCreated){
+            //if chat is not visible and view has been created properly
             main.closeChat();
         }
     }
 
     /**
      * Empties and refills the chat if the recipient has been switched
-     *
      */
     private void fillChatIfNeeded() {
         ListView list = (ListView)getActivity().findViewById(R.id.listMessages);
@@ -278,7 +278,7 @@ public class MessagingFragment extends Fragment {
     /**
      * Checks if current conversation contains message using the sinch id
      * @param message message in question
-     * @return True; Database contains message, False; Database doesn't contain message
+     * @return True; Conversation contains message, False; Conversation doesn't contain message
      */
     private boolean conversationContainsMessage(Message message) {
         return messageAdapter.contains(message);

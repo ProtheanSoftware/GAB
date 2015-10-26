@@ -66,7 +66,11 @@ public class DataHandler {
         return me;
     }
 
-    public Runnable searchMatches = new Runnable() {
+    /**
+     * Runnable which polls the database for new matches
+     * Fires propertychange when done
+     */
+    private Runnable searchMatches = new Runnable() {
         @Override
         public void run() {
             Log.d(TAG, "Searching for matches");
@@ -115,8 +119,8 @@ public class DataHandler {
 
     /**
      * Sorts the matchlist after number of simular interests between you and the match
-     * @param unsortedMatches
-     * @return
+     * @param unsortedMatches The target matchlist
+     * @return Sorted list
      */
     private void sortMatches(ArrayList<Profile> unsortedMatches) {
         boolean flag = true;
@@ -151,7 +155,7 @@ public class DataHandler {
 
     /**
      * Returns the current users db id.
-     * @return
+     * @return the currnt id
      */
     public int getMyDbId() throws SQLException {
         return JdbcDatabaseHandler.getInstance().getMyId();
