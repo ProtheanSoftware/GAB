@@ -272,11 +272,11 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
                 });
 
                 try {
-                    //if (BusHandler.getInstance().hasDoorsOpened(waitTime)) {
-                    //Searchmatches
-                    t.start();
-                    //
-                    // }
+                    if (BusHandler.getInstance().hasDoorsOpened(waitTime)) {
+                        //Searchmatches
+                        t.start();
+                        //
+                    }
                 } catch (Exception e) {
                     waitLong = true;
                 }
