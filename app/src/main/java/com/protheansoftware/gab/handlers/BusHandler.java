@@ -23,15 +23,12 @@ import javax.net.ssl.HttpsURLConnection;
  * @author oskar
  * Created by oskar on 09/10/15.
  */
-public class BusHandler{
-    private final String TAG = "GAB";
+public class BusHandler {
+    private final String TAG = "BusHandler";
     private static BusHandler instance;
-    private boolean flag;
     private JdbcDatabaseHandler jdb = JdbcDatabaseHandler.getInstance();
 
-    private BusHandler(){
-
-    }
+    private BusHandler(){}
 
     public static BusHandler getInstance() {
         if(instance == null){
@@ -40,34 +37,41 @@ public class BusHandler{
         return instance;
     }
 
+    /**
+     * @return The bus VIN on bus/network with icomera api or null if failed to retrieve.
+     */
     public String getBusVIN() {
-        long newtime = System.currentTimeMillis();
-        long oldtime = newtime - 100000;
+        Log.i(TAG, "Trying to retrieve the bus VIN.");
+        String sa = null;
 
-        //String tmp = getJSON("https://ece01.ericsson.net:4443/ecity?resourceSpec=Ericsson$Cell_Id_Value&t1=" + oldtime + "&t2=" + newtime);
-        //String tmp = getXML("http://www.ombord.info/api/xml/system/");
-        String tmp = "" +
+        //String rawXML = getXML("http://www.ombord.info/api/xml/system/");
+        //Used temporarily since else the user has to be on a real bus.
+        String rawXML = "" +
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<system>\n" +
                 "    <system_id type=\"integer\">2501069301</system_id>\n" +
                 "</system>"
                 ;
 
-        if(tmp == null) {
-            flag = true;
-            return null;
-        }
+        Log.d(TAG, "");
 
-        ArrayList<String> sa = new ArrayList<>();
-        Matcher m = Pattern.compile("(?<=<system_id type=\"integer\">)([^<]*)").matcher(tmp);
-        while (m.find()) {sa.add(m.group());}
+        if(rawXML == null) return null;
+
+        //Tries to extract the system_id from the rawXML using regex.
+        Matcher m = Pattern.compile("(?<=<system_id type=\"integer\">)([^<]*)").matcher(rawXML);
+        while (m.find()) {sa = m.group();}
+
+        //Couldn't extract the system_id from the rawXML
         if (sa == null) return null;
-        Log.e(TAG, "HEJ: "+sa.get(0));
-        String result = jdb.getdgwFromSystemId(sa.get(0));
 
-        return result;
+        return jdb.getdgwFromSystemId(sa);
     }
 
+    /**
+     * Tries to retrieve xml from target url using GET with a timeout of 3s.
+     * @param target The url to get the xml from.
+     * @return The result xml or null if unable to retrieve xml.
+     */
     private String getXML(String target) {
         try {
             URL url = new URL(target);
@@ -84,7 +88,6 @@ public class BusHandler{
 
             switch (status) {
                 case 200:
-                    String line;
                     int numCharsRead;
                     char[] charArray = new char[1024];
                     StringBuffer sb = new StringBuffer();
@@ -94,23 +97,12 @@ public class BusHandler{
                     return sb.toString();
             }
         } catch (ConnectException e) {
-            Log.d(TAG, "Couldn't connect: "+e);
+            Log.d(TAG, "Couldn't connect: " + e);
         } catch(Exception e) {
             Log.e(TAG, "ERROR: "+e);
             e.printStackTrace();
         }
         return null;
-    }
-
-    /**
-     * Gets the device wifi
-     * @param context The devices context
-     * @return SSID of wifi
-     */
-    public String getMyWifi(Context context) {
-        WifiManager mngr = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        String wifi = mngr.getConnectionInfo().getSSID();
-        return wifi;
     }
 
     /**
@@ -154,34 +146,32 @@ public class BusHandler{
         return null;
     }
 
-    public boolean startSessionIfNeeded(Context context) {
-        flag = false;
-        int user_id = jdb.getMyId(); //Will be passed to this function as a param
+    /**
+     * Starts a session if the user is connected to a bus network with icomera api installed.
+     * Updates the session vin if the user is on another bus than the session.
+     * @return True if a session was started or updated, else false.
+     */
+    public boolean startSessionIfNeeded() {
+        int user_id = jdb.getMyId();
         String bus_vin = getBusVIN();
 
-        Log.e(TAG, "VIN: "+bus_vin);
+        Log.d(TAG, "My bus VIN: "+bus_vin);
 
-        if (flag) {
-            //We are not on a bus network or cant access local api
-            return false;
-        }
+        //We are not on a bus network or cant access local icomera api.
+        if (bus_vin == null) {return false;}
 
         Session session = jdb.getSessiondgwByUserId(user_id);
         if (session != null) {
             if (session.dgw.equals(bus_vin)) {
-                Log.e(TAG, "Session running. Fetch and display matches.");
-                //already on this bus network and session is started
-                //Display my matches
+                Log.i(TAG, "Session running.");
             } else {
-                Log.e(TAG, "Updating session VIN.");
-                Log.e(TAG, "User is on a bus but not the same as the session. " +
+                Log.i(TAG, "Updating session VIN.");
+                Log.d(TAG, "User is on a bus but not the same as the session. " +
                         "My VIN: " + bus_vin + ". Session VIN: " + session.dgw);
-                //Im on a another bus network, update the session
                 jdb.updateSession(bus_vin, user_id);
             }
         } else {
-            Log.e(TAG, "Starting a new session...");
-            //Im on a bus network and no session is started, start a new session
+            Log.i(TAG, "Starting a new session...");
             jdb.sessionStart(bus_vin);
         }
         return true;
