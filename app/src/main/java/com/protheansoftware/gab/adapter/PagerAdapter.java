@@ -8,8 +8,13 @@ import com.protheansoftware.gab.fragments.MatchScreenFragment;
 import com.protheansoftware.gab.fragments.MatchesListFragment;
 import com.protheansoftware.gab.fragments.MessagingFragment;
 
+
+/**
+ * The pager adapter used with the main viewpager, returns the different fragments the application uses.
+ * @author Tobias Alldén
+ */
 public class PagerAdapter extends FragmentStatePagerAdapter {
-    int mNumOfTabs;
+    int numberOfTabs;
     boolean hasMatches = false;
     MainActivity main;
     MatchScreenFragment matchScreenFragment;
@@ -18,7 +23,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     public PagerAdapter(FragmentManager fm, int NumOfTabs, MainActivity main) {
         super(fm);
-        this.mNumOfTabs = NumOfTabs;
+        this.numberOfTabs = NumOfTabs;
         this.main = main;
     }
     public void setHasMatches(boolean value) {
@@ -54,10 +59,10 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return mNumOfTabs;
+        return numberOfTabs;
     }
     public void setCount(int i){
-        this.mNumOfTabs = i;
+        this.numberOfTabs = i;
         notifyDataSetChanged();
     }
 }

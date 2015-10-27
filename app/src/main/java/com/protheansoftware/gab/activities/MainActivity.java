@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements PropertyChangeLis
         setSupportActionBar(toolbar);
         toolbar.setTitle(R.string.app_name);
 
+        //Add tabs to tablayout
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.addTab(tabLayout.newTab().setText("Matchescreen"));
         tabLayout.addTab(tabLayout.newTab().setText("Matches"));
