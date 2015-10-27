@@ -106,13 +106,13 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     public void onResume() {
         super.onResume();
 //        bh.startSessionIfNeeded(this.getContext(), (GsmCellLocation) telephonyManager.getCellLocation());
-        if (!bh.startSessionIfNeeded(this.getContext())) {
+        if (!bh.startSessionIfNeeded()) {
             setMessage("You need to be on a buss network to match with other people!");
         }
         //Thread that, when the doors have been opened on your bus, reload our matches.
         //If something goes wrong, wait 30 seconds before trying again
         doorsHandler = new Handler();
-        if(jdb.getSessiondgwByUserId(jdb.getMyId()) != null) doorsHandler.post(doorsThread);
+        if(jdb.getSessiondgwByUserId() != null) doorsHandler.post(doorsThread);
     }
 
     /**
