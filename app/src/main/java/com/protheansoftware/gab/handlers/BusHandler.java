@@ -1,7 +1,5 @@
 package com.protheansoftware.gab.handlers;
 
-import android.content.Context;
-import android.net.wifi.WifiManager;
 import android.util.Base64;
 import android.util.Log;
 
@@ -20,13 +18,13 @@ import java.util.regex.Pattern;
 import javax.net.ssl.HttpsURLConnection;
 
 /**
- * @author oskar
+ * @author oskar, david
  * Created by oskar on 09/10/15.
  */
 public class BusHandler {
     private final String TAG = "BusHandler";
     private static BusHandler instance;
-    private JdbcDatabaseHandler jdb = JdbcDatabaseHandler.getInstance();
+    private IDatabaseHandler jdb = JdbcDatabaseHandler.getInstance();
 
     private BusHandler(){}
 
@@ -38,9 +36,9 @@ public class BusHandler {
     }
 
     /**
-     * @return The bus VIN on bus/network with icomera api or null if failed to retrieve.
+     * @return The bus DGW on bus/network with icomera api or null if failed to retrieve.
      */
-    public String getBusVIN() {
+    public String getBusDGW() {
         Log.i(TAG, "Trying to retrieve the bus VIN.");
         String sa = null;
 
@@ -53,11 +51,10 @@ public class BusHandler {
                 "</system>"
                 ;
 
-        Log.d(TAG, "");
-
         if(rawXML == null) return null;
+        Log.d(TAG, "The raw xml retrieved from icomera local api: "+rawXML);
 
-        //Tries to extract the system_id from the rawXML using regex.
+        Log.d(TAG, "Trying to extract the system_id from the rawXML using regex.");
         Matcher m = Pattern.compile("(?<=<system_id type=\"integer\">)([^<]*)").matcher(rawXML);
         while (m.find()) {sa = m.group();}
 
@@ -73,6 +70,7 @@ public class BusHandler {
      * @return The result xml or null if unable to retrieve xml.
      */
     private String getXML(String target) {
+        Log.i(TAG, "Retrieving raw xml from target url.");
         try {
             URL url = new URL(target);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -100,7 +98,6 @@ public class BusHandler {
             Log.d(TAG, "Couldn't connect: " + e);
         } catch(Exception e) {
             Log.e(TAG, "ERROR: "+e);
-            e.printStackTrace();
         }
         return null;
     }
@@ -111,6 +108,7 @@ public class BusHandler {
      * @return String of response, in JSON form.
      */
     private String getJSON(String target){
+        Log.i(TAG, "Retrieving JSON from target url.");
         try {
             byte[] authEncBytes = Base64.encode(Secrets.API.getBytes(), Base64.DEFAULT);
             String authEncStr = new String(authEncBytes);
@@ -148,31 +146,31 @@ public class BusHandler {
 
     /**
      * Starts a session if the user is connected to a bus network with icomera api installed.
-     * Updates the session vin if the user is on another bus than the session.
-     * @return True if a session was started or updated, else false.
+     * Updates the session DGW if the user is on another bus than the session.
+     * @return True if a session was started or updated, and the user is currently on a bus with
+     * icomera api. Else returns false.
      */
     public boolean startSessionIfNeeded() {
-        int user_id = jdb.getMyId();
-        String bus_vin = getBusVIN();
+        String bus_dgw = getBusDGW();
 
-        Log.d(TAG, "My bus VIN: "+bus_vin);
+        Log.d(TAG, "Not on a bus network or cant access local icomera api.");
+        if (bus_dgw == null) {return false;}
 
-        //We are not on a bus network or cant access local icomera api.
-        if (bus_vin == null) {return false;}
+        Log.d(TAG, "My bus DGW: "+bus_dgw);
 
-        Session session = jdb.getSessiondgwByUserId(user_id);
+        Session session = jdb.getSessiondgwByUserId();
         if (session != null) {
-            if (session.dgw.equals(bus_vin)) {
+            if (session.dgw.equals(bus_dgw)) {
                 Log.i(TAG, "Session running.");
             } else {
-                Log.i(TAG, "Updating session VIN.");
+                Log.i(TAG, "Updating session DGW.");
                 Log.d(TAG, "User is on a bus but not the same as the session. " +
-                        "My VIN: " + bus_vin + ". Session VIN: " + session.dgw);
-                jdb.updateSession(bus_vin, user_id);
+                        "My DGW: " + bus_dgw + ". Session DGW: " + session.dgw);
+                jdb.updateSession(bus_dgw);
             }
         } else {
             Log.i(TAG, "Starting a new session...");
-            jdb.sessionStart(bus_vin);
+            jdb.sessionStart(bus_dgw);
         }
         return true;
     }
@@ -185,7 +183,7 @@ public class BusHandler {
     public boolean hasDoorsOpened(int deltaTime){
         long newtime = System.currentTimeMillis();
         long oldtime = newtime - deltaTime; //2 * 60 * 1000/10
-        String busVin = jdb.getSessiondgwByUserId(jdb.getMyId()).dgw;
+        String busVin = jdb.getSessiondgwByUserId().dgw;
         String tmp = getJSON("https://ece01.ericsson.net:4443/ecity?dgw=" + busVin + "&resourceSpec=Ericsson$Open_Door_Value&t1=" + oldtime + "&t2=" + newtime);
 
         Log.d(TAG, tmp);

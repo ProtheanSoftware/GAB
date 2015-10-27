@@ -369,7 +369,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         }
     }
 
-    public Session getSessiondgwByUserId(int user_id) {
+    public Session getSessiondgwByUserId() {
         Session session = null;
 
         Connection con = null;
@@ -392,7 +392,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
             ResultSet rs = statement
                     .executeQuery("SELECT * " +
                             "FROM `t_sessions` " +
-                            "WHERE `user_id` =" + user_id + ";");
+                            "WHERE `user_id` =" + getMyId() + ";");
             if (rs.next()) {
                 session = new Session(rs.getInt("session_id"),
                         rs.getInt("user_id"),
@@ -721,7 +721,10 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         }
     }
 
-    public void updateSession(String bus_dgw, int user_id) {
+    /**
+     * @param bus_dgw The new bus DGW.
+     */
+    public void updateSession(String bus_dgw) {
         Connection con = null;
         PreparedStatement pstatement = null;
 
@@ -739,7 +742,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
 
             pstatement = con.prepareStatement("UPDATE t_sessions SET dgw = ? WHERE user_id = ?");
             pstatement.setString(1, bus_dgw);
-            pstatement.setInt(2, user_id);
+            pstatement.setInt(2, getMyId());
             pstatement.executeUpdate();
         }catch (SQLException ex){
             Logger lgr = Logger.getLogger(JdbcDatabaseHandler.class.getName());
@@ -761,7 +764,7 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
     }
 
     public ArrayList<Profile> getUsersOnBuss() {
-        Session my_session = getSessiondgwByUserId(getMyId());
+        Session my_session = getSessiondgwByUserId();
         ArrayList<Profile> profiles =
                 selectFromUsers(
                         "SELECT `t_users`.`user_id`, `t_users`.`name`, `t_users`.`fb_id`, `t_users`.`interests` " +
@@ -774,6 +777,11 @@ public class JdbcDatabaseHandler implements IDatabaseHandler {
         return profiles;
     }
 
+    /**
+     * Tries retrieve the bus DGW from its system_id on the server.
+     * @param target The system_id which is used to find the bus DGW.
+     * @return The bus DGW if found, else null.
+     */
     public String getdgwFromSystemId(String target) {
         String result = "";
 
