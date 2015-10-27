@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 /**
  * A class containing all tha data for a potential match
+ * @author Tobias Allden
+ * @author Oskar Jedvert
  */
 public class Profile {
     private int databaseId;

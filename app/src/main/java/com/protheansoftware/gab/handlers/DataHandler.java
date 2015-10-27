@@ -102,7 +102,7 @@ public class DataHandler {
         Log.d(TAG, "Searching for matches...");
 
         //Start session and search for matches
-        if(jdb.getSessiondgwByUserId(jdb.getMyId())!=null) {
+        if(jdb.getSessiondgwByUserId()!=null) {
             Thread t = new Thread(searchMatches);
             t.start();
         }
