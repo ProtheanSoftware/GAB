@@ -1,5 +1,6 @@
 package com.protheansoftware.gab.activities;
 
+import android.app.Activity;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.util.Log;
@@ -142,7 +143,6 @@ public class MainActivity extends AppCompatActivity implements PropertyChangeLis
 
     /**
      * Sets if there are matches
-     * @param value
      */
     public void setHasMatches(boolean value) {
         hasMatches  =value;
@@ -151,7 +151,6 @@ public class MainActivity extends AppCompatActivity implements PropertyChangeLis
     @Override
     public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
         if(propertyChangeEvent.getPropertyName().equals("MatchList")) {
-            Log.d("Swag","hello");
             this.hasMatches = true;
             if(matchScreen == null) {
                 matchScreen = (MatchScreenFragment)adapter.getItem(0);
@@ -171,11 +170,16 @@ public class MainActivity extends AppCompatActivity implements PropertyChangeLis
 
     /**
      * Returns the datahandler
-     * @return
+     * @return The current datahandler
      */
     public DataHandler getDataHandler() {
         return this.handler;
     }
+
+    /**
+     * Opens the chat if the chat has not been previously opened, If the chat is already opened it closes
+     * said chat and opens a new one.
+     */
     public void openChat(){
         adapter.setCount(3);
         Log.d(TAG, "Chat opened");
@@ -185,10 +189,12 @@ public class MainActivity extends AppCompatActivity implements PropertyChangeLis
         if(tabLayout.getTabCount() == 3){
             tabLayout.removeTabAt(2);
         }
-        String recipient = "null";
+        String recipient;
+        //Polls the database for the name of the recipient
         try{
             recipient = JdbcDatabaseHandler.getInstance().getUser(Integer.parseInt(MessagingFragment.getRecipientId())).getName();
         }catch (SQLException e){
+            recipient = "null;";
         }
         tabLayout.addTab(tabLayout.newTab().setText(recipient));
 
@@ -201,6 +207,9 @@ public class MainActivity extends AppCompatActivity implements PropertyChangeLis
         super.onDestroy();
     }
 
+    /**
+     * Closes chat
+     */
     public void closeChat() {
         //Make sure chat is opened
         if(adapter.getCount() > 2){

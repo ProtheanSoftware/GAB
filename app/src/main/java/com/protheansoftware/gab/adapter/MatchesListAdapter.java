@@ -20,6 +20,7 @@ import com.protheansoftware.gab.model.Profile;
 import com.protheansoftware.gab.model.Session;
 
 /**
+ * @author Oscar Hall
  * Created by Oscar Hall on 01/10/15.
  */
 public class MatchesListAdapter extends ArrayAdapter<MatchProfile>{
