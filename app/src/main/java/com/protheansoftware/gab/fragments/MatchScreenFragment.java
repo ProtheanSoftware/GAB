@@ -1,9 +1,7 @@
 package com.protheansoftware.gab.fragments;
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +10,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.*;
 
 import com.protheansoftware.gab.R;
-import com.protheansoftware.gab.activities.FacebookLogin;
 import com.protheansoftware.gab.activities.MainActivity;
 import com.protheansoftware.gab.handlers.BusHandler;
 import com.protheansoftware.gab.handlers.JdbcDatabaseHandler;
@@ -22,7 +19,8 @@ import java.util.ArrayList;
 
 
 /**
- * Shows the different matches retrieved
+ * Contains a graphical representation of a User, with functrionality to like or dislike the user, as well as functionality to switch view to search-screen.
+ * @author Tobias Allden
  */
 public class MatchScreenFragment extends Fragment implements View.OnClickListener {
     public static final String TAG = "MatchScreen";
@@ -48,10 +46,6 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
         this.main = main;
     }
 
-    /**
-     * Sets the list of matches
-     * @param matches
-     */
     public void setMatches(ArrayList<Profile> matches) {
         this.matches = matches;
         if(matches.size()>0) setMatch(matches.get(0));
@@ -187,7 +181,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     }
 
     /**
-     * Dislike the match
+     * Dislike the user
      */
     public void dislike(int id, String name) {
         try {
@@ -198,7 +192,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     }
 
     /**
-     * Likes the match
+     * Likes the user
      */
     public void like(int id, String name){
         try {
@@ -209,7 +203,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     }
 
     /**
-     * Sets the searchmessage
+     * Sets the message on the searchsceen.
      */
     private void setMessage(String message) {
         ((TextView)getActivity().findViewById(R.id.message)).setText(message);

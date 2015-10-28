@@ -3,6 +3,8 @@ package com.protheansoftware.gab.model;
 import java.util.ArrayList;
 
 /**
+ * Data model for handling "profile" and session data
+ * @author isoa3
  * Created by isoa3 on 21/10/15.
  */
 public class MatchProfile extends Profile {
