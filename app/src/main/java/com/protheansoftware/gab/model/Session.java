@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * Data model for handling session data
  * @author david
- * Created by David Ström on 2015-10-10.
+ * Created by David StrÃ¶m on 2015-10-10.
  */
 public class Session {
     public final int session_id;

@@ -55,7 +55,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
      * Is called if no matches could be retrieved from the server
      */
     public void setNoMatches() {
-        setMessage("Kunde ej hitta matchningar");
+        setMessage(R.string.no_matches_found);
     }
 
     /**
@@ -101,7 +101,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
         super.onResume();
 //        bh.startSessionIfNeeded(this.getContext(), (GsmCellLocation) telephonyManager.getCellLocation());
         if (!bh.startSessionIfNeeded()) {
-            setMessage("Du behöver vara på en buss för att kunna hitta matchningar!");
+            setMessage(R.string.not_on_bus);
         }
         //Thread that, when the doors have been opened on your bus, reload our matches.
         //If something goes wrong, wait 30 seconds before trying again
@@ -203,9 +203,9 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     }
 
     /**
-     * Sets the message on the searchsceen.
+     * Sets the message on the searchscreen from resources.
      */
-    private void setMessage(String message) {
+    private void setMessage(int message) {
         ((TextView)getActivity().findViewById(R.id.message)).setText(message);
     }
 
@@ -226,7 +226,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
             public void onClick(View view) {
                 searchImage = ((ImageView)getActivity().findViewById(R.id.searchImage));
                 searchAnimation = AnimationUtils.loadAnimation(getContext(),R.anim.fade);
-                setMessage(String.valueOf(R.string.searchForMatchesMessage));
+                setMessage(R.string.searchForMatchesMessage);
                 searchImage.startAnimation(searchAnimation);
                 main.searchFormatches();
             }

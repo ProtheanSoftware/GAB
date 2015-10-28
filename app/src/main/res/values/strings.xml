@@ -4,6 +4,8 @@
 
     <string name="action_settings">Logga ut</string>
     <string name="logout_prompt">Är du säker på att du vill logga ut?</string>
+    <string name="not_on_bus">Du behöver vara på en buss för att kunna hitta matchningar!</string>
+    <string name="no_matches_found">Kunde ej hitta matchningar</string>
     <string name="title_activity_tabbed">TabbedActivity</string>
     <string name="facebook_app_id">906828406063799</string>
 
