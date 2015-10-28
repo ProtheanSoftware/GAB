@@ -17,6 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Database handler for polling a mysqldatabase. Uses JDBC, "Java DataBase Connector".
+ * @author oskar
  * Created by oskar on 2015-09-26.
  */
 public class JdbcDatabaseHandler implements IDatabaseHandler {
