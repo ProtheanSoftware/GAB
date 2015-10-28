@@ -1,6 +1,8 @@
 package com.protheansoftware.gab.model;
 
 /**
+ * Data model for handling "like" data
+ * @author oskar
  * Created by oskar on 2015-10-03.
  */
 public class Like {
