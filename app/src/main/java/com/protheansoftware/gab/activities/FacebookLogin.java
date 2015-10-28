@@ -32,6 +32,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * This activity handles the login functionality required to sign in to facebook. Also contains a method for logging in as a developer.
+ * @author Tobias Allden
+ */
 public class FacebookLogin extends Activity {
     LoginButton loginButton;
     CallbackManager callbackManager;
@@ -48,7 +52,7 @@ public class FacebookLogin extends Activity {
         FacebookSdk.sdkInitialize(getApplicationContext());
         Log.d(TAG, "Facebook sdk initialized");
 
-        Log.i(TAG, "Tries to log in with previous user...");
+        Log.d(TAG, "Tries to log in with previous user...");
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("user_likes"));
 
         //Check if logged in, if true, starts main activity

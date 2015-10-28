@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
- * This class handles the bulk of the data the application uses
+ * This class contains data concerning Matches as well as holding the functionality for searching for these.
  * @author Tobias Alldén
  */
 public class DataHandler {
