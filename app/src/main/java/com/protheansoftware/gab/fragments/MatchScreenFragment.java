@@ -101,7 +101,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
         super.onResume();
 //        bh.startSessionIfNeeded(this.getContext(), (GsmCellLocation) telephonyManager.getCellLocation());
         if (!bh.startSessionIfNeeded()) {
-            setMessage("You need to be on a buss network to match with other people!");
+            setMessage("Du behöver vara på en buss för att kunna hitta matchningar!");
         }
         //Thread that, when the doors have been opened on your bus, reload our matches.
         //If something goes wrong, wait 30 seconds before trying again

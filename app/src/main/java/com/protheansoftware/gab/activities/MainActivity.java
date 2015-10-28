@@ -69,8 +69,8 @@ public class MainActivity extends AppCompatActivity implements PropertyChangeLis
 
         //Add tabs to tablayout
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setText("Matchescreen"));
-        tabLayout.addTab(tabLayout.newTab().setText("Matches"));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.matchScreen_name));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.matchList_name));
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         viewPager = (ViewPager) findViewById(R.id.pager);
