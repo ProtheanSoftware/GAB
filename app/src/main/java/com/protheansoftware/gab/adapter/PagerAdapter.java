@@ -11,7 +11,7 @@ import com.protheansoftware.gab.fragments.MessagingFragment;
 
 /**
  * The pager adapter used with the main viewpager, returns the different fragments the application uses.
- * @author Tobias Alldén
+ * @author Tobias Allden
  */
 public class PagerAdapter extends FragmentStatePagerAdapter {
     int numberOfTabs;
