@@ -3,6 +3,7 @@
     <string name="app_name">gab</string>
 
     <string name="action_settings">Logga ut</string>
+    <string name="logout_prompt">Är du säker på att du vill logga ut?</string>
     <string name="title_activity_tabbed">TabbedActivity</string>
     <string name="facebook_app_id">906828406063799</string>
 

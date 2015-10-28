@@ -7,6 +7,8 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+import com.protheansoftware.gab.R;
+
 /**
  * Created by boking on 2015-10-17.
  * Fragment confirming logout action.
@@ -38,7 +40,7 @@ public class LogoutFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Build the dialog and set up the button click handlers
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Är du säker på att du vill logga ut?")
+        builder.setMessage(R.string.logout_prompt)
                 .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Send the positive button event back to the host activity
