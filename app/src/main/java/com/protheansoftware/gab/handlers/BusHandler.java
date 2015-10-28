@@ -20,6 +20,7 @@ import javax.net.ssl.HttpsURLConnection;
 /**
  * @author oskar, david
  * Created by oskar on 09/10/15.
+ * Handles communicating with the icomera and electricity api's.
  */
 public class BusHandler {
     private final String TAG = "BusHandler";

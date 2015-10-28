@@ -37,6 +37,8 @@ import com.protheansoftware.gab.handlers.JdbcDatabaseHandler;
 
 /**
  * Created by boking on 2015-10-07.
+ * Displays sent and received messages between the user and some matched recipient while also
+ * allowing new messages to be created.
  */
 public class MessagingFragment extends Fragment {
     private final static String TAG = "MESSAGING_ACTIVITY";

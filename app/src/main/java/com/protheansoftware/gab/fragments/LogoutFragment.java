@@ -9,6 +9,7 @@ import android.os.Bundle;
 
 /**
  * Created by boking on 2015-10-17.
+ * Fragment confirming logout action.
  */
 public class LogoutFragment extends DialogFragment {
 
