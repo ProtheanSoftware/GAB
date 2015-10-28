@@ -20,6 +20,7 @@ import com.protheansoftware.gab.model.Profile;
 import com.protheansoftware.gab.model.Session;
 
 /**
+ * List adapter for the "confirmed" matches.
  * @author Oscar Hall
  * Created by Oscar Hall on 01/10/15.
  */

@@ -20,6 +20,9 @@ import java.util.Objects;
 import com.protheansoftware.gab.R;
 
 /**
+ * Adapter for displaying messages, has different directions for incoming and outgoing,
+ * automatically positions the messages to left or right depending on these.
+ * @author boking
  * Created by boking on 2015-10-07.
  */
 public class MessageAdapter extends BaseAdapter {
