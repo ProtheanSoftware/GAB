@@ -13,6 +13,7 @@ import com.sinch.android.rtc.messaging.MessageClientListener;
 import com.sinch.android.rtc.messaging.WritableMessage;
 
 /**
+ * Service for sending and receiving messages from Sínch.
  * @author oskar 
  * Created by oskar on 2015-10-06.
  */
