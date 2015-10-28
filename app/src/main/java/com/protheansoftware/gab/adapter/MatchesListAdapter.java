@@ -20,6 +20,7 @@ import com.protheansoftware.gab.model.Profile;
 import com.protheansoftware.gab.model.Session;
 
 /**
+ * List adapter for the "confirmed" matches.
  * @author Oscar Hall
  * Created by Oscar Hall on 01/10/15.
  */
@@ -50,7 +51,7 @@ public class MatchesListAdapter extends ArrayAdapter<MatchProfile>{
         if(singleMatchItem.getDgw() != null) {
 
             if(mySession == null) {
-                mySession = JdbcDatabaseHandler.getInstance().getSessiondgwByUserId(JdbcDatabaseHandler.getInstance().getMyId());
+                mySession = JdbcDatabaseHandler.getInstance().getSessiondgwByUserId();
             }
 
             if (singleMatchItem.getDgw().equals(mySession.dgw)) {

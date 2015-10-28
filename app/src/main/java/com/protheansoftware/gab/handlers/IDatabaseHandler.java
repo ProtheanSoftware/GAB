@@ -4,6 +4,7 @@ import com.protheansoftware.gab.model.Like;
 import com.protheansoftware.gab.model.MatchProfile;
 import com.protheansoftware.gab.model.Message;
 import com.protheansoftware.gab.model.Profile;
+import com.protheansoftware.gab.model.Session;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -119,4 +120,22 @@ public interface IDatabaseHandler {
      * @param sinch_id The id of the message sinch sends
      */
     void saveMessage(int recieverId, String message, String sinch_id);
+
+    /**
+     * * Tries to get the bus DGW from system_id.
+     * @param target The bus system_id.
+     * @return The bus DGW or null if not found.
+     */
+    String getdgwFromSystemId(String target);
+
+    /**
+     * @return The session DGW.
+     */
+    Session getSessiondgwByUserId();
+
+    /**
+     * Updates the current users session to use bus_dgw instead.
+     * @param bus_dgw The new bus DGW.
+     */
+    void updateSession(String bus_dgw);
 }
