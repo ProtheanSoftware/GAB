@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.StrictMode;
 import android.util.Log;
 
+import com.protheansoftware.gab.activities.MainActivity;
 import com.protheansoftware.gab.model.Profile;
 
 import java.beans.PropertyChangeListener;
@@ -12,7 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
- * This class handles the bulk of the data the application uses
+ * This class contains data concerning Matches as well as holding the functionality for searching for these.
  * @author Tobias Alldén
  */
 public class DataHandler {
@@ -65,6 +66,10 @@ public class DataHandler {
         return me;
     }
 
+    /**
+     * Runnable which polls the database for new matches
+     * Fires propertychange when done
+     */
     private Runnable searchMatches = new Runnable() {
         @Override
         public void run() {
@@ -76,12 +81,17 @@ public class DataHandler {
                 e.printStackTrace();
             }
             Log.d(TAG, matches.toString());
-            if(matches == null || matches.isEmpty()){
-                pcs.firePropertyChange("NoMatches",null,null);
-            }else{
-                sortMatches(matches);
-                pcs.firePropertyChange("MatchList",null,matches);
-            }
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if(matches == null || matches.isEmpty()){
+                        pcs.firePropertyChange("NoMatches",null,null);
+                    }else{
+                        sortMatches(matches);
+                        pcs.firePropertyChange("MatchList",null,matches);
+                    }
+                }
+            });
         }
     };
 
@@ -92,8 +102,9 @@ public class DataHandler {
         Log.d(TAG, "Searching for matches...");
 
         //Start session and search for matches
-        if(jdb.getSessiondgwByUserId(jdb.getMyId())!=null) {
-            handler.post(searchMatches);
+        if(jdb.getSessiondgwByUserId()!=null) {
+            Thread t = new Thread(searchMatches);
+            t.start();
         }
     }
 
@@ -108,8 +119,8 @@ public class DataHandler {
 
     /**
      * Sorts the matchlist after number of simular interests between you and the match
-     * @param unsortedMatches
-     * @return
+     * @param unsortedMatches The target matchlist
+     * @return Sorted list
      */
     private void sortMatches(ArrayList<Profile> unsortedMatches) {
         boolean flag = true;
@@ -144,7 +155,7 @@ public class DataHandler {
 
     /**
      * Returns the current users db id.
-     * @return
+     * @return the currnt id
      */
     public int getMyDbId() throws SQLException {
         return JdbcDatabaseHandler.getInstance().getMyId();

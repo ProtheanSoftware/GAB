@@ -5,7 +5,9 @@ import java.util.ArrayList;
 
 
 /**
- * A class containing all tha data for a potential match
+ * This class is a representation of a User in the application.
+ * @author Tobias Allden
+ * @author Oskar Jedvert
  */
 public class Profile {
     private int databaseId;
@@ -37,10 +39,6 @@ public class Profile {
         return interests;
     }
 
-    /**
-     * Sets interests
-     * @param interests
-     */
     public void setInterests(ArrayList<String> interests) {
         this.interests = interests;
     }

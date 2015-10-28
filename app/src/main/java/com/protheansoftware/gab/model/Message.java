@@ -1,6 +1,8 @@
 package com.protheansoftware.gab.model;
 
 /**
+ * Data model for handling message data in database
+ * @author oskar
  * Created by oskar on 2015-10-08.
  */
 public class Message {

@@ -3,7 +3,9 @@ package com.protheansoftware.gab.model;
 import java.util.Date;
 
 /**
- * Created by time on 2015-10-10.
+ * Data model for handling session data
+ * @author david
+ * Created by David Ström on 2015-10-10.
  */
 public class Session {
     public final int session_id;

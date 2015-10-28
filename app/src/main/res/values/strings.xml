@@ -2,29 +2,27 @@
 <resources>
     <string name="app_name">gab</string>
 
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Logga ut</string>
     <string name="title_activity_tabbed">TabbedActivity</string>
     <string name="facebook_app_id">906828406063799</string>
 
-    <string name="main_fragment_0">Match Screen</string>
-    <string name="main_fragment_1">Matches List</string>
-    <string name="main_fragment_2">Chat</string>
+    <string name="matchScreen_name">Match Skärm</string>
+    <string name="matchList_name">Mina matchningar</string>
+    <string name="chat_name">Chatt</string>
+
     <string name="message_matchScreen">Ni båda gillar:</string>
     <string name="matchScreen_nameTag">Namn</string>
     <string name="searchForMatchesMessage">Söker efter personer...</string>
+    <string name="doorsOpened_string">Dörrarna har öppnats, laddar om matchningar!</string>
+
     <string name="title_activity_facebook_login">FacebookLoginActivity</string>
     <string name="splash_screen_text">gab</string>
     <string name="title_activity_main">Main</string>
-    <string name="remove_user_msg">Removed user: </string>
+    <string name="remove_user_msg">Tog bort: </string>
     <string name="remove_btn_message">Ta bort</string>
-    <string name="match_popup_text">You have new matches!</string>
-    <string name="match_popup_ok">Go to matches</string> //Reconsider this text .OH
-    <string name="match_popup_cancel">Cancel</string>
+    <string name="match_popup_text">Du har nya matchningar!</string>
+    <string name="match_popup_ok">Gå till matchningar</string> //Reconsider this text .OH
+    <string name="match_popup_cancel">Avbryt</string>
 
-    <string name="hello_world">Hello world!</string>
-
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_main2">gab</string>
 
 </resources>

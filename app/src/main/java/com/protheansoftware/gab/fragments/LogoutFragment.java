@@ -1,4 +1,4 @@
-package com.protheansoftware.gab;
+package com.protheansoftware.gab.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -6,12 +6,10 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
-
-import com.facebook.login.LoginManager;
 
 /**
  * Created by boking on 2015-10-17.
+ * Fragment confirming logout action.
  */
 public class LogoutFragment extends DialogFragment {
 
@@ -40,14 +38,14 @@ public class LogoutFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Build the dialog and set up the button click handlers
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Are you sure you want to log out?")
-                .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+        builder.setMessage("Är du säker på att du vill logga ut?")
+                .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Send the positive button event back to the host activity
                         mListener.onDialogPositiveClick(LogoutFragment.this);
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton("Avbryt", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Send the negative button event back to the host activity
                         mListener.onDialogNegativeClick(LogoutFragment.this);

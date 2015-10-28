@@ -1,5 +1,4 @@
 package com.protheansoftware.gab.fragments;
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -20,7 +19,8 @@ import java.util.ArrayList;
 
 
 /**
- * Shows the different matches retrieved
+ * Contains a graphical representation of a User, with functrionality to like or dislike the user, as well as functionality to switch view to search-screen.
+ * @author Tobias Allden
  */
 public class MatchScreenFragment extends Fragment implements View.OnClickListener {
     public static final String TAG = "MatchScreen";
@@ -46,13 +46,9 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
         this.main = main;
     }
 
-    /**
-     * Sets the list of matches
-     * @param matches
-     */
     public void setMatches(ArrayList<Profile> matches) {
         this.matches = matches;
-        setMatch(matches.get(0));
+        if(matches.size()>0) setMatch(matches.get(0));
     }
 
     /**
@@ -104,18 +100,21 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     public void onResume() {
         super.onResume();
 //        bh.startSessionIfNeeded(this.getContext(), (GsmCellLocation) telephonyManager.getCellLocation());
-        if (bh.startSessionIfNeeded(this.getContext()) == false) {
-            setMessage("You need to be on a buss network to match with other people!");
+        if (!bh.startSessionIfNeeded()) {
+            setMessage("Du behöver vara på en buss för att kunna hitta matchningar!");
         }
         //Thread that, when the doors have been opened on your bus, reload our matches.
         //If something goes wrong, wait 30 seconds before trying again
         doorsHandler = new Handler();
-      //  if(jdb.getSessiondgwByUserId(jdb.getMyId()) != null) doorsHandler.post(doorsThread);
+        if(jdb.getSessiondgwByUserId() != null) doorsHandler.post(doorsThread);
     }
 
-    //Fills out the fragment with the match.
+    /**
+     * Fills out the form with the specified profiles information.
+     * @param match
+     */
     public void setMatch(final Profile match){
-        ((TextView)getActivity().findViewById(R.id.nameTag)).setText(match.getName());
+        ((TextView) getActivity().findViewById(R.id.nameTag)).setText(match.getName());
         ListView list = (ListView)getActivity().findViewById(R.id.centerContentList);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,main.getDataHandler().getMyProfile().getSimularInterestList(match.getInterests()));
         list.setAdapter(adapter);
@@ -182,7 +181,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     }
 
     /**
-     * Dislike the match
+     * Dislike the user
      */
     public void dislike(int id, String name) {
         try {
@@ -193,7 +192,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     }
 
     /**
-     * Likes the match
+     * Likes the user
      */
     public void like(int id, String name){
         try {
@@ -204,7 +203,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     }
 
     /**
-     * Sets the searchmessage
+     * Sets the message on the searchsceen.
      */
     private void setMessage(String message) {
         ((TextView)getActivity().findViewById(R.id.message)).setText(message);
@@ -212,6 +211,7 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onPause() {
+        doorsHandler.removeCallbacks(doorsThread);
         super.onPause();
     }
 
@@ -251,22 +251,38 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
         @Override
         public void run() {
             boolean waitLong = false;
-            int waitTime = 48000; // 48 sec
-            try {
-                //if (BusHandler.getInstance().hasDoorsOpened(waitTime)) {
-                    //Searchmatches
-                    Toast.makeText(getActivity().getApplicationContext(),
-                            "Doors have been opened, reloading potential matches..",
-                            Toast.LENGTH_SHORT).show();
+            int waitTime = 12000; // 48 sec
+            if (getView() != null) {
 
-                //
-                // }
-            }catch (Exception e){
-                waitLong = true;
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        main.searchFormatches();
+                        getView().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getActivity().getApplicationContext(),
+                                        "Doors have been opened, reloading potential matches..",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                });
+
+                try {
+                    if (BusHandler.getInstance().hasDoorsOpened(waitTime)) {
+                        //Searchmatches
+                        t.start();
+                        //
+                    }
+                } catch (Exception e) {
+                    waitLong = true;
+                }
+
             }
-            if(waitLong){
+            if (waitLong) {
                 doorsHandler.postDelayed(doorsThread, waitTime * 2);
-            }else {
+            } else {
                 doorsHandler.postDelayed(doorsThread, waitTime);
             }
         }

@@ -26,7 +26,7 @@ import java.util.Observable;
 
 
 /**
- * Implement match list here
+ * Displays confirmed matches.
  */
 public class MatchesListFragment extends android.support.v4.app.ListFragment implements AdapterView.OnItemClickListener {
 
@@ -52,12 +52,15 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
 
         matchesListAdapter = new MatchesListAdapter(getActivity(), matches);
         setListAdapter(matchesListAdapter);
-
+        //Initializes the swipecontainer, enables reload through "pull-to-refresh"-pattern
         swipeContainer = (SwipeRefreshLayout) getActivity().findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 setRefreshing(true);
+                /**
+                 * Thread that will start reloading the matches, once done flags refreshing=false
+                 */
                 Thread thread = new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -70,6 +73,7 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
             }
 
         });
+        //Colors of the "loader-circle"
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
@@ -86,8 +90,7 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_item_list,container,false);
-        return rootView;
+        return inflater.inflate(R.layout.fragment_item_list,container,false);
     }
 
     public void setDbh(IDatabaseHandler dbh){
@@ -108,6 +111,12 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
         //Switch tab and open chat
         main.openChat();
     }
+
+    /**
+     * Runnable that checks if the matches are still reloading, once the matches have been loaded
+     * isRefreshing() will return false and the Runnable will set the "Swipe Container-spinner"
+     * to stop spinning aswell as reload the adapter using the new matches
+     */
     private final Runnable refresh = new Runnable() {
         @Override
         public void run() {
@@ -122,6 +131,9 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
         }
     };
 
+    /**
+     * Polls the database for new matches
+     */
     private void reloadMatches(){
         matches = new ArrayList<MatchProfile>();
         try {
@@ -131,6 +143,12 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
         }
     }
 
+    /**
+     * Initializes the flipboard bottomsheetlayout, setting a listenener to the matchlist that
+     * reacts to long click. On such an ocurrance, opens the bottomsheetlayout to be able to remove
+     * the clicked user. Adds clicklistner to the removebutton on the sheet, on click will remove
+     * the user from matches.
+     */
     private void initBottomSheetLayout() {
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
@@ -171,26 +189,4 @@ public class MatchesListFragment extends android.support.v4.app.ListFragment imp
     public void setRefreshing(boolean refreshing) {
         this.refreshing = refreshing;
     }
-
-
-  /**  This thread have been cut out of the demo product. .OH
-   * private Runnable matchCheckThread = new Runnable() {
-        @Override
-        public void run() {
-            int waitTime = 15000; // 15 sec
-            //Create a new instance of thread to check again after waitTime .OH
-            handler.postDelayed(matchCheckThread, waitTime);
-            try {
-                  ArrayList<Profile> oldList = matches;
-                  reloadMatches();
-                  if (oldList.size() != matches.size()) {
-                    //move this code to a custom handler instead. Should only send a msg to handler here. Buuuut will be debuged right now. .OH
-                    MatchPopup mp = new MatchPopup();
-                    mp.show(getFragmentManager(), "New match");
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-    };*/
 }

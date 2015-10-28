@@ -15,21 +15,31 @@ import com.sinch.android.rtc.messaging.WritableMessage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.protheansoftware.gab.R;
 
 /**
+ * Adapter for displaying messages, has different directions for incoming and outgoing,
+ * automatically positions the messages to left or right depending on these.
+ * @author boking
  * Created by boking on 2015-10-07.
  */
 public class MessageAdapter extends BaseAdapter {
     public static final String TAG = "MESSAGE ADAPTER";
 
+    //Used for positioning of messages in chat
     public static final int DIRECTION_INCOMING = 0;
     public static final int DIRECTION_OUTGOING = 1;
 
     private List<Pair<WritableMessage, Integer>> messages;
     private LayoutInflater layoutInflater;
 
+    /**
+     * Initializes the message adapter using the Activity in order to inflate messages on the correct
+     * side of the chat.
+     * @param activity The activity of the message adapter
+     */
     public MessageAdapter(Activity activity){
         layoutInflater = activity.getLayoutInflater();
         messages = new ArrayList<Pair<WritableMessage, Integer>>();
@@ -83,11 +93,12 @@ public class MessageAdapter extends BaseAdapter {
             }else if (direction == DIRECTION_OUTGOING){
                 res = R.layout.message_right;
             }
+            //Add to view
             convertView = layoutInflater.inflate(res, parent, false);
         }
 
         WritableMessage message = messages.get(i).first;
-
+        //Add to array
         TextView txtMessage = (TextView) convertView.findViewById(R.id.txtMessage);
         txtMessage.setText(message.getTextBody());
 
@@ -107,9 +118,16 @@ public class MessageAdapter extends BaseAdapter {
         return null;
     }
 
+    /**
+     * Checks if the conversation already contains a message.
+     * Doesn't currently work since "Sinch" converts WriteableMessage to Message which for some reason
+     * changes the ID for some reason. In theory this should work.
+     * @param message Message in question
+     * @return true if exists, false else
+     */
     public boolean contains(Message message) {
         for(Pair<WritableMessage, Integer> temp : messages){
-            if(message.getMessageId() == temp.first.getMessageId()) return true;
+            if(message.getMessageId().equals(temp.first.getMessageId())) return true;
         }
         return false;
     }

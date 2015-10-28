@@ -9,6 +9,7 @@ import com.protheansoftware.gab.R;
 
 /**
  * Created by isoa3 on 07/10/15.
+ * Displays a splashscreen then prompts the user to sign in using facebook.
  */
 public class SplashScreen extends Activity {
     // Splash screen timer
