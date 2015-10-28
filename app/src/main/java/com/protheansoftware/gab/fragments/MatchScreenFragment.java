@@ -12,6 +12,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.*;
 
 import com.protheansoftware.gab.R;
+import com.protheansoftware.gab.activities.FacebookLogin;
 import com.protheansoftware.gab.activities.MainActivity;
 import com.protheansoftware.gab.handlers.BusHandler;
 import com.protheansoftware.gab.handlers.JdbcDatabaseHandler;
@@ -105,18 +106,21 @@ public class MatchScreenFragment extends Fragment implements View.OnClickListene
     public void onResume() {
         super.onResume();
 //        bh.startSessionIfNeeded(this.getContext(), (GsmCellLocation) telephonyManager.getCellLocation());
-        if (!bh.startSessionIfNeeded(this.getContext())) {
+        if (!bh.startSessionIfNeeded()) {
             setMessage("You need to be on a buss network to match with other people!");
         }
         //Thread that, when the doors have been opened on your bus, reload our matches.
         //If something goes wrong, wait 30 seconds before trying again
         doorsHandler = new Handler();
-        if(jdb.getSessiondgwByUserId(jdb.getMyId()) != null) doorsHandler.post(doorsThread);
+        if(jdb.getSessiondgwByUserId() != null) doorsHandler.post(doorsThread);
     }
 
-    //Fills out the fragment with the match.
+    /**
+     * Fills out the form with the specified profiles information.
+     * @param match
+     */
     public void setMatch(final Profile match){
-        ((TextView)getActivity().findViewById(R.id.nameTag)).setText(match.getName());
+        ((TextView) getActivity().findViewById(R.id.nameTag)).setText(match.getName());
         ListView list = (ListView)getActivity().findViewById(R.id.centerContentList);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,main.getDataHandler().getMyProfile().getSimularInterestList(match.getInterests()));
         list.setAdapter(adapter);

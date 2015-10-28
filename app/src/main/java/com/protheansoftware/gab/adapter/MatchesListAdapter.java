@@ -51,7 +51,7 @@ public class MatchesListAdapter extends ArrayAdapter<MatchProfile>{
         if(singleMatchItem.getDgw() != null) {
 
             if(mySession == null) {
-                mySession = JdbcDatabaseHandler.getInstance().getSessiondgwByUserId(JdbcDatabaseHandler.getInstance().getMyId());
+                mySession = JdbcDatabaseHandler.getInstance().getSessiondgwByUserId();
             }
 
             if (singleMatchItem.getDgw().equals(mySession.dgw)) {
