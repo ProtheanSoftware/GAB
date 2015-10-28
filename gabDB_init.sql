@@ -273,11 +273,11 @@ INSERT INTO `t_likes` (`id`, `origin_id`, `like_id`, `like_name`) VALUES
 (89, 299, 301, 'Oscar Boking');
 
 
-CREATE OR REPLACE VIEW `v_matches` AS (SELECT t1.id, t1.origin_id, t1.like_id, t1.like_name
+CREATE OR REPLACE VIEW `v_matches` AS (SELECT t1.id, t1.origin_id, t1.like_id, t1.like_name, s.dgw
 FROM t_likes t1
 INNER JOIN t_likes t2 ON t1.origin_id = t2.like_id
+LEFT JOIN t_sessions s ON s.user_id = t1.like_id
 WHERE (t1.origin_id = t2.like_id AND t1.like_id = t2.origin_id));
-
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
