@@ -68,9 +68,13 @@ Session, datamodel for sessions.
 
 # Team
 Tobias Alldén
+
 David Ström
+
 Oskar Jedvert
+
 Oscar Boking
+
 Oscar Hall
 
 Built at Chalmers, 2015
