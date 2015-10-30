@@ -3,6 +3,7 @@ An android app for making new friends on the go. For the electricity innovation 
 
 <h2>docs</h2>
 Documentation regarding technical choices and reflections of the project.
+You can also find a .apk of our app here.
 
 <h2>Getting started</h2>
 git clone https://github.com/ProtheanSoftware/gab.git
@@ -67,14 +68,10 @@ Message, message datamodel
 Session, datamodel for sessions.
 
 # Team
-Tobias Alldén
-
-David Ström
-
-Oskar Jedvert
-
-Oscar Boking
-
-Oscar Hall
+-Tobias Alldén
+-David Ström
+-Oskar Jedvert
+-Oscar Boking
+-Oscar Hall
 
 Built at Chalmers, 2015
