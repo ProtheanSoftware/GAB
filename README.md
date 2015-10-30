@@ -1,7 +1,17 @@
 # gab
-An android app for making new friends on the go. For the electricity innovation challenge.
+An android app for making new friends on the go. For the electricity innovation challenge and as a part of Chalmers course DAT255.
 
-# Package structure
+# docs
+Documentation regarding technical choices and reflections of the project.
+
+# Getting started
+git clone https://github.com/ProtheanSoftware/gab.git
+Read Developer documentation in docs.
+
+gabDB_init.sql can be run on a MySQL server to create/re-initialize the database.
+
+
+# App source package structure
 
 <h2>activities package</h2>
 
@@ -54,3 +64,12 @@ MatchProfile, extends profile, used for "confirmed" matches; we can see which bu
 Message, message datamodel
 
 Session, datamodel for sessions.
+
+# Team
+Tobias Alldén
+David Ström
+Oskar Jedvert
+Oscar Boking
+Oscar Hall
+
+Built at Chalmers, 2015

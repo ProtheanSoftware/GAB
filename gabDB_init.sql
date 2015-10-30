@@ -17,7 +17,8 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
-
+CREATE DATABASE IF NOT EXISTS gab;
+USE gab;
 --
 -- Databas: `gab`
 --
@@ -201,7 +202,6 @@ INSERT INTO `t_sessions` (`session_id`, `user_id`, `dgw`, `timestamp`) VALUES
 INSERT INTO `t_messages` (`message_id`, `sender_id`, `reciever_id`, `message`, `sinch_id`) VALUES
 (1, 298, 297, 'Hej oskar', '5dd16043-73bc-4e6a-be54-acac8afe67d7'),
 (2, 297, 298, 'hej allden', '89a369e0-c5e7-48e9-84ab-acdd6d0c25a9'),
-(4, 297, 298, 'ballle', 'd0fe1c31-e5e7-403b-8e3a-8ca43e1dca97'),
 (5, 298, 298, 'yo', 'cc03fb6c-865e-4895-8a92-582dde5eb86b'),
 (6, 298, 298, 'hej', 'a09d4bfc-a3b9-4326-9d17-18e9a111d131'),
 (7, 298, 297, 'swag', 'd1530f57-631d-4072-9574-be9412f13e4c'),
