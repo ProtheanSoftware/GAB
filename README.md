@@ -1,11 +1,12 @@
 # gab
 An android app for making new friends on the go. For the electricity innovation challenge and as a part of Chalmers course DAT255.
 
-# docs
+<h2>docs</h2>
 Documentation regarding technical choices and reflections of the project.
 
-# Getting started
+<h2>Getting started</h2>
 git clone https://github.com/ProtheanSoftware/gab.git
+
 Read Developer documentation in docs.
 
 gabDB_init.sql can be run on a MySQL server to create/re-initialize the database.
